@@ -1,1 +1,1 @@
-# PUNCH_CLUB
+# PUNCH_CLUB - The game for fighters

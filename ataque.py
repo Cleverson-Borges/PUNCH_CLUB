@@ -1,11 +1,10 @@
-from habilidade import Habilidade
+from Entidades.habilidade import Habilidade
 
 
 class Ataque(Habilidade):
-    def __init__(self, nome, descricao, tipo, custo, dano):
-        super().__init__(nome, descricao, tipo, custo)
+    def __init__(self, id, nome, descricao, tipo, custo, dano):
+        super().__init__(id, nome, descricao, tipo, custo)
         self.__dano = dano
-        Ataque.adicionar_habilidade(self)
 
     @property
     def dano(self):

@@ -1,5 +1,6 @@
 class Habilidade:
-    def __init__(self, nome, descricao, tipo, custo):
+    def __init__(self, id, nome, descricao, tipo, custo):
+        self.__id = id
         self.__nome = nome
         self.__descricao = descricao
         self.__tipo = tipo

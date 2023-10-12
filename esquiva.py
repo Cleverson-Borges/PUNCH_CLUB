@@ -1,12 +1,10 @@
-from habilidade import Habilidade
+from Entidades.habilidade import Habilidade
 
 
 class Esquiva(Habilidade):
-    def __init__(self, nome, descricao, tipo, custo, taxa_esquiva:int):
-        super().__init__(nome, descricao, tipo, custo)
+    def __init__(self, id, nome, descricao, tipo, custo, taxa_esquiva:int):
+        super().__init__(id, nome, descricao, tipo, custo)
         self.__taxa_esquiva = taxa_esquiva
-        Esquiva.adicionar_habilidade(self)
-
 
     @property
     def taxa_esquiva(self):

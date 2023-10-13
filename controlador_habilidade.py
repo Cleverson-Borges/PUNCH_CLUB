@@ -6,8 +6,8 @@ from Entidades.esquiva import Esquiva
 
 
 class ControladorHabilidade:
-    def __init__(self):
-        #self.__controlador_central = controlador_central
+    def __init__(self, controlador_central):
+        self.__controlador_central = controlador_central
         self.__habilidades = []
         self.__tela_habilidade = TelaHabilidade()
 
@@ -27,7 +27,7 @@ class ControladorHabilidade:
         else:
             raise TypeError('A habilidade deve ser uma instância da classe Habilidade')
 
-    def base_de_habilidades(self):
+    def gerar_base_de_habilidades(self):
         habilidade1 = Ataque(1,'Jab', 'Soco direto', 'Ataque', 3, 3)
         habilidade2 = Ataque(2, 'Hook', 'Soco gancho', 'Ataque', 3, 5)
         habilidade3 = Ataque(3, 'Uppercut', 'Soco Uppercut', 'Ataque', 5, 8)
@@ -52,18 +52,19 @@ class ControladorHabilidade:
         habilidades_escolhidas = []
         while contador <= 4:
             habilidade_escolhida = self.__tela_habilidade.selecionar_tipo()
-            if habilidade_escolhida == 1:
+            if habilidade_escolhida == '1':
                 self.busca_habilidade('Ataque')
                 habilidades_escolhidas.append(self.selecao_habilidade())
                 contador += 1
-            elif habilidade_escolhida == 2:
+            elif habilidade_escolhida == '2':
                 self.busca_habilidade('Defesa')
                 habilidades_escolhidas.append(self.selecao_habilidade())
                 contador += 1
-            elif habilidade_escolhida == 3:
+            elif habilidade_escolhida == '3':
                 self.busca_habilidade('Esquiva')
                 habilidades_escolhidas.append(self.selecao_habilidade())
                 contador += 1
+        return habilidades_escolhidas
     def selecao_habilidade(self):
         id = self.__tela_habilidade.obtem_id()
         habilidade_escolhida = self.busca_por_id(id)

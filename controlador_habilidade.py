@@ -15,7 +15,7 @@ class ControladorHabilidade:
     def habilidades(self):
         return self.__habilidades
 
-    def cadastrar_habilidade(self, habilidade:Habilidade):
+    def cadastrar_habilidade(self, habilidade: Habilidade):
         if isinstance(habilidade, Habilidade):
             self.__habilidades.append(habilidade)
         else:
@@ -28,13 +28,13 @@ class ControladorHabilidade:
             raise TypeError('A habilidade deve ser uma instância da classe Habilidade')
 
     def gerar_base_de_habilidades(self):
-        habilidade1 = Ataque(1,'Jab', 'Soco direto', 'Ataque', 3, 3)
+        habilidade1 = Ataque(1, 'Jab', 'Soco direto', 'Ataque', 3, 3)
         habilidade2 = Ataque(2, 'Hook', 'Soco gancho', 'Ataque', 3, 5)
         habilidade3 = Ataque(3, 'Uppercut', 'Soco Uppercut', 'Ataque', 5, 8)
         habilidade4 = Defesa(4, 'Bloqueio', 'Bloqueio de soco', 'Defesa', 3, 35)
         habilidade5 = Defesa(5, 'Cobertura', 'Cobrir a cabeça e o corpo com os braços', 'Defesa', 7, 75)
         habilidade6 = Defesa(6, 'Clinch', 'Segurar o oponente para interromper os ataques', 'Defesa', 9, 90)
-        habilidade7 = Esquiva(7,'Esquiva rápida', 'Esquiva rápida para desviar de socos', 'Esquiva', 10, 15)
+        habilidade7 = Esquiva(7, 'Esquiva rápida', 'Esquiva rápida para desviar de socos', 'Esquiva', 10, 15)
         habilidade8 = Esquiva(8, 'Esquiva diagonal', 'Esquiva diagonal para evitar ataques', 'Esquiva', 20, 25)
         habilidade9 = Esquiva(9, 'Esquiva para trás', 'Movimento de recuo para escapar de golpes', 'Esquiva', 25, 30)
         self.__habilidades.append(habilidade1)
@@ -53,22 +53,23 @@ class ControladorHabilidade:
         while contador <= 4:
             habilidade_escolhida = self.__tela_habilidade.selecionar_tipo()
             if habilidade_escolhida == '1':
-                self.busca_habilidade('Ataque')
+                self.busca_habilidade_ataque('Ataque')
                 habilidades_escolhidas.append(self.selecao_habilidade())
                 contador += 1
             elif habilidade_escolhida == '2':
-                self.busca_habilidade('Defesa')
+                self.busca_habilidade_defesa('Defesa')
                 habilidades_escolhidas.append(self.selecao_habilidade())
                 contador += 1
             elif habilidade_escolhida == '3':
-                self.busca_habilidade('Esquiva')
+                self.busca_habilidade_esquiva('Esquiva')
                 habilidades_escolhidas.append(self.selecao_habilidade())
                 contador += 1
         return habilidades_escolhidas
+
     def selecao_habilidade(self):
         id = self.__tela_habilidade.obtem_id()
         habilidade_escolhida = self.busca_por_id(id)
-        if  habilidade_escolhida is not None:
+        if habilidade_escolhida is not None:
             return habilidade_escolhida
 
     def busca_por_id(self, id):
@@ -79,11 +80,24 @@ class ControladorHabilidade:
                 return habilidade
         return None
 
-    def busca_habilidade(self, tipo):
-        # FALTAAA ADICIONAR INFORMAÇÃO ADICIONAL
+# Método que pode substiuir outros
+#
+#    def busca_habilidade(self):
+#        for habilidade in self.__habilidades:
+#            if habilidade.tipo == 'Ataque':
+#                self.__tela_habilidade.mostrar_habilidade_ataque(habilidade)
+
+    def busca_habilidade_ataque(self, tipo):
         for habilidade in self.__habilidades:
             if habilidade.tipo == tipo:
-                self.__tela_habilidade.mostrar_habilidade(habilidade)
+                self.__tela_habilidade.mostrar_habilidade_ataque(habilidade)
 
+    def busca_habilidade_defesa(self, tipo):
+        for habilidade in self.__habilidades:
+            if habilidade.tipo == tipo:
+                self.__tela_habilidade.mostrar_habilidade_defesa(habilidade)
 
-
+    def busca_habilidade_esquiva(self, tipo):
+        for habilidade in self.__habilidades:
+            if habilidade.tipo == tipo:
+                self.__tela_habilidade.mostrar_habilidade_esquiva(habilidade)

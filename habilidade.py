@@ -7,6 +7,10 @@ class Habilidade:
         self.__custo = custo
 
     @property
+    def id(self):
+        return self.__id
+
+    @property
     def nome(self):
         return self.__nome
 
@@ -21,6 +25,10 @@ class Habilidade:
     @property
     def custo(self):
         return self.__custo
+
+    @id.setter
+    def id(self, id):
+        self.__id = id
 
     @nome.setter
     def nome(self, nome):
@@ -46,4 +54,3 @@ class Habilidade:
             self.__custo = custo
         else:
             raise TypeError('O custo deve ser um inteiro')
-

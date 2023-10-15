@@ -1,19 +1,18 @@
-from equipamento import Equipamento
-from status import Status
-from habilidade import Habilidade
+from Entidades.caracteristica import Caracteristica
 
 
 class Boxeador:
-    def __init__(self, nome:str, apelido:str, idade:int, peso:float, altura:float, nacionalidade:str, equipamento:Equipamento, status:Status):
+    def __init__(self, nome:str, apelido:str, idade:int, peso:float, altura:float, nacionalidade:str, cpf:int, caracteristica:Caracteristica, numero_inscricao:int, boxeador_cpu:bool):
         self.__nome = nome
         self.__apelido = apelido
         self.__idade = idade
         self.__peso = peso
         self.__altura = altura
         self.__nacionalidade = nacionalidade
-        self.__equipamento = equipamento
-        self.__status = status
-        self.__numero_inscricao = 1
+        self.__cpf = cpf
+        self.__caracteristica = caracteristica
+        self.__numero_inscricao = numero_inscricao
+        self.__boxeador_cpu = boxeador_cpu
         self.__habilidades = []
         
     @property
@@ -41,16 +40,20 @@ class Boxeador:
         return self.__nacionalidade
 
     @property
-    def equipamento(self):
-        return self.__equipamento
+    def cpf(self):
+        return self.__cpf
 
     @property
-    def status(self):
-        return self.__status
+    def caracteristica(self):
+        return self.__caracteristica
 
     @property
     def numero_inscricao(self):
         return self.__numero_inscricao
+
+    @property
+    def boxeador_cpu(self):
+        return self.__boxeador_cpu
 
     @property
     def habilidades(self):
@@ -99,16 +102,16 @@ class Boxeador:
         else:
             raise TypeError('A nacionalidade deve ser uma string')
 
-    @equipamento.setter
-    def equipamento(self, equipamento):
-        if isinstance(equipamento, Equipamento):
-            self.__equipamento = equipamento
+    @cpf.setter
+    def cpf(self, cpf):
+        if isinstance(cpf, int):
+            self.__cpf = cpf
         else:
-            raise TypeError('O equipamento deve ser um objeto da classe Equipamento')
+            raise TypeError('O CPF deve ser um inteiro')
 
-    @status.setter
-    def status(self, status):
-        if isinstance(status, Status):
+    @caracteristica.setter
+    def caracteristica(self, status):
+        if isinstance(status, Caracteristica):
             self.__status = status
         else:
             raise TypeError('O status deve ser um objeto da classe Status')
@@ -119,3 +122,10 @@ class Boxeador:
             self.__numero_inscricao = numero_inscricao
         else:
             raise TypeError('O número de inscrição deve ser um inteiro')
+
+    @boxeador_cpu.setter
+    def boxeador_cpu(self, boxeador_cpu):
+        if isinstance(boxeador_cpu, bool):
+            self.__boxeador_cpu = boxeador_cpu
+        else:
+            raise TypeError('Boxeador CPU é False ou True')

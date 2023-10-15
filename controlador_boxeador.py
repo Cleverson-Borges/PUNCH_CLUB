@@ -90,13 +90,12 @@ class ControladorBoxeador:
                 numero_inscricao=self.__numero_inscricao,
                 boxeador_cpu=True
             )
-            lista_habilidades_escolhidas = self.escolher_habilidades()
-            if lista_habilidades_escolhidas is None and len(boxeador.habilidades) == 0:
-                self.encerra_sistema()
-            for habilidade in lista_habilidades_escolhidas:
-                boxeador.habilidades.append(habilidade)
+            # lista_habilidades_escolhidas = self.escolher_habilidades()
+            # if lista_habilidades_escolhidas is None and len(boxeador.habilidades) == 0:
+            #     self.encerra_sistema()
+            # for habilidade in lista_habilidades_escolhidas:
+            #     boxeador.habilidades.append(habilidade)
 
-            breakpoint()
             self.__boxeadores.append(boxeador)
             self.__tela_boxeador.mostrar_mensagem('Boxeador cadastrado com sucesso!')
             self.__numero_inscricao += 1
@@ -290,6 +289,18 @@ class ControladorBoxeador:
     def listar_habilidades(self, boxeador:Boxeador):
         return boxeador.habilidades
 
+
+    def verifica_jogadores_maquina(self):
+        lista_jogadores_usuario = []
+        for boxeador in self.__boxeadores:
+            if boxeador.boxeador_cpu is False:
+                lista_jogadores_usuario.append(boxeador)
+        if len(lista_jogadores_usuario) == 0 or len(lista_jogadores_usuario) > 1:
+            self.__tela_boxeador.mostrar_mensagem("---------------------------ATENÇÃO---------------------------")
+            self.__tela_boxeador.mostrar_mensagem("Não é possível iniciar o jogo, você tem que controlar 1 jogador!")
+            self.__tela_boxeador.mostrar_mensagem("Por favor, cadastre um jogador e marque a opção de que ele não é CPU")
+            self.__tela_boxeador.mostrar_mensagem("------------------------------------------------------------")
+            self.encerra_sistema()
     def encerra_sistema(self):
         self.__controlador_central.abre_tela()
 

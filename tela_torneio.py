@@ -19,7 +19,8 @@ class TelaTorneio:
         print("-"*15, "CADASTRAMENTO DE TORNEIO", "-"*15)
         print()
         nome_torneio = input(str("Informe o nome que deseja dar ao torneio PUNCH CLUB: "))
-        numero_lutadores = self.le_num_inteiro("Informe novamente o numero de lutadores que deseja no torneio (4 ou 8): ", [4, 8])
+        numero_lutadores = self.le_num_inteiro("Informe novamente o numero de lutadores que deseja no "
+                                               "torneio (4 ou 8): ", [4, 8])
         return {"nome_torneio":nome_torneio,
                 "numero_lutadores":numero_lutadores}
 
@@ -45,7 +46,9 @@ class TelaTorneio:
 
     def tela_opcoes(self):
         print('-------- ░▒▓█ PUNCH CLUB TORNEIO █▓▒░ ----------',)
+        print()
         print('Escolha sua opção:')
+        print()
         print('(1) Cadastrar Torneio')
         print('(2) Alterar Torneio')
         print('(3) Mostrar Torneio')

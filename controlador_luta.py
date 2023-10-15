@@ -7,66 +7,75 @@ class ControladorLuta:
         self.__lutas = []
         self.__start_game = False
         self.__quantidade_lutadores = 0
-        self.__jogador_usuario = None
         self.__fase = None
 
     @property
     def lista_lutas(self):
         return self.__lutas
 
+    @property
+    def jogador_usuario(self):
+        return self.__jogador_usuario
+
     def iniciar_jogo(self):
+        player = 0
+        lutador_atual = None
         if self.__controlador_central.controlador_torneio.torneio_criado:
-            lista_lutas = self.__controlador_central.controlador_torneio.lutas_torneio
-            numero_lutadores = self.__controlador_central.controlador_torneio.torneio_atual.numero_lutadores
+            lista_lutas = self.__controlador_central.controlador_torneio.lutas
+            numero_lutadores = int(self.__controlador_central.controlador_torneio.torneio_atual.numero_lutas * 2)
             if numero_lutadores == 4:
                 self.__fase = 'semi-final'
             elif numero_lutadores == 8:
                 self.__fase = 'quartas-de-final'
             for luta in lista_lutas:
                 if not luta.boxeador_um.boxeador_cpu:
-                    self.__jogador_usuario = luta.boxeador_um
+                    jogador_usuario = luta.boxeador_um
+                    jogador_adversario = luta.boxeador_dois
                 elif not luta.boxeador_dois.boxeador_cpu:
-                    self.__jogador_usuario = luta.boxeador_dois
+                    jogador_usuario = luta.boxeador_dois
+                    jogador_adversario = luta.boxeador_um
                 if not luta.boxeador_um.boxeador_cpu or not luta.boxeador_dois.boxeador_cpu:
-                    self.__controlador_central.controlador_torneio.mostrar_luta_usuario()
-                    self.__controlador_central.controlador_torneio.mostrar_chaveamento(luta.boxeador_um, luta.boxeador_dois)
-                    self.iniciar_luta(luta.boxeador_um, luta.boxeador_dois)
+                    self.__controlador_central.controlador_torneio.mostrar_luta_usuario(jogador_usuario, jogador_adversario)
+                    self.iniciar_luta(jogador_usuario, jogador_adversario)
 
-    def iniciar_luta(self, boxeador_um, boxeador_dois):
-        self.__controlador_central.controlador_boxeador.verifica_jogadores_maquina()
-        if not self.__jogador_usuario:
-            round = 1
-            jogada = 0
-            game_start = True
-            while boxeador_dois.vida > 0 or boxeador_um.vida > 0 or game_start or round <= 3:
-                self.mostrar_luta(boxeador_um, boxeador_dois)
-                escolha_inicial = self.__tela_luta.tela_inicio_luta_opcoes()
-                if escolha_inicial == 0:
-                    self.__controlador_central.inicializa_sistema()
-                else:
-                    self.mostrar_luta(boxeador_um, boxeador_dois)
-                for habilidade in self.__jogador_usuario.habilidades:
-                    if habilidade.tipo == 'Ataque':
-                        self.__tela_luta.mostrar_habilidade_ataque(habilidade)
-                    elif habilidade.tipo == 'Defesa':
-                        self.__tela_luta.mostrar_habilidade_defesa(habilidade)
-                    elif habilidade.tipo == 'Esquiva':
-                        self.__tela_luta.mostrar_habilidade_esquiva(habilidade)
-                escolha_habilidade = self.__tela_luta.le_num_inteiro("Escolha a habilidade que deseja usar: ")
-                habilidada_escolhida = self.busca_por_id(escolha_habilidade, self.__jogador_usuario.habilidades)
-                if habilidada_escolhida is not None:
-                    if habilidada_escolhida.tipo == 'Ataque':
-                        boxeador_dois.vida -= habilidada_escolhida.dano
-                    elif habilidada_escolhida.tipo == 'Defesa':
-                        boxeador_um.vida += habilidada_escolhida.taxa_defesa
-                    elif habilidada_escolhida.tipo == 'Esquiva':
-                        boxeador_um.vida += habilidada_escolhida.taxa_esquiva
-                jogada =+ 1
-                if jogada == 3:
-                    jogada = 0
-                    round += 1
         else:
-            self.__tela_luta.mostra_mensagem("Você não pode lutar, pois todos os lutadores são CPU!")
+            self.__tela_luta.mostrar_mensagem("------------------------------ATENÇÃO------------------------------")
+            self.__tela_luta.mostrar_mensagem("Não há nenhum torneio cadastrado, é necessário cadastrar o torneio antes")
+            self.__tela_luta.mostrar_mensagem("------------------------------------------------------------------")
+
+
+    def iniciar_luta(self, boxeador_usuario, boxeador_adversario):
+        self.__controlador_central.controlador_boxeador.verifica_jogadores_maquina()
+        round = 1
+        jogada = 0
+        game_start = True
+        while boxeador_usuario.caracteristica.vida > 0 or boxeador_adversario.caracteristica.vida > 0 or game_start or round <= 3:
+            self.mostrar_luta(boxeador_usuario, boxeador_adversario)
+            escolha_inicial = self.__tela_luta.tela_inicio_luta_opcoes()
+            if escolha_inicial == 0:
+                self.__controlador_central.inicializa_sistema()
+            else:
+                self.mostrar_luta(boxeador_usuario, boxeador_adversario)
+            for habilidade in boxeador_usuario.habilidades:
+                if habilidade.tipo == 'Ataque':
+                    self.__tela_luta.mostrar_habilidade_ataque(habilidade)
+                elif habilidade.tipo == 'Defesa':
+                    self.__tela_luta.mostrar_habilidade_defesa(habilidade)
+                elif habilidade.tipo == 'Esquiva':
+                    self.__tela_luta.mostrar_habilidade_esquiva(habilidade)
+            escolha_habilidade = self.__tela_luta.le_num_inteiro("Escolha a habilidade que deseja usar: ")
+            habilidada_escolhida = self.busca_por_id(escolha_habilidade, boxeador_usuario.habilidades)
+            if habilidada_escolhida is not None:
+                if habilidada_escolhida.tipo == 'Ataque':
+                    boxeador_usuario.vida -= habilidada_escolhida.dano
+                elif habilidada_escolhida.tipo == 'Defesa':
+                    boxeador_usuario.vida += habilidada_escolhida.taxa_defesa
+                elif habilidada_escolhida.tipo == 'Esquiva':
+                    boxeador_usuario.vida += habilidada_escolhida.taxa_esquiva
+            jogada =+ 1
+            if jogada == 3:
+                jogada = 0
+                round += 1
 
     def busca_por_id(self, id, lista_habilidades):
         for habilidade in lista_habilidades:

@@ -47,9 +47,10 @@ class ControladorTorneio:
                 self.criar_lutas(self.__torneio_atual.numero_lutas)
                 self.__torneio_criado = True
         else:
-            self.__tela_torneio.mostrar_mensagem("------------------------------ATENÇÃO------------------------------")
+            self.__tela_torneio.mostrar_mensagem("------------------------------ATENÇÃO---------------------------------")
             self.__tela_torneio.mostrar_mensagem("Não há boxeadores cadastrados, é necessário cadastrar boxeadores antes")
-            self.__tela_torneio.mostrar_mensagem("------------------------------------------------------------------")
+            self.__tela_torneio.mostrar_mensagem("----------------------------------------------------------------------")
+            self.__tela_torneio.mostrar_mensagem(" ")
 
     def alterar_torneio(self):
         if self.__torneio_atual:
@@ -91,6 +92,7 @@ class ControladorTorneio:
     def mostrar_chaveamento(self):
         for luta in self.__lutas:
             self.__tela_torneio.mostrar_chaveamento(self.__torneio_atual.nome_torneio, luta.boxeador_um, luta.boxeador_dois, luta.fase)
+
     def encerra_sistema(self):
         self.__controlador_central.abre_tela()
 

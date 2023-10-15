@@ -12,15 +12,22 @@ class TelaCentral:
                 if ints_validos:
                     print("Valores válidos: ", ints_validos)
 
+    def mostrar_mensagem(self, mensagem):
+        print(mensagem)
+
     def tela_opcoes(self):
+        print()
+        print(" ----------------------")
         print("   ░▒▓█ PUNCH CLUB █▓▒░")
         print()
-        print("1 Cadastro de boxeador")
-        print("2 Cadastro de torneio")
-        print(" ---------------------")
-        print("3   ░▓ START GAME ▓░")
-        print(" ---------------------")
+        print("1 - CADASTRO DE BOXEADOR")
+        print("2 - CADASTRO DE TORNEIO")
+        print(" ----------------------")
+        print("3 -  ░▓ START GAME ▓░")
+        print(" ----------------------")
         print("0 -      SAIR")
+        print(" ----------------------")
         print()
-        opcao = self.le_num_inteiro("Escolha a opcao: ", [0, 1, 2, 3])
+        opcao = self.le_num_inteiro("Informe sua escolha: ", [0, 1, 2, 3])
+        print()
         return opcao

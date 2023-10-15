@@ -11,7 +11,7 @@ class TelaLuta:
                     raise ValueError
                 return valor_int
             except ValueError:
-                print("Valor incorreto!")
+                print("Valor inválido!")
                 if ints_validos:
                     print("Valores válidos: ", ints_validos)
 
@@ -20,9 +20,10 @@ class TelaLuta:
         return resposta
 
     def tela_inicio_luta_opcoes(self):
-        print("1 Lutar          |          0 Desistir")
         print()
-        opcao = self.le_num_inteiro("Escolha a opcao: ", [0, 1])
+        print("1 - LUTAR          |          0 - DESSISTIR")
+        print()
+        opcao = self.le_num_inteiro("Informe sua escolha: ", [0, 1])
         return opcao
 
     def mostrar_habilidade_ataque (self, habilidade):
@@ -47,7 +48,8 @@ class TelaLuta:
 
     def tela_luta_padrao(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2):
         lutador1 = [
-            f" {vida1} HP    {stamina1} ST",
+            f""
+            f"     {vida1} HP    {stamina1} ST",
             f"          {apelido1}",
             "        |||||||||",
             "        | _   _ |",
@@ -71,7 +73,8 @@ class TelaLuta:
         ]
 
         lutador2 = [
-            f" {vida2} HP    {stamina2} ST",
+            f""
+            f"                       {vida2} HP    {stamina2} ST",
             f"                            {apelido2}",
             "                           --|||--",
             "                          | _   _ |",
@@ -100,7 +103,8 @@ class TelaLuta:
 
     def tela_luta_vitoria_boxeador_um(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2):
         lutador1 = [
-            f" {vida1} HP    {stamina1} ST",
+            f""
+            f"      {vida1} HP    {stamina1} ST",
             f"          {apelido1}",
             "        |||||||||",
             "        | _   _ |",
@@ -124,11 +128,12 @@ class TelaLuta:
         ]
 
         lutador2 = [
-            f" {vida2} HP    {stamina2} ST",
+            f""
+            f"                       {vida2} HP    {stamina2} ST",
             f"                            {apelido2}",
             "                           --|||--",
             "                          | _   _ |",
-            "                        (  o _ o  )",
+            "                        (  X _ X  )",
             "                          |  ___  |",
             "                            |_____|",
             "              _______/     \\_______",
@@ -153,12 +158,13 @@ class TelaLuta:
 
     def tela_luta_vitoria_boxeador_dois(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2):
         lutador1 = [
-            f" {vida1} HP    {stamina1} ST",
+            f""
+            f"     {vida1} HP    {stamina1} ST",
             f"          {apelido1}",
             "        |||||||||",
             "        | _   _ |",
-            "       (  O _ O  )",
-            "        |   _   |",
+            "       (  X _ X  )",
+            "        |   X   |",
             "         |_____|",
             "  _______/     \\_______",
             " /                     \\",
@@ -177,7 +183,8 @@ class TelaLuta:
         ]
 
         lutador2 = [
-            f" {vida2} HP    {stamina2} ST",
+            f""
+            f"                       {vida2} HP    {stamina2} ST",
             f"                            {apelido2}",
             "                           --|||--",
             "                          | _   _ |",

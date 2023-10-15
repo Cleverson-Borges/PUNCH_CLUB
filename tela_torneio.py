@@ -11,7 +11,7 @@ class TelaTorneio:
                     raise ValueError
                 return valor_int
             except ValueError:
-                print("Valor incorreto!")
+                print("Valor inválido!")
                 if ints_validos:
                     print("Valores válidos: ", ints_validos)
 
@@ -24,7 +24,7 @@ class TelaTorneio:
                 "numero_lutadores":numero_lutadores}
 
     def mostrar_luta_usuario(self, nome_torneio, boxeador_um, boxeador_dois, fase):
-        print("-"*5, f"SUA PRÓXIMA LUTA DO TORNEIO {nome_torneio}")
+        print("-"*5, f"SUA PRÓXIMA LUTA DO TORNEIO {nome_torneio}", "-"*5)
         print()
         print(f"CHAVE = {boxeador_um.nome}", "vs", f"{boxeador_dois.nome}")
         print(f"{'-'*10} {fase} {'-'*10}")
@@ -50,11 +50,14 @@ class TelaTorneio:
         print()
 
     def tela_opcoes(self):
-        print('-------- ░▒▓█ PUNCH CLUB TORNEIO █▓▒░ ----------',)
+        print()
+        print('---------- ░▒▓█ PUNCH CLUB █▓▒░ ----------',)
         print('Escolha sua opção:')
         print('(1) Cadastrar Torneio')
         print('(2) Alterar Torneio')
         print('(3) Mostrar Torneio')
         print('(0) Retornar')
-        opcao = self.le_num_inteiro("Escolha a opcao: ", [0, 1, 2, 3])
+        print()
+        opcao = self.le_num_inteiro("Informe sua escolha: ", [0, 1, 2, 3])
+        print()
         return opcao

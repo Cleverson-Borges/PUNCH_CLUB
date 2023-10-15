@@ -13,7 +13,6 @@ class ControladorCentral:
         self.__controlador_torneio = ControladorTorneio(self)
         self.__tela_central = TelaCentral()
 
-
     def inicializa_sistema(self):
         self.cria_base_dados_habilidade()
         self.abre_tela()
@@ -39,6 +38,7 @@ class ControladorCentral:
 
     def cria_base_dados_boxeador(self):
         self.__controlador_boxeador.gerar_boxeador()
+
     def cadastra_boxeador(self):
         self.__controlador_boxeador.abre_tela()
 
@@ -46,6 +46,11 @@ class ControladorCentral:
         self.__controlador_torneio.abre_tela()
 
     def encerra_sistema(self):
+        self.__tela_central.mostrar_mensagem("---------------------------------------------------")
+        self.__tela_central.mostrar_mensagem("      Adoramos ter você jogando PUNCH CLUB!!!")
+        self.__tela_central.mostrar_mensagem("---------------------------------------------------")
+        self.__tela_central.mostrar_mensagem("Com os cumprimentos Breno Sayão e Cleverson Borges ")
+        self.__tela_central.mostrar_mensagem("---------------------------------------------------")
         exit(0)
 
     def abre_tela(self):

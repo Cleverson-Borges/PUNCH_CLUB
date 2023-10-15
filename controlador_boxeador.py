@@ -88,7 +88,7 @@ class ControladorBoxeador:
                 cpf=cpf,
                 caracteristica=exemplo_caracteristica,
                 numero_inscricao=self.__numero_inscricao,
-                boxeador_cpu=True
+                boxeador_cpu=False
             )
             # lista_habilidades_escolhidas = self.escolher_habilidades()
             # if lista_habilidades_escolhidas is None and len(boxeador.habilidades) == 0:
@@ -189,11 +189,11 @@ class ControladorBoxeador:
             )
         self.__boxeadores.append(boxeador_medio_1)
         boxeador_dificil_1 = Boxeador(
-            nome='Jean Hauck',
-            apelido='Goat',
+            nome='Rafael Santos',
+            apelido='Santos',
             idade=30,
-            peso=110,
-            altura=1.99,
+            peso=100,
+            altura=1.90,
             nacionalidade='Brasil',
             cpf=121756789,
             caracteristica=caracteristica_boxeador_dificil,
@@ -240,9 +240,9 @@ class ControladorBoxeador:
             boxeador = self.busca_por_cpf(cpf)
             boxeador_cpu = self.__tela_boxeador.verifica_boxeador_cpu()
             if boxeador_cpu == 'S' or boxeador_cpu == 'Sim' or boxeador_cpu == 'sim':
-                boxeador_cpu = True
-            else:
                 boxeador_cpu = False
+            else:
+                boxeador_cpu = True
             if (boxeador is not None):
                 self.__tela_boxeador.mostrar_mensagem("Insira o CPF do boxeador para alteração")
                 novos_dados = self.__tela_boxeador.cadastrar_boxeador()
@@ -256,7 +256,7 @@ class ControladorBoxeador:
                 self.listar_boxeadores()
                 self.__tela_boxeador.mostrar_mensagem("Boxeador alterado com sucesso")
             else:
-                self.__tela_boxeador.mostrar_mensagem("Informe um numero de cpf existente!")
+                self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE BOXEADOR NÃO EXISTE")
         else:
             self.__tela_boxeador.mostrar_mensagem("A lista está vazia")
 
@@ -273,7 +273,7 @@ class ControladorBoxeador:
                 self.listar_boxeadores()
                 self.__tela_boxeador.mostrar_mensagem("Boxeador excluído com sucesso")
             else:
-                self.__tela_boxeador.mostrar_mensagem("Informe um numero de cpf existente!")
+                self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE USUÁRIO NÃO EXISTE")
         else:
             self.__tela_boxeador.mostrar_mensagem("A lista está vazia")
 

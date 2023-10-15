@@ -54,6 +54,5 @@ class TelaHabilidade:
         print(mensagem)
 
     def obtem_id(self):
-        resposta = self.le_num_inteiro("Digite o ID da Habilidade que deseja adicionar ao seu boxeador ou 0 "
-                                       "para voltar: ", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        resposta = self.le_num_inteiro("Digite o ID da Habilidade que deseja adicionar ao seu boxeador ou 0 para voltar: ", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
         return resposta

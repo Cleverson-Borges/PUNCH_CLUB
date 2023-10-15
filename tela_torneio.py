@@ -19,21 +19,26 @@ class TelaTorneio:
         print("-"*15, "CADASTRAMENTO DE TORNEIO", "-"*15)
         print()
         nome_torneio = input(str("Informe o nome que deseja dar ao torneio PUNCH CLUB: "))
-        numero_lutadores = self.le_num_inteiro("Informe novamente o numero de lutadores que deseja no "
-                                               "torneio (4 ou 8): ", [4, 8])
+        numero_lutadores = self.le_num_inteiro("Informe novamente o numero de lutadores que deseja no torneio (4 ou 8): ", [4, 8])
         return {"nome_torneio":nome_torneio,
                 "numero_lutadores":numero_lutadores}
 
-    def mostrar_luta_usuario(self, nome_torneio, boxeador, fase):
+    def mostrar_luta_usuario(self, nome_torneio, boxeador_um, boxeador_dois, fase):
         print("-"*5, f"SUA PRÓXIMA LUTA DO TORNEIO {nome_torneio}")
         print()
-        print(f"CHAVE 1 = {boxeador.nome}", "vs", f"{boxeador.nome}")
-        print(f"{'-'*10} {fase.upper()} {'-'*10}")
+        print(f"CHAVE = {boxeador_um.nome}", "vs", f"{boxeador_dois.nome}")
+        print(f"{'-'*10} {fase} {'-'*10}")
 
-    def mostra_mensagem(self, mensagem):
+    def mostrar_mensagem(self, mensagem):
         print(mensagem)
 
     def mostrar_chaveamento(self, nome_torneio, boxeador1, boxeador2, numero_fase=1):
+        if numero_fase == 1:
+            numero_fase = "final"
+        elif numero_fase == 2:
+            numero_fase = "semi-final"
+        elif numero_fase == 4:
+            numero_fase = "quartas-de-final"
         print("-"*5, f"CHAVEAMENTO DO TORNEIO {nome_torneio}")
         print(f"CHAVE {numero_fase} = {boxeador1.nome}", "vs", f"{boxeador2.nome}")
         print()
@@ -46,9 +51,7 @@ class TelaTorneio:
 
     def tela_opcoes(self):
         print('-------- ░▒▓█ PUNCH CLUB TORNEIO █▓▒░ ----------',)
-        print()
         print('Escolha sua opção:')
-        print()
         print('(1) Cadastrar Torneio')
         print('(2) Alterar Torneio')
         print('(3) Mostrar Torneio')

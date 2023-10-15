@@ -203,5 +203,5 @@ class TelaLuta:
         for linha1, linha2 in zip(lutador1, lutador2):
             print(linha1 + "           " + linha2)
 
-    def mostra_mensagem(self, mensagem):
+    def mostrar_mensagem(self, mensagem):
         print(mensagem)

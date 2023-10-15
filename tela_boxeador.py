@@ -48,7 +48,7 @@ class TelaBoxeador:
         return cpf
 
     def verifica_boxeador_cpu(self):
-        resposta = input('É o seu lutador ou é da CPU? (Responda com S (Sim) ou N (Não): ')
+        resposta = input('Este é o lutador que você quer jogar? (Responda com S (Sim) ou N (Não): ')
         return resposta
 
     def mostra_boxeador(self, dados_boxeador):

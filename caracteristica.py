@@ -1,5 +1,5 @@
 class Caracteristica:
-    def __init__(self, forca:int, esquiva:int, vida:int, defesa:int, stamina:int):
+    def __init__(self, forca:int, esquiva:int, vida, defesa:int, stamina:int):
         self.__forca = forca
         self.__esquiva = esquiva
         self.__vida = vida
@@ -43,10 +43,10 @@ class Caracteristica:
 
     @vida.setter
     def vida(self, vida):
-        if isinstance(vida, int):
+        if isinstance(vida, float) or isinstance(vida, int):
             self.__vida = vida
         else:
-            raise TypeError('A vida deve ser um inteiro')
+            raise TypeError('A vida deve ser um inteiro ou um float')
 
     @defesa.setter
     def defesa(self, defesa):

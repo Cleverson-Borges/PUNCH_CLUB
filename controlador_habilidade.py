@@ -98,6 +98,13 @@ class ControladorHabilidade:
                 return habilidade
         return None
 
+# Método que pode substiuir outros
+#
+#    def busca_habilidade(self):
+#        for habilidade in self.__habilidades:
+#            if habilidade.tipo == 'Ataque':
+#                self.__tela_habilidade.mostrar_habilidade_ataque(habilidade)
+
     def busca_habilidade_ataque(self, tipo):
         for habilidade in self.__habilidades:
             if habilidade.tipo == tipo:

@@ -90,11 +90,11 @@ class ControladorBoxeador:
                 numero_inscricao=self.__numero_inscricao,
                 boxeador_cpu=False
             )
-            # lista_habilidades_escolhidas = self.escolher_habilidades()
-            # if lista_habilidades_escolhidas is None and len(boxeador.habilidades) == 0:
-            #     self.encerra_sistema()
-            # for habilidade in lista_habilidades_escolhidas:
-            #     boxeador.habilidades.append(habilidade)
+            lista_habilidades_escolhidas = self.escolher_habilidades()
+            if lista_habilidades_escolhidas is None and len(boxeador.habilidades) == 0:
+                self.encerra_sistema()
+            for habilidade in lista_habilidades_escolhidas:
+                boxeador.habilidades.append(habilidade)
 
             self.__boxeadores.append(boxeador)
             self.__tela_boxeador.mostrar_mensagem('Boxeador cadastrado com sucesso!')
@@ -282,7 +282,6 @@ class ControladorBoxeador:
         return dict_caracterisitca
 
     def escolher_habilidades(self):
-        self.__controlador_central.controlador_habilidade.gerar_base_de_habilidades()
         habilidades = self.__controlador_central.controlador_habilidade.adicionar_habilidade()
         return habilidades
 

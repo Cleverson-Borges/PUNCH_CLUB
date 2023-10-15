@@ -7,7 +7,8 @@ import random
 
 
 class ControladorTorneio:
-    def __init__(self, nome_torneio: str, numero_lutadores: int):
+    def __init__(self, controlador_central, nome_torneio: str, numero_lutadores: int):
+        self.__controlador_central = controlador_central
         self.__nome_torneio = nome_torneio
         self.__numero_lutadores = numero_lutadores
         self.__boxeadores = ControleBoxeador.boxeadores

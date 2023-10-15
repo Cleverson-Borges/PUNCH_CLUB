@@ -189,11 +189,11 @@ class ControladorBoxeador:
             )
         self.__boxeadores.append(boxeador_medio_1)
         boxeador_dificil_1 = Boxeador(
-            nome='Rafael Santos',
-            apelido='Santos',
+            nome='Jean Hauck',
+            apelido='Goat',
             idade=30,
-            peso=100,
-            altura=1.90,
+            peso=110,
+            altura=1.99,
             nacionalidade='Brasil',
             cpf=121756789,
             caracteristica=caracteristica_boxeador_dificil,
@@ -256,7 +256,7 @@ class ControladorBoxeador:
                 self.listar_boxeadores()
                 self.__tela_boxeador.mostrar_mensagem("Boxeador alterado com sucesso")
             else:
-                self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE ATIVO NÃO EXISTE")
+                self.__tela_boxeador.mostrar_mensagem("Informe um numero de cpf existente!")
         else:
             self.__tela_boxeador.mostrar_mensagem("A lista está vazia")
 
@@ -273,7 +273,7 @@ class ControladorBoxeador:
                 self.listar_boxeadores()
                 self.__tela_boxeador.mostrar_mensagem("Boxeador excluído com sucesso")
             else:
-                self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE USUÁRIO NÃO EXISTE")
+                self.__tela_boxeador.mostrar_mensagem("Informe um numero de cpf existente!")
         else:
             self.__tela_boxeador.mostrar_mensagem("A lista está vazia")
 

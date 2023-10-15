@@ -15,6 +15,7 @@ class ControladorCentral:
 
 
     def inicializa_sistema(self):
+        self.cria_base_dados_habilidade()
         self.abre_tela()
 
     @property
@@ -33,21 +34,28 @@ class ControladorCentral:
     def controlador_torneio(self):
         return self.__controlador_torneio
 
-    def cria_base_dados(self):
-        self.__controlador_boxeador.gerar_boxeador()
+    def cria_base_dados_habilidade(self):
         self.__controlador_habilidade.gerar_base_de_habilidades()
+
+    def cria_base_dados_boxeador(self):
+        self.__controlador_boxeador.gerar_boxeador()
     def cadastra_boxeador(self):
         self.__controlador_boxeador.abre_tela()
-        self.cria_base_dados()
 
     def cadastra_torneio(self):
         self.__controlador_torneio.abre_tela()
 
+    def encerra_sistema(self):
+        exit(0)
+
     def abre_tela(self):
         lista_opcoes = {1: self.cadastra_boxeador,
                         2: self.__controlador_torneio.abre_tela,
-                        3: self.__controlador_luta.iniciar_luta}
+                        3: self.__controlador_luta.iniciar_jogo,
+                        0: self.encerra_sistema}
         while True:
             opcao_escolhida = self.__tela_central.tela_opcoes()
             funcao_escolhida = lista_opcoes[opcao_escolhida]
             funcao_escolhida()
+            if opcao_escolhida == 0:
+                break

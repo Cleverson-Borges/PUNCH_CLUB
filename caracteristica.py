@@ -1,6 +1,3 @@
-from Entidades.habilidade import Habilidade
-
-
 class Caracteristica:
     def __init__(self, forca:int, esquiva:int, vida:int, defesa:int, stamina:int):
         self.__forca = forca

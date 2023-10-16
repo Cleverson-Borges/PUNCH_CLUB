@@ -1,4 +1,4 @@
-from Telas.tela_abstrata import TelaAbstrata
+from Telas.tela_central import TelaAbstrata
 
 
 class TelaBoxeador(TelaAbstrata):
@@ -141,4 +141,3 @@ class TelaBoxeador(TelaAbstrata):
         print(f"Força: {caracteristica.forca}")
         print(f"Defesa: {caracteristica.defesa}")
         print()
-

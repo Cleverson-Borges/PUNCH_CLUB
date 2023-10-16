@@ -68,7 +68,7 @@ class ControladorLuta:
                             self.__fase = 'semi-final'
                             self.__tela_luta.mostrar_semi_final(jogador_usuario, jogador_adversario)
                             luta_semi_final = self.__controlador_central.controlador_torneio.lutas
-                            jogador_adversario = luta_semi_final[0].boxeador_dois
+                            jogador_adversario = luta_semi_final[3].boxeador_dois
                             self.__tela_luta.mostrar_final(jogador_usuario, jogador_adversario)
                             self.__controlador_central.controlador_torneio.mostrar_luta_usuario(boxeador_um=jogador_usuario, boxeador_dois=jogador_adversario)
                             luta_dois, lista_jogadas_usuario, dano_total_causado = self.iniciar_luta(jogador_usuario, jogador_adversario)

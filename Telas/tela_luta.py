@@ -1,17 +1,8 @@
-from Telas.tela_abstrata import TelaAbstrata
+from Telas.tela_central import TelaAbstrata
 
 
 class TelaLuta(TelaAbstrata):
     def __init__(self):
-        pass
-
-    def le_str_valida(self):
-        pass
-
-    def le_num_float_entre(self):
-        pass
-
-    def le_num_inteiro_entre(self):
         pass
 
     def le_num_inteiro(self, mensagem=" ", ints_validos=None):

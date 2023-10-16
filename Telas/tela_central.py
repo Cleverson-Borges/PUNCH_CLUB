@@ -2,14 +2,7 @@ from Telas.tela_abstrata import TelaAbstrata
 
 
 class TelaCentral(TelaAbstrata):
-
-    def le_str_valida(self):
-        pass
-
-    def le_num_float_entre(self):
-        pass
-
-    def le_num_inteiro_entre(self):
+    def __init__(self):
         pass
 
     def le_num_inteiro(self, mensagem=" ", ints_validos=None):

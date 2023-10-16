@@ -47,9 +47,9 @@ class ControladorTorneio:
                 self.__torneio_atual = Torneio(nome_torneio, numero_lutas)
                 self.criar_lutas(self.__torneio_atual.numero_lutas)
                 self.__torneio_criado = True
-                self.__tela_torneio.mostrar_mensagem("------------------------------------------------------------------")
-                self.__tela_torneio.mostrar_mensagem("--------------------------TORNEIO CRIADO--------------------------")
-                self.__tela_torneio.mostrar_mensagem("------------------------------------------------------------------")
+                self.__tela_torneio.mostrar_mensagem("                                                              ")
+                self.__tela_torneio.mostrar_mensagem("------------------------TORNEIO CRIADO------------------------")
+                self.__tela_torneio.mostrar_mensagem("                                                              ")
 
                 self.mostrar_torneio()
         else:

@@ -1,5 +1,17 @@
-class TelaLuta:
+from Telas.tela_abstrata import TelaAbstrata
+
+
+class TelaLuta(TelaAbstrata):
     def __init__(self):
+        pass
+
+    def le_str_valida(self):
+        pass
+
+    def le_num_float_entre(self):
+        pass
+
+    def le_num_inteiro_entre(self):
         pass
 
     def le_num_inteiro(self, mensagem=" ", ints_validos=None):
@@ -11,7 +23,7 @@ class TelaLuta:
                     raise ValueError
                 return valor_int
             except ValueError:
-                print("Valor incorreto!")
+                print("Valor inválido!")
                 if ints_validos:
                     print("Valores válidos: ", ints_validos)
 
@@ -23,9 +35,12 @@ class TelaLuta:
         return resposta
 
     def tela_inicio_luta_opcoes(self):
-        print("1 Lutar          |          0 Desistir")
         print()
-        opcao = self.le_num_inteiro("Escolha a opcao: ", [0, 1])
+        print("---------------------------------------------")
+        print("| [1] Lutar          |          [0] Desistir|")
+        print("---------------------------------------------")
+        print()
+        opcao = self.le_num_inteiro("Informe sua escolha: ", [0, 1])
         return opcao
 
     def mostrar_habilidade_ataque (self, habilidade):
@@ -51,7 +66,8 @@ class TelaLuta:
 
     def tela_luta_padrao(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2):
         lutador1 = [
-            f" {vida1} HP    {stamina1} ST",
+            f"     {vida1} HP    {stamina1} ST",
+            f"",
             f"          {apelido1}",
             "        |||||||||",
             "        | _   _ |",
@@ -75,7 +91,8 @@ class TelaLuta:
         ]
 
         lutador2 = [
-            f" {vida2} HP    {stamina2} ST",
+            f"                       {vida2} HP    {stamina2} ST",
+            f"",
             f"                            {apelido2}",
             "                           --|||--",
             "                          | _   _ |",
@@ -104,8 +121,9 @@ class TelaLuta:
 
     def tela_luta_vitoria_boxeador_um(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2):
         lutador1 = [
-            f" {vida1} HP    {stamina1} ST",
-            f"          {apelido1}",
+            f"     {vida1} HP    {stamina1} ST",
+            f"",
+            f"          [{apelido1}]",
             "        |||||||||",
             "        | _   _ |",
             "       (  O _ O  )",
@@ -128,8 +146,9 @@ class TelaLuta:
         ]
 
         lutador2 = [
-            f" {vida2} HP    {stamina2} ST",
-            f"                            {apelido2}",
+            f"                       {vida2} HP    {stamina2} ST",
+            f"",
+            f"                            [{apelido2}]",
             "                           --|||--",
             "                          | _   _ |",
             "                        (  X _ X  )",
@@ -157,7 +176,8 @@ class TelaLuta:
 
     def tela_luta_vitoria_boxeador_dois(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2):
         lutador1 = [
-            f" {vida1} HP    {stamina1} ST",
+            f"     {vida1} HP    {stamina1} ST",
+            f"",
             f"          {apelido1}",
             "        |||||||||",
             "        | _   _ |",
@@ -181,7 +201,8 @@ class TelaLuta:
         ]
 
         lutador2 = [
-            f" {vida2} HP    {stamina2} ST",
+            f"                       {vida2} HP    {stamina2} ST",
+            f"",
             f"                            {apelido2}",
             "                           --|||--",
             "                          | _   _ |",
@@ -208,36 +229,42 @@ class TelaLuta:
             print(linha1 + "           " + linha2)
 
     def mostra_informacoes_luta_usuario(self, dano_total, habilidades_usadas):
-        print('--------------RELATÓRIO FINAL DA LUTA------------')
-        print('-------------------------------------------------')
+        print()
+        print('-------------- RELATÓRIO FINAL DA LUTA --------------')
+        print()
         print(f"Você causou {dano_total} de dano")
         print(f"Você usou {habilidades_usadas - 1} habilidades")
-        print('-------------------------------------------------')
+        print()
+        print("-----------------------------------------------------")
 
     def mostrar_final(self, jogador_usuario, jogador_adversario):
-        print("--------------------------")
-        print("------ GRANDE FINAL ------")
-        print("--------------------------")
-        print("------------------------------------------------------------")
-        print(f"-{jogador_usuario.apelido} VS {jogador_adversario.apelido}-")
-        print("------------------------------------------------------------")
+        print()
+        print()
+        print("               ------ GRANDE FINAL ------               ")
+        print()
+        print()
+        print("----------------------------------------------------------------")
+        print(f"|[{jogador_usuario.apelido}] VS [{jogador_adversario.apelido}]|")
+        print("----------------------------------------------------------------")
 
     def mostrar_semi_final(self, jogador_usuario, jogador_adversario):
-        print("--------------------------")
-        print("------ SEMI FINAL ------")
-        print("--------------------------")
-        print("------------------------------------------------------------")
-        print(f"-{jogador_usuario.apelido} VS {jogador_adversario.apelido}-")
-        print("------------------------------------------------------------")
+        print()
+        print("               ------ SEMI FINAL ------               ")
+        print()
+        print("----------------------------------------------------------------")
+        print(f"|[{jogador_usuario.apelido}] VS [{jogador_adversario.apelido}]|")
+        print("----------------------------------------------------------------")
 
     def mostrar_campeao(self, jogador):
-        print("---------------------------------------")
-        print("--------------- CAMPEÃO ---------------")
-        print("---------------------------------------")
+        print()
+        print("               !!!!!! CAMPEÃO !!!!!!               ")
+        print()
+        print()
         print(f"O {jogador.apelido} ganhou o torneio")
         print(f"Parabéns {jogador.nome}!")
-        print("---------------------------------------")
-        print("-------------- GAME OVER --------------")
-        print("---------------------------------------")
+        print()
+        print("-----------------------------------------")
+        print("-------------- FIM DE JOGO --------------")
+        print("-----------------------------------------")
     def mostrar_mensagem(self, mensagem):
         print(mensagem)

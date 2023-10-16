@@ -1,5 +1,17 @@
-class TelaCaracteristica:
+from Telas.tela_abstrata import TelaAbstrata
+
+
+class TelaCaracteristica(TelaAbstrata):
     def __init__(self):
+        pass
+
+    def le_str_valida(self):
+        pass
+
+    def le_num_float_entre(self):
+        pass
+
+    def le_num_inteiro_entre(self):
         pass
 
     def le_num_inteiro(self, mensagem=" ", ints_validos=None):
@@ -11,7 +23,7 @@ class TelaCaracteristica:
                     raise ValueError
                 return valor_int
             except ValueError:
-                print("Valor incorreto!")
+                print("Valor inválido!")
                 if ints_validos:
                     print("Valores válidos: ", ints_validos)
     def tela_cadastro_status(self):
@@ -19,19 +31,22 @@ class TelaCaracteristica:
         esquiva = 10
         vida = 100
         defesa = 10
-        stamina = 10
-        incremento_de_pontos = 10
-        incremento_de_vida = 25
-        print('Distribua os pontos do seu lutador')
+        stamina = 15
+        incremento_de_pontos = 3
+        incremento_de_vida = 10
+        print('Distribua os pontos do seu lutador!')
         for i in range(10):
-            print('Você tem {} pontos'.format(10 - i))
-            print(f'1 - Força. Está com {forca} pontos de força')
-            print(f'2 - Esquiva Está com {esquiva} pontos de esquiva')
-            print(f'3 - Vida Está com {vida} pontos de vida')
-            print(f'4 - Defesa Está com {defesa} pontos de defesa')
-            print(f'5 - Stamina Está com {stamina} pontos de stamina')
+            print(f'Você tem {10 - i} ponto(s) para serem distribuídos')
+            print()
+            print(f'1 - Força   - [{forca}] pontos de força atualmente')
+            print(f'2 - Esquiva - [{esquiva}] pontos de esquiva atualmente')
+            print(f'3 - Vida    - [{vida}] pontos de vida atualmente')
+            print(f'4 - Defesa  - [{defesa}] pontos de defesa atualmente')
+            print(f'5 - Stamina - [{stamina}] pontos de stamina atualmente')
+            print()
             print('0 - Sair')
-            opcao = self.le_num_inteiro("Escolha a opcao: ", [0, 1, 2, 3, 4, 5])
+            opcao = self.le_num_inteiro("Escolha uma opção: ", [0, 1, 2, 3, 4, 5])
+            print()
             if opcao == 1:
                 forca = forca + incremento_de_pontos
             elif opcao == 2:

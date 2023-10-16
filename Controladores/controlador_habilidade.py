@@ -33,10 +33,10 @@ class ControladorHabilidade:
         habilidade3 = Ataque(3, 'Uppercut', 'Soco Uppercut', 'Ataque', 5, 8)
         habilidade4 = Defesa(4, 'Bloqueio', 'Bloqueio de soco', 'Defesa', 3, 35)
         habilidade5 = Defesa(5, 'Cobertura', 'Cobrir a cabeça e o corpo com os braços', 'Defesa', 7, 75)
-        habilidade6 = Defesa(6, 'Clinch', 'Segurar o oponente para interromper os ataques', 'Defesa', 9, 90)
-        habilidade7 = Esquiva(7, 'Esquiva rápida', 'Esquiva rápida para desviar de socos', 'Esquiva', 10, 15)
-        habilidade8 = Esquiva(8, 'Esquiva diagonal', 'Esquiva diagonal para evitar ataques', 'Esquiva', 20, 25)
-        habilidade9 = Esquiva(9, 'Esquiva para trás', 'Movimento de recuo para escapar de golpes', 'Esquiva', 25, 30)
+        habilidade6 = Defesa(6, 'Clinch', 'Segurar o oponente para interromper os ataques', 'Defesa', 8, 90)
+        habilidade7 = Esquiva(7, 'Esquiva rápida', 'Esquiva rápida para desviar de socos', 'Esquiva', 5, 20)
+        habilidade8 = Esquiva(8, 'Esquiva diagonal', 'Esquiva diagonal para evitar ataques', 'Esquiva', 8, 35)
+        habilidade9 = Esquiva(9, 'Esquiva para trás', 'Movimento de recuo para escapar de golpes', 'Esquiva', 10, 55)
         self.__habilidades.append(habilidade1)
         self.__habilidades.append(habilidade2)
         self.__habilidades.append(habilidade3)
@@ -62,21 +62,21 @@ class ControladorHabilidade:
                 self.__tela_habilidade.mostrar_mensagem('Habilidades de ataque')
                 self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.busca_habilidade_ataque('Ataque')
-                habilidades_escolhidas.append(self.selecao_habilidade())
+                habilidades_escolhidas.append(self.selecao_habilidade_ataque())
                 contador += 1
             elif habilidade_escolhida == 2:
                 self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.__tela_habilidade.mostrar_mensagem('Habilidades de defesa')
                 self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.busca_habilidade_defesa('Defesa')
-                habilidades_escolhidas.append(self.selecao_habilidade())
+                habilidades_escolhidas.append(self.selecao_habilidade_defesa())
                 contador += 1
             elif habilidade_escolhida == 3:
                 self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.__tela_habilidade.mostrar_mensagem('Habilidades de esquiva')
                 self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.busca_habilidade_esquiva('Esquiva')
-                habilidades_escolhidas.append(self.selecao_habilidade())
+                habilidades_escolhidas.append(self.selecao_habilidade_esquiva())
                 contador += 1
             self.__tela_habilidade.mostrar_mensagem('Habilidade adicionada com sucesso!')
         self.__tela_habilidade.mostrar_mensagem('-'*50)
@@ -84,12 +84,23 @@ class ControladorHabilidade:
         self.__tela_habilidade.mostrar_mensagem('-'*50)
         return habilidades_escolhidas
 
-    def selecao_habilidade(self):
-        id = self.__tela_habilidade.obtem_id()
+    def selecao_habilidade_ataque(self):
+        id = self.__tela_habilidade.obtem_id_ataque()
         habilidade_escolhida = self.busca_por_id(id)
         if habilidade_escolhida is not None:
             return habilidade_escolhida
 
+    def selecao_habilidade_defesa(self):
+        id = self.__tela_habilidade.obtem_id_defesa()
+        habilidade_escolhida = self.busca_por_id(id)
+        if habilidade_escolhida is not None:
+            return habilidade_escolhida
+
+    def selecao_habilidade_esquiva(self):
+        id = self.__tela_habilidade.obtem_id_esquiva()
+        habilidade_escolhida = self.busca_por_id(id)
+        if habilidade_escolhida is not None:
+            return habilidade_escolhida
     def busca_por_id(self, id):
         if id == 0:
             self.__tela_habilidade.selecionar_tipo()

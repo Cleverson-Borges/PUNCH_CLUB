@@ -1,7 +1,17 @@
+from Telas.tela_abstrata import TelaAbstrata
 
 
-class TelaHabilidade:
+class TelaHabilidade(TelaAbstrata):
     def __init__(self):
+        pass
+
+    def le_str_valida(self):
+        pass
+
+    def le_num_float_entre(self):
+        pass
+
+    def le_num_inteiro_entre(self):
         pass
 
     def le_num_inteiro(self, mensagem=" ", ints_validos=None):
@@ -13,17 +23,20 @@ class TelaHabilidade:
                     raise ValueError
                 return valor_int
             except ValueError:
-                print("Valor incorreto!")
+                print("Valor inválido!")
                 if ints_validos:
                     print("Valores válidos: ", ints_validos)
 
     def selecionar_tipo(self):
+        print()
         print('-'*5, "SELEÇÃO DE HABILIDADES!", "-"*5)
-        print("\n(0) Voltar")
         print("(1) Habilidades de ataque")
         print("(2) Habilidades de defesa")
         print("(3) Habilidades de esquiva")
-        escolha = self.le_num_inteiro("Escolha a opcao: ", [0, 1, 2, 3])
+        print("\n(0) Voltar")
+        print()
+        escolha = self.le_num_inteiro("Escolha uma opção: ", [0, 1, 2, 3])
+        print()
         return escolha
 
     def mostrar_habilidade_ataque(self, habilidade):
@@ -53,6 +66,20 @@ class TelaHabilidade:
     def mostrar_mensagem(self, mensagem):
         print(mensagem)
 
-    def obtem_id(self):
-        resposta = self.le_num_inteiro("Digite o ID da Habilidade que deseja adicionar ao seu boxeador ou 0 para voltar: ", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+    def obtem_id_ataque(self):
+        resposta = self.le_num_inteiro("Digite o ID da Habilidade de ataque que deseja adicionar ao seu "
+                                       "boxeador ou 0 para voltar: ", [0, 1, 2, 3])
+        print()
+        return resposta
+
+    def obtem_id_defesa(self):
+        resposta = self.le_num_inteiro("Digite o ID da Habilidade de defesa que deseja adicionar ao seu "
+                                       "boxeador ou 0 para voltar: ", [0, 4, 5, 6])
+        print()
+        return resposta
+
+    def obtem_id_esquiva(self):
+        resposta = self.le_num_inteiro("Digite o ID da Habilidade de esquiva que deseja adicionar ao seu "
+                                       "boxeador ou 0 para voltar: ", [0, 7, 8, 9])
+        print()
         return resposta

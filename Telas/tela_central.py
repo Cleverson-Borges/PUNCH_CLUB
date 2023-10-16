@@ -1,4 +1,17 @@
-class TelaCentral:
+from Telas.tela_abstrata import TelaAbstrata
+
+
+class TelaCentral(TelaAbstrata):
+
+    def le_str_valida(self):
+        pass
+
+    def le_num_float_entre(self):
+        pass
+
+    def le_num_inteiro_entre(self):
+        pass
+
     def le_num_inteiro(self, mensagem=" ", ints_validos=None):
         while True:
             valor_lido = input(mensagem)
@@ -8,19 +21,26 @@ class TelaCentral:
                     raise ValueError
                 return valor_int
             except ValueError:
-                print("Valor incorreto!")
+                print("Valor inválido!")
                 if ints_validos:
                     print("Valores válidos: ", ints_validos)
 
+    def mostrar_mensagem(self, mensagem):
+        print(mensagem)
+
     def tela_opcoes(self):
+        print()
+        print(" ----------------------")
         print("   ░▒▓█ PUNCH CLUB █▓▒░")
         print()
-        print("1 Cadastro de boxeador")
-        print("2 Cadastro de torneio")
-        print(" ---------------------")
-        print("3   ░▓ START GAME ▓░")
-        print(" ---------------------")
+        print("1 - CADASTRO DE BOXEADOR")
+        print("2 - CADASTRO DE TORNEIO")
+        print(" ----------------------")
+        print("3 -  ░▓ START GAME ▓░")
+        print(" ----------------------")
         print("0 -      SAIR")
+        print(" ----------------------")
         print()
-        opcao = self.le_num_inteiro("Escolha a opcao: ", [0, 1, 2, 3])
+        opcao = self.le_num_inteiro("Informe sua escolha: ", [0, 1, 2, 3])
+        print()
         return opcao

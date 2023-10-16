@@ -94,6 +94,9 @@ class ControladorLuta:
                         self.__tela_luta.mostrar_mensagem("------ GAME OVER ------")
                         self.__tela_luta.mostrar_mensagem("-----------------------")
                         self.__controlador_central.inicializa_sistema()
+                else:
+                    return self.__tela_luta.mostrar_mensagem("Não iniciará o jogo enquanto não tiver 1 jogador "
+                                                             "controlado por você!")
         else:
             self.__tela_luta.mostrar_mensagem("------------------------------ATENÇÃO------------------------------")
             self.__tela_luta.mostrar_mensagem("Não há nenhum torneio cadastrado, é necessário cadastrar o torneio antes")

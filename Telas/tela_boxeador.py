@@ -1,9 +1,10 @@
 from Telas.tela_central import TelaAbstrata
+import PySimpleGUI as sg
 
 
 class TelaBoxeador(TelaAbstrata):
     def __init__(self):
-        pass
+        self.tela_opcoes()
 
     def le_num_inteiro(self, mensagem=" ", ints_validos=None):
         while True:
@@ -72,19 +73,63 @@ class TelaBoxeador(TelaAbstrata):
                 'nacionalidade': nacionalidade}
 
     def tela_opcoes(self):
-        print()
-        print('-------- ░▒▓█ CADASTRO DE BOXEADOR █▓▒░ ----------',)
-        print('Escolha sua opção:')
-        print('(1) Incluir Boxeador')
-        print('(2) Alterar Boxeador')
-        print('(3) Listar Boxeador')
-        print('(4) Excluir Boxeador')
-        print('(5) Listar habilidades boxeador')
-        print('(6) Listar caracteristicas boxeador')
-        print('(0) Retornar')
-        print()
-        opcao = self.le_num_inteiro("Informe a sua escolha: ", [0, 1, 2, 3, 4, 5, 6])
-        print()
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('░▒▓█ CADASTRO DE BOXEADOR █▓▒░', font=("Lucida", 25, 'bold'))],
+                    [sg.Text('Escolha sua opção:', font=("Lucida", 15, 'bold'))],
+                    [sg.Button('Incluir boxeador', size=(20, 2), key='1', button_color=('white', 'black'), border_width=0,
+                               font=("Lucida", 12, 'bold'))],
+                    [sg.Button('Alterar boxeador', size=(20, 2), key='2', button_color=('white', 'black'), border_width=0,
+                               font=("Lucida", 12, 'bold'))],
+                    [sg.Button('Listar boxeadores', size=(20, 2), key='3', button_color=('white', 'black'), border_width=0,
+                               font=("Lucida", 12, 'bold'))],
+                    [sg.Button('Excluir boxeador', size=(20, 2), key='4', button_color=('white', 'black'),
+                               border_width=0,
+                               font=("Lucida", 12, 'bold'))],
+                    [sg.Button('Listar habilidades boxeador', size=(20, 2), key='5', button_color=('white', 'black'),
+                               border_width=0,
+                               font=("Lucida", 12, 'bold'))],
+                    [sg.Button('Listar caracteristicas boxeador', size=(20, 2), key='6', button_color=('white', 'black'),
+                               border_width=0,
+                               font=("Lucida", 12, 'bold'))],
+                    [sg.Button('Confirmar', size=(8, 1), button_color=('black', 'green'),
+                               font=("Lucida", 12, 'bold')),
+                     sg.Cancel('Cancelar', size=(8, 1), key='0', button_color=('black', 'red'),
+                               font=("Lucida", 12, 'bold'))]
+                ],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('Cadastro de contas').Layout(layout)
+
+    def primeira_tela_opcoes(self):
+        self.tela_opcoes()
+        button, values = self.__window.Read()
+        opcao = 0
+        if button == '1':
+            opcao = 1
+        if button == '2':
+            opcao = 2
+        if button == '3':
+            opcao = 3
+        if button == '4':
+            opcao = 4
+        if button == '5':
+            opcao = 5
+        if button == '6':
+            opcao = 6
+        if button == '0' in (None, 'Cancelar'):
+            opcao = 0
+
+        self.close()
+        return opcao
+
+        if button == '0' in (None, 'Cancelar'):
+            opcao = 0
+
+        self.close()
         return opcao
 
     def mostrar_mensagem(self, mensagem):
@@ -141,3 +186,6 @@ class TelaBoxeador(TelaAbstrata):
         print(f"Força: {caracteristica.forca}")
         print(f"Defesa: {caracteristica.defesa}")
         print()
+
+    def close(self):
+        self.__window.Close()

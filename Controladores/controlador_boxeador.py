@@ -2,6 +2,7 @@ from Entidades.boxeador import Boxeador
 from Entidades.caracteristica import Caracteristica
 from Telas.tela_caracteristica import TelaCaracteristica
 from Telas.tela_boxeador import TelaBoxeador
+from DAOs.boxeador_dao import BoxeadorDAO
 
 
 class ControladorBoxeador:
@@ -9,13 +10,13 @@ class ControladorBoxeador:
         self.__tela_boxeador = TelaBoxeador()
         self.__tela_caracteristica = TelaCaracteristica()
         self.__controlador_central = controlador_central
-        self.__boxeadores = []
+        self.__boxeador_dao = BoxeadorDAO()
         self.__boxeador_atual = None
         self.__numero_inscricao = 1
 
     @property
     def boxeadores(self):
-        return self.__boxeadores
+        return self.__boxeador_dao.get_all()
 
     @property
     def boxeador_atual(self):
@@ -40,7 +41,7 @@ class ControladorBoxeador:
 
     def busca_por_cpf(self, cpf):
         # Busca um usuário na lista de boxeadors com base no CPF
-        for boxeador in self.__boxeadores:
+        for boxeador in self.__boxeador_dao.get_all():
             if(boxeador.cpf == cpf):
                 return boxeador
         return None
@@ -87,7 +88,7 @@ class ControladorBoxeador:
             for habilidade in lista_habilidades_escolhidas:
                 boxeador.habilidades.append(habilidade)
 
-            self.__boxeadores.append(boxeador)
+            self.__boxeador_dao.add(boxeador)
             self.__tela_boxeador.mostrar_mensagem('Boxeador cadastrado com sucesso!')
             self.__numero_inscricao += 1
 
@@ -126,7 +127,7 @@ class ControladorBoxeador:
             boxeador_cpu=True,
             numero_inscricao=numero_inscricao
             )
-        self.__boxeadores.append(boxeador_facil)
+        self.__boxeador_dao.add(boxeador_facil)
         boxeador_medio = Boxeador(
             nome='John Ruiz',
             apelido='Ruiz',
@@ -139,7 +140,7 @@ class ControladorBoxeador:
             boxeador_cpu=True,
             numero_inscricao=numero_inscricao + 1
             )
-        self.__boxeadores.append(boxeador_medio)
+        self.__boxeador_dao.add(boxeador_medio)
         boxeador_dificil = Boxeador(
             nome='Mike Tyson',
             apelido='Tyson',
@@ -152,7 +153,7 @@ class ControladorBoxeador:
             boxeador_cpu=True,
             numero_inscricao=numero_inscricao + 1
             )
-        self.__boxeadores.append(boxeador_dificil)
+        self.__boxeador_dao.add(boxeador_dificil)
         boxeador_facil_1 = Boxeador(
             nome='Fabiano Pena',
             apelido='Pena',
@@ -165,7 +166,7 @@ class ControladorBoxeador:
             boxeador_cpu=True,
             numero_inscricao=numero_inscricao + 1
             )
-        self.__boxeadores.append(boxeador_facil_1)
+        self.__boxeador_dao.add(boxeador_facil_1)
         boxeador_medio_1 = Boxeador(
             nome='Jorge Silva',
             apelido='Silva',
@@ -178,7 +179,7 @@ class ControladorBoxeador:
             boxeador_cpu=True,
             numero_inscricao=numero_inscricao + 1
             )
-        self.__boxeadores.append(boxeador_medio_1)
+        self.__boxeador_dao.add(boxeador_medio_1)
         boxeador_dificil_1 = Boxeador(
             nome='Jean Hauck',
             apelido='GOAT',
@@ -191,7 +192,7 @@ class ControladorBoxeador:
             boxeador_cpu=True,
             numero_inscricao=numero_inscricao + 1
             )
-        self.__boxeadores.append(boxeador_dificil_1)
+        self.__boxeador_dao.add(boxeador_dificil_1)
         boxeador_dificil_2 = Boxeador(
             nome='Anderson Popó',
             apelido='Popó',
@@ -204,13 +205,13 @@ class ControladorBoxeador:
             boxeador_cpu=True,
             numero_inscricao=numero_inscricao + 1
             )
-        self.__boxeadores.append(boxeador_dificil_2)
+        self.__boxeador_dao.add(boxeador_dificil_2)
 
     def listar_boxeadores(self):
         # Lista os usuarios presentes na lista
-        if len(self.__boxeadores) > 0:
+        if not self.__boxeador_dao.is_empty():
             self.__tela_boxeador.mostrar_mensagem("-----------LISTA DE BOXEADORES-----------")
-            for boxeador in self.__boxeadores:
+            for boxeador in self.__boxeador_dao.get_all():
                 self.__tela_boxeador.mostra_boxeador({'nome':boxeador.nome,
                                                       'cpf':boxeador.cpf,
                                                       'apelido': boxeador.apelido,
@@ -224,7 +225,7 @@ class ControladorBoxeador:
             self.__tela_boxeador.mostrar_mensagem("A lista está vazia!")
 
     def listar_habilidade_boxeador(self):
-        if len(self.__boxeadores) > 0:
+        if not self.__boxeador_dao.is_empty():
             self.listar_boxeadores()
             self.__tela_boxeador.mostrar_mensagem("Informe o CPF do boxeador que deseja ver as habilidades!")
             cpf = self.__tela_boxeador.obtem_cpf()
@@ -249,7 +250,7 @@ class ControladorBoxeador:
             self.__tela_boxeador.mostrar_mensagem("A lista está vazia!")
 
     def listar_caracteristica_boxeador(self):
-        if len(self.__boxeadores) > 0:
+        if not self.__boxeador_dao.is_empty():
             self.listar_boxeadores()
             self.__tela_boxeador.mostrar_mensagem("Insira o CPF do boxeador que deseja ver as habilidades!")
             cpf = self.__tela_boxeador.obtem_cpf()
@@ -262,7 +263,7 @@ class ControladorBoxeador:
             self.__tela_boxeador.mostrar_mensagem("A lista está vazia!")
 
     def alterar_boxeador(self):
-        if len(self.__boxeadores) > 0:
+        if not self.__boxeador_dao.is_empty():
             self.listar_boxeadores()
             self.__tela_boxeador.mostrar_mensagem("Insira o CPF do boxeador que deseja alterar")
             cpf = self.__tela_boxeador.obtem_cpf()
@@ -291,14 +292,14 @@ class ControladorBoxeador:
 
     def excluir_boxeador(self):
         # Exclui boxeador na lista de boxeador
-        if len(self.__boxeadores) > 0:
+        if not self.__boxeador_dao.is_empty():
             self.listar_boxeadores()
             self.__tela_boxeador.mostrar_mensagem("Insira o CPF do boxeador que deseja excluir")
             cpf_usuario = self.__tela_boxeador.obtem_cpf()
             usuario = self.busca_por_cpf(cpf_usuario)
 
             if (usuario is not None):
-                self.__boxeadores.remove(usuario)
+                self.__boxeador_dao.remove(usuario)
                 self.listar_boxeadores()
                 self.__tela_boxeador.mostrar_mensagem("Boxeador excluído com sucesso!")
             else:
@@ -319,7 +320,7 @@ class ControladorBoxeador:
 
     def verifica_jogadores_maquina(self):
         lista_jogadores_usuario = []
-        for boxeador in self.__boxeadores:
+        for boxeador in self.__boxeador_dao.get_all():
             if boxeador.boxeador_cpu is False:
                 lista_jogadores_usuario.append(boxeador)
         if len(lista_jogadores_usuario) == 0 or len(lista_jogadores_usuario) > 1:
@@ -333,7 +334,7 @@ class ControladorBoxeador:
             self.encerra_sistema()
 
     def bonificacao_por_peso(self):
-        for boxeador in self.__boxeadores:
+        for boxeador in self.__boxeador_dao.get_all():
             imc = float(boxeador.peso / (boxeador.altura * boxeador.altura))
             if imc < 17:
                 boxeador.caracteristica.forca -= 5
@@ -366,4 +367,4 @@ class ControladorBoxeador:
 
         continua = True
         while continua:
-            escolha_tela[self.__tela_boxeador.tela_opcoes()]()
+            escolha_tela[self.__tela_boxeador.primeira_tela_opcoes()]()

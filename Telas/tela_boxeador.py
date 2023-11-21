@@ -72,6 +72,16 @@ class TelaBoxeador(TelaAbstrata):
                 'altura': altura,
                 'nacionalidade': nacionalidade}
 
+    def tela_cadastro_boxeador(self):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('░▒▓█ CADASTRAMENTO NOVO BOXEADOR █▓▒░', font=('Lucida', 25, 'bold'))]
+                ]
+            )]
+        ]
+
     def tela_opcoes(self):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
@@ -96,7 +106,7 @@ class TelaBoxeador(TelaAbstrata):
                                font=("Lucida", 12, 'bold'))],
                     [sg.Button('Confirmar', size=(8, 1), button_color=('black', 'green'),
                                font=("Lucida", 12, 'bold')),
-                     sg.Cancel('Cancelar', size=(8, 1), key='0', button_color=('black', 'red'),
+                     sg.Cancel('Voltar', size=(8, 1), key='0', button_color=('black', 'red'),
                                font=("Lucida", 12, 'bold'))]
                 ],
                 element_justification='center'
@@ -155,6 +165,25 @@ class TelaBoxeador(TelaAbstrata):
         print(f'NACIONALIDADE: {dados_boxeador["nacionalidade"]}')
         print()
 
+    def tela_exibe_boxeadores(self, dados_boxeador):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('⣿⣿⣿ BOXEADORES CREDENCIADOS ⣿⣿⣿', font=('Lucida', 25,))],
+                    [sg.Text(f'NOME DO BOXEADOR: {dados_boxeador["nome"]}', font=('Lucida', 15))],
+                    [sg.Text(f'CPF: {dados_boxeador["cpf"]}', font=('Lucida', 15))],
+                    [sg.Text(f'APELIDO: {dados_boxeador["apelido"]}', font=('Lucida', 15))],
+                    [sg.Text(f'IDADE: {dados_boxeador["idade"]} anos', font=('Lucida', 15))],
+                    [sg.Text(f'PESO: {dados_boxeador["peso"]} kg', font=('Lucida', 15))],
+                    [sg.Text(f'ALTURA: {dados_boxeador["altura"]} m', font=('Lucida', 15))],
+                    [sg.Text(f'NACIONALIDADE: {dados_boxeador["nacionalidade"]}', font=('Lucida', 15))]
+                ],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('Boxeadores Credenciados').Layout(layout)
+
     def mostrar_habilidade_ataque(self, habilidade):
         print(f"ID da habilidade: {habilidade.id}")
         print(f"Nome: {habilidade.nome}")
@@ -162,6 +191,25 @@ class TelaBoxeador(TelaAbstrata):
         print(f"Custo de Stamina: {habilidade.custo}")
         print(f"Dano da habilidade: {habilidade.dano}")
         print()
+
+    def tela_habilidade_ataque(self, habilidade):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('⣿⣿⣿ HABILIDADES DE ATAQUE ⣿⣿⣿', font=('Lucida', 25))],
+                    [sg.Text(f'ID da habilidade:   {habilidade.id}')],
+                    [sg.Text(f'Nome:               {habilidade.nome}')],
+                    [sg.Text(f'Descrição :         {habilidade.descricao}')],
+                    [sg.Text(f'Custo de Stamina:   {habilidade.stamina}')],
+                    [sg.Text(f'Dano da habilidade: {habilidade.dano}')],
+                    [sg.Cancel('Voltar', size=(8, 1), key='0', button_color=('black', 'red'),
+                              font=('Lucida', 12, 'bold'))]
+                ],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('Habilidades Ataque').Layout(layout)
 
     def mostrar_habilidade_defesa(self, habilidade):
         print(f"ID da habilidade: {habilidade.id}")
@@ -171,6 +219,25 @@ class TelaBoxeador(TelaAbstrata):
         print(f"Taxa de Defesa: {habilidade.taxa_defesa}")
         print()
 
+    def tela_habilidade_defesa(self, habilidade):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('⣿⣿⣿ HABILIDADES DE DEFESA ⣿⣿⣿', font=('Lucida', 25))],
+                    [sg.Text(f'ID da habilidade: {habilidade.id}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Nome:             {habilidade.nome}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Descrição :       {habilidade.descricao}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Custo de Stamina: {habilidade.stamina}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Taxa de Defesa:   {habilidade.taxa_defesa}', font=('Lucida', 15, 'bold'))],
+                    [sg.Cancel('Voltar', size=(8, 1), key='0', button_color=('black', 'red'),
+                              font=('Lucida', 12, 'bold'))]
+                ],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('Habilidades Defesa').Layout(layout)
+
     def mostrar_habilidade_esquiva(self, habilidade):
         print(f"ID da habilidade: {habilidade.id}")
         print(f"Nome: {habilidade.nome}")
@@ -178,6 +245,25 @@ class TelaBoxeador(TelaAbstrata):
         print(f"Custo de Stamina: {habilidade.custo}")
         print(f"Taxa de esquiva: {habilidade.taxa_esquiva}")
         print()
+
+    def tela_habilidade_esquiva(self, habilidade):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('⣿⣿⣿ HABILIDADES DE ESQUIVA ⣿⣿⣿', font=('Lucida', 25))],
+                    [sg.Text(f'ID da habilidade: {habilidade.id}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Nome:             {habilidade.nome}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Descrição :       {habilidade.descricao}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Custo de Stamina: {habilidade.stamina}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Taxa de Esquiva:  {habilidade.taxa_esquiva}', font=('Lucida', 15, 'bold'))],
+                    [sg.Cancel('Voltar', size=(8, 1), key='0', button_color=('black', 'red'),
+                              font=('Lucida', 12, 'bold'))]
+                ],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('Habilidades Esquiva').Layout(layout)
 
     def mostrar_caracteristica_boxeador(self, caracteristica):
         print(f"Stamina: {caracteristica.stamina}")
@@ -187,5 +273,27 @@ class TelaBoxeador(TelaAbstrata):
         print(f"Defesa: {caracteristica.defesa}")
         print()
 
+    def tela_caracteristicas(self, caracteristica):
+        sg.ChangeLookAndFeel("DarkTanBlue")
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('⣿⣿⣿ CARACTERISTICAS ⣿⣿⣿', font=("Lucida", 25, 'bold'))],
+                    [sg.Text(f'Stamina: {caracteristica.stamina}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Esquiva: {caracteristica.esquiva}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Vida:    {caracteristica.vida}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Força:   {caracteristica.forca}', font=('Lucida', 15, 'bold'))],
+                    [sg.Text(f'Defesa:  {caracteristica.defesa}', font=('Lucida', 15, 'bold'))],
+                    [sg.Cancel('Voltar', size=(8, 1), key='0', button_color=('black', 'red'),
+                              font=('Lucida', 12, 'bold'))]
+                ],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('Tela Caracteristicas').Layout(layout)
+
     def close(self):
         self.__window.Close()
+
+    def print_mensagem(self, mensagem):
+        sg.popup('', mensagem)

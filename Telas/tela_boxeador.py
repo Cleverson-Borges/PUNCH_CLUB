@@ -56,6 +56,10 @@ class TelaBoxeador(TelaAbstrata):
             else:
                 print("A string deve conter exatamente 3 letras.")
 
+    def open(self):
+        button, values = self.__window.Read()
+        return button, values
+
     def cadastrar_boxeador(self):
         print('Cadastro de boxeador')
         nome = str(input('Nome: '))
@@ -75,12 +79,18 @@ class TelaBoxeador(TelaAbstrata):
     def tela_cadastro_boxeador(self):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
-            [sg.Column(
-                [
-                    [sg.Text('░▒▓█ CADASTRAMENTO NOVO BOXEADOR █▓▒░', font=('Lucida', 25, 'bold'))]
-                ]
-            )]
+                    [sg.Text('░▒▓█ CADASTRAMENTO DE NOVO BOXEADOR █▓▒░', font=('Lucida', 25, 'bold'))],
+                    [sg.Text('Nome:', size=(15, 1)), sg.InputText('', key='nome')],
+                    [sg.Text('Apelido:', size=(15, 1)), sg.InputText('', key='apelido')],
+                    [sg.Text('Idade:', size=(15, 1)), sg.InputText('', key='idade')],
+                    [sg.Text('Peso:', size=(15, 1)), sg.InputText('', key='peso')],
+                    [sg.Text('Altura:', size=(15, 1)), sg.InputText('', key='altura')],
+                    [sg.Text('Nacionalidade:', size=(15, 1)), sg.InputText('', key='nacionalidade')],
+                    [sg.Button('Cadastrar'), sg.Cancel('Voltar')]
         ]
+        self.__window = sg.Window('Cadastamento boxeador').Layout(layout)
+
+
 
     def tela_opcoes(self):
         sg.ChangeLookAndFeel('DarkTanBlue')
@@ -150,6 +160,21 @@ class TelaBoxeador(TelaAbstrata):
         print()
         return cpf
 
+    def seleciona_por_cpf(self):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Text(' ░▒▓█ SELECIONAR BOXEADOR █▓▒░ ', font=("Lucida", 25))],
+            [sg.Text('Digite o CPF do boxeador que deseja selecionar:', font=("Lucida", 15))],
+            [sg.Text('CPF:', size=(15, 1)), sg.InputText('cpf', key='cpf')],
+            [sg.Button('Confirmar'), sg.Cancel('Voltar')]
+        ]
+        self.__window = sg.Window('Seleciona boxeador').Layout(layout)
+
+        button, values = self.open()
+        identificador = values['identificador']
+        self.close()
+        return identificador
+
     def verifica_boxeador_cpu(self):
         resposta = input('Este é o lutador que você quer jogar? (Responda com S (Sim) ou N (Não): ')
         return resposta
@@ -185,14 +210,6 @@ class TelaBoxeador(TelaAbstrata):
         self.__window = sg.Window('Boxeadores Credenciados').Layout(layout)
 
     def mostrar_habilidade_ataque(self, habilidade):
-        print(f"ID da habilidade: {habilidade.id}")
-        print(f"Nome: {habilidade.nome}")
-        print(f"Descrição: {habilidade.descricao}")
-        print(f"Custo de Stamina: {habilidade.custo}")
-        print(f"Dano da habilidade: {habilidade.dano}")
-        print()
-
-    def tela_habilidade_ataque(self, habilidade):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
             [sg.Column(
@@ -212,14 +229,6 @@ class TelaBoxeador(TelaAbstrata):
         self.__window = sg.Window('Habilidades Ataque').Layout(layout)
 
     def mostrar_habilidade_defesa(self, habilidade):
-        print(f"ID da habilidade: {habilidade.id}")
-        print(f"Nome: {habilidade.nome}")
-        print(f"Descrição: {habilidade.descricao}")
-        print(f"Custo de Stamina: {habilidade.custo}")
-        print(f"Taxa de Defesa: {habilidade.taxa_defesa}")
-        print()
-
-    def tela_habilidade_defesa(self, habilidade):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
             [sg.Column(
@@ -239,14 +248,6 @@ class TelaBoxeador(TelaAbstrata):
         self.__window = sg.Window('Habilidades Defesa').Layout(layout)
 
     def mostrar_habilidade_esquiva(self, habilidade):
-        print(f"ID da habilidade: {habilidade.id}")
-        print(f"Nome: {habilidade.nome}")
-        print(f"Descrição: {habilidade.descricao}")
-        print(f"Custo de Stamina: {habilidade.custo}")
-        print(f"Taxa de esquiva: {habilidade.taxa_esquiva}")
-        print()
-
-    def tela_habilidade_esquiva(self, habilidade):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
             [sg.Column(
@@ -266,14 +267,6 @@ class TelaBoxeador(TelaAbstrata):
         self.__window = sg.Window('Habilidades Esquiva').Layout(layout)
 
     def mostrar_caracteristica_boxeador(self, caracteristica):
-        print(f"Stamina: {caracteristica.stamina}")
-        print(f"Esquiva: {caracteristica.esquiva}")
-        print(f"Vida: {caracteristica.vida}")
-        print(f"Força: {caracteristica.forca}")
-        print(f"Defesa: {caracteristica.defesa}")
-        print()
-
-    def tela_caracteristicas(self, caracteristica):
         sg.ChangeLookAndFeel("DarkTanBlue")
         layout = [
             [sg.Column(

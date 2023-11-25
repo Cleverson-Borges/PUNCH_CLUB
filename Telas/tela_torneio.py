@@ -4,6 +4,7 @@ import PySimpleGUI as sg
 class TelaTorneio(TelaAbstrata):
     def __init__(self):
         self.__window = None
+        self.tela_opcoes()
 
     def open(self):
         button, values = self.__window.Read()
@@ -72,12 +73,49 @@ class TelaTorneio(TelaAbstrata):
         print(f"CHAVE {numero_fase} = {boxeador1.nome}", "vs", f"{boxeador2.nome}")
         print()
 
+    def mostrar_chaveamento(self, nome_torneio, boxeador1, boxeador2, numero_fase=1):
+        if numero_fase == 1:
+            numero_fase = "final"
+        elif numero_fase == 2:
+            numero_fase = "semi-final"
+        elif numero_fase == 4:
+            numero_fase = "quartas-de-final"
+
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('⣿⣿⣿ CHAVEAMENTO DO TORNEIO ⣿⣿⣿', font=('Lucida', 25, 'bold'))],
+                    [sg.Text('  ')],
+                    [sg.Text(f'CHAVE {numero_fase} = {boxeador1.nome} vs {boxeador2.nome}', size=(15, 1))],
+                    [sg.Text('  ')],
+                    [sg.Cancel('Voltar')]]
+            )]
+        ]
+        self.__window = sg.Window('mostrar chaveamento').Layout(layout)
+
     def mostrar_torneio(self, nome_torneio, numero_lutadores):
         print()
         print("-"*5, f"TORNEIO {nome_torneio}", "-"*5)
         print()
         print(f"Numero de lutadores: {numero_lutadores}")
         print()
+
+    def mostrar_torneio(self, nome_torneio, numero_lutadores):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('░▒▓█ TORNEIO CADASTRADO █▓▒░', font=('Lucida', 25, 'bold'))],
+                    [sg.Text('  ')],
+                    [sg.Text(f'Nome do torneio: {nome_torneio}', size=(15, 1))],
+                    [sg.Text('   ')],
+                    [sg.Text(f'Numero de lutadores: {numero_lutadores}', size=(15, 1))],
+                    [sg.Cancel('Voltar')]],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('mostrar torneio').Layout(layout)
 
     def tela_opcoes(self):
         print()
@@ -89,4 +127,41 @@ class TelaTorneio(TelaAbstrata):
         print('(0) Retornar')
         print()
         opcao = self.le_num_inteiro("Informe a sua escolha: ", [0, 1, 2, 3])
+        return opcao
+
+    def tela_opcoes(self):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('░▒▓█ PUNCH CLUB TORNEIO █▓▒░', font=("Lucida", 25, 'bold'))],
+                    [sg.Text('Escolha sua opção:', font=("Lucida", 15, 'bold'))],
+                    [sg.Button('Cadastrar Torneio', size=(20, 2), key='1', button_color=('white', 'black'),
+                               border_width=0,font=("Lucida", 12, 'bold'))],
+                    [sg.Button('ALTERAR TORNEIO', size=(20, 2), key='2', button_color=('white', 'black'),
+                               border_width=0, font=("Lucida", 12, 'bold'))],
+                    [sg.Button('MOSTRAR TORNEIO', size=(20, 2), key='3', button_color=('white', 'black'),
+                               border_width=0, font=("Lucida", 12, 'bold'))],
+                    [sg.Cancel('Voltar', size=(8, 1), key='0', button_color=('black', 'red'),
+                               font=("Lucida", 12, 'bold'))]
+                ],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('Cadastro de boxeadores').Layout(layout)
+
+    def init_tela_opcoes(self):
+        self.tela_opcoes()
+        button, values = self.__window.Read()
+        opcao = 0
+        if button == '1':
+            opcao = 1
+        if button == '2':
+            opcao = 2
+        if button == '3':
+            opcao = 3
+        if button == '0' in (None, 'Cancelar'):
+            opcao = 0
+
+        self.close()
         return opcao

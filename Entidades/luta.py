@@ -6,7 +6,6 @@ class Luta:
         self.__boxeador_um = boxeador_um
         self.__boxeador_dois = boxeador_dois
         self.__vencedor = None
-        self.__perdedor = None
         self.__round_atual = 0
 
     @property
@@ -20,10 +19,6 @@ class Luta:
     @property
     def vencedor(self):
         return self.__vencedor
-
-    @property
-    def perdedor(self):
-        return self.__perdedor
 
     @property
     def round_atual(self):
@@ -47,13 +42,6 @@ class Luta:
     def vencedor(self, vencedor):
         if isinstance(vencedor, Boxeador):
             self.__vencedor = vencedor
-        else:
-            raise TypeError('O lutador deve ser um boxeador')
-
-    @perdedor.setter
-    def perdedor(self, perdedor):
-        if isinstance(perdedor, Boxeador):
-            self.__perdedor = perdedor
         else:
             raise TypeError('O lutador deve ser um boxeador')
 

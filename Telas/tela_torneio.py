@@ -18,7 +18,7 @@ class TelaTorneio(TelaAbstrata):
                 if ints_validos:
                     print("Valores válidos: ", ints_validos)
 
-    def cadastro_torneio(self):
+    def cadastrar_torneio(self):
         print("-"*15, "CADASTRAMENTO DE TORNEIO", "-"*15)
         print()
         nome_torneio = input(str("Informe o nome que deseja dar ao torneio PUNCH CLUB: "))
@@ -54,9 +54,10 @@ class TelaTorneio(TelaAbstrata):
         print(f"CHAVE {numero_fase} = {boxeador1.nome}", "vs", f"{boxeador2.nome}")
         print()
 
-    def mostrar_torneio(self, nome_torneio, numero_lutadores):
+    def mostrar_torneio(self, nome_torneio, numero_lutadores, id_torneio):
         print()
         print("-"*5, f"TORNEIO {nome_torneio}", "-"*5)
+        print(f"ID DO TORNEIO: {id_torneio}")
         print()
         print(f"Numero de lutadores: {numero_lutadores}")
         print()
@@ -66,9 +67,15 @@ class TelaTorneio(TelaAbstrata):
         print('-------- ░▒▓█ PUNCH CLUB TORNEIO █▓▒░ ----------',)
         print('Escolha sua opção:')
         print('(1) Cadastrar Torneio')
-        print('(2) Alterar Torneio')
-        print('(3) Mostrar Torneio')
         print('(0) Retornar')
         print()
-        opcao = self.le_num_inteiro("Informe a sua escolha: ", [0, 1, 2, 3])
+        opcao = self.le_num_inteiro("Informe a sua escolha: ", [0, 1])
         return opcao
+
+    def obtem_cpf(self):
+        cpf = input("Informe o cpf do seu boxeador: ")
+        return int(cpf)
+
+    def obtem_id_torneio(self):
+        id_torneio = input("Informe o id do torneio: ")
+        return int(id_torneio)

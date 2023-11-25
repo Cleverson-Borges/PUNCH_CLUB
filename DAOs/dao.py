@@ -49,5 +49,5 @@ class DAO(ABC):
         return self.__cache.values()
 
     def is_empty(self):
-        if len(self.__cache.items()) > 0:
+        if len(self.__cache.items()) == 0:
             return True

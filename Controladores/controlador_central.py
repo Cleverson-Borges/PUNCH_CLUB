@@ -1,6 +1,6 @@
 from Controladores.controlador_boxeador import ControladorBoxeador
 from Controladores.controlador_habilidade import ControladorHabilidade
-from Controladores.controlador_luta import ControladorLuta
+from Controladores.controlador_jogo import ControladorJogo
 from Controladores.controlador_torneio import ControladorTorneio
 from Telas.tela_central import TelaCentral
 
@@ -9,10 +9,9 @@ class ControladorCentral:
     def __init__(self):
         self.__controlador_boxeador = ControladorBoxeador(self)
         self.__controlador_habilidade = ControladorHabilidade(self)
-        self.__controlador_luta = ControladorLuta(self)
+        self.__controlador_luta = ControladorJogo(self)
         self.__controlador_torneio = ControladorTorneio(self)
         self.__tela_central = TelaCentral()
-
 
     def inicializa_sistema(self):
         self.cria_base_dados_habilidade()
@@ -37,8 +36,6 @@ class ControladorCentral:
     def cria_base_dados_habilidade(self):
         self.__controlador_habilidade.gerar_base_de_habilidades()
 
-    def cria_base_dados_boxeador(self):
-        self.__controlador_boxeador.gerar_boxeador()
     def cadastra_boxeador(self):
         self.__controlador_boxeador.abre_tela()
 

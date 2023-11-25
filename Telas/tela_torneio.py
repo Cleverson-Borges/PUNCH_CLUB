@@ -36,7 +36,7 @@ class TelaTorneio(TelaAbstrata):
                     [sg.Button('Confirmar'), sg.Cancel('Cancelar')]                ]
             )]
         ]
-        self.__window = sg.Window('Caqdastro Torneio').Layout(layout)
+        self.__window = sg.Window('Cadastro Torneio').Layout(layout)
 
         button, values = self.open()
         nome_torneio = values['nome_torneio']

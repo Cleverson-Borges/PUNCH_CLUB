@@ -23,17 +23,6 @@ class ControladorJogo:
     def __init__(self, controlador_central):
         self.__controlador_central = controlador_central
         self.__tela_jogo = TelaJogo()
-        self.__vitoria_boxeador_usuario = False
-        self.__jogadas_usuario = []
-
-
-    def mostrar_torneio(self, torneio):
-        self.__tela_jogo.mostrar_torneio(torneio.nome_torneio,
-                                            int(torneio.numero_lutas * 2))
-        for luta in torneio.lista_lutas:
-            self.__tela_jogo.mostrar_chaveamento(torneio.nome_torneio, luta.boxeador_um,
-                                                    luta.boxeador_dois, torneio.numero_lutas)
-
 
     def escolher_torneio(self):
         self.__controlador_central.controlador_torneio.listar_torneios()
@@ -55,15 +44,20 @@ class ControladorJogo:
                 self.__controlador_central.controlador_torneio.mostrar_luta_usuario(boxeador_um=jogador_usuario,
                                                                                     boxeador_dois=jogador_adversario,
                                                                                     torneio=torneio)
-                luta_um, lista_jogadas_usuario, dano_total_causado = self.iniciar_luta(jogador_usuario,
-                                                                                       jogador_adversario)
+                dict_luta = self.iniciar_luta(jogador_usuario,
+                                              jogador_adversario)
+
+                lista_jogadas_usuario = dict_luta.get("jogadas_usuario")
+                if not lista_jogadas_usuario:
+                    lista_jogadas_usuario = []
+                dano_total_causado = dict_luta["dano_causado_usuario"]
+                luta_um = dict_luta["vitoria_jogador_usuario"]
                 self.retorna_informacoes_lista(lista_jogadas_usuario, dano_total_causado)
-                if luta_um and torneio.fase_atual:
-                    self.organizar_campeonato(torneio, jogador_usuario, jogador_adversario)
+                if luta_um:
+                    self.__tela_jogo.mostrar_campeao(boxeador_campeao=jogador_usuario)
+                    self.__controlador_central.controlador_torneio.remover_torneio(torneio.id_torneio)
                 else:
-                    self.__tela_jogo.mostrar_mensagem("-----------------------")
                     self.__tela_jogo.mostrar_mensagem("------ GAME OVER ------")
-                    self.__tela_jogo.mostrar_mensagem("-----------------------")
                     self.__controlador_central.inicializa_sistema()
 
 
@@ -72,54 +66,38 @@ class ControladorJogo:
                                                          "controlado por você!")
 
     def iniciar_luta(self, boxeador_usuario, boxeador_adversario):
-        self.__jogadas_usuario = []
+        vitoria_jogador_usuario = False
+        jogadas_usuario = []
         self.__controlador_central.controlador_boxeador.verifica_jogadores_maquina()
         _dano_causado_usuario = 0
         round = 1
         jogada = 0
         game_start = True
         while boxeador_usuario.caracteristica.vida > 0 and boxeador_adversario.caracteristica.vida > 0 and game_start and round <= 4:
-            self.__tela_jogo.mostrar_mensagem("-------------------")
-            self.__tela_jogo.mostrar_mensagem(f"Round {round} de {FightNumbers.ROUND.value}")
-            self.__tela_jogo.mostrar_mensagem("     FIGHT!!")
-            self.__tela_jogo.mostrar_mensagem("-------------------")
-            self.mostrar_luta(boxeador_usuario, boxeador_adversario)
-            escolha_inicial = self.__tela_jogo.tela_inicio_luta_opcoes()
-            if escolha_inicial == 0:
+            escolha_inicial = self.mostrar_luta(boxeador_usuario, boxeador_adversario, round)
+            if not escolha_inicial:
+                self.__tela_jogo.mostrar_mensagem("Você desistiu da luta, retornando ao menu principal")
                 self.__controlador_central.inicializa_sistema()
-            else:
-                self.mostrar_luta(boxeador_usuario, boxeador_adversario)
             # Ataque da CPU
             habilidade_escolhida_cpu = self.escolher_habilidade_cpu()
-            if habilidade_escolhida_cpu.custo < boxeador_adversario.caracteristica.stamina:
-                self.__tela_jogo.mostrar_mensagem('-' * 50)
-                if habilidade_escolhida_cpu.tipo == 'Ataque':
-                    self.__tela_jogo.mostrar_mensagem(
-                        f"O {boxeador_adversario.apelido} usou a habilidade {habilidade_escolhida_cpu.tipo} e te dara {habilidade_escolhida_cpu.dano} de dano")
-                elif habilidade_escolhida_cpu.tipo == 'Defesa':
-                    self.__tela_jogo.mostrar_mensagem(
-                        f"O {boxeador_adversario.apelido} usou a habilidade {habilidade_escolhida_cpu.tipo} e bloqueará em {habilidade_escolhida_cpu.taxa_defesa} % o dano")
-                elif habilidade_escolhida_cpu.tipo == 'Esquiva':
-                    self.__tela_jogo.mostrar_mensagem(
-                        f"O {boxeador_adversario.apelido} usou a habilidade {habilidade_escolhida_cpu.tipo} e tem {habilidade_escolhida_cpu.taxa_esquiva} % de chance de esquivar do dano")
-                self.__tela_jogo.mostrar_mensagem('-' * 50)
-                stamina_cpu_vazia = False
-            else:
-                self.__tela_jogo.mostrar_mensagem(
-                    f"O {boxeador_adversario.apelido} não tem stamina suficiente para usar a habilidade {habilidade_escolhida_cpu.tipo}")
-                stamina_cpu_vazia = True
+            mensagem = ''
+            if not isinstance(habilidade_escolhida_cpu, tuple):
+                if habilidade_escolhida_cpu.custo < boxeador_adversario.caracteristica.stamina:
+                    if habilidade_escolhida_cpu.tipo == 'Ataque':
+                        mensagem = f"O {boxeador_adversario.apelido} usou a habilidade {habilidade_escolhida_cpu.tipo} e te dara {habilidade_escolhida_cpu.dano} de dano"
+                    elif habilidade_escolhida_cpu.tipo == 'Defesa':
+                        mensagem = f"O {boxeador_adversario.apelido} usou a habilidade {habilidade_escolhida_cpu.tipo} e bloqueará em {habilidade_escolhida_cpu.taxa_defesa} % o dano"
+                    elif habilidade_escolhida_cpu.tipo == 'Esquiva':
+                        mensagem = f"O {boxeador_adversario.apelido} usou a habilidade {habilidade_escolhida_cpu.tipo} e tem {habilidade_escolhida_cpu.taxa_esquiva} % de chance de esquivar do dano"
+                    stamina_cpu_vazia = False
+                else:
+                    mensagem = f"O {boxeador_adversario.apelido} não tem stamina suficiente para usar a habilidade {habilidade_escolhida_cpu.tipo}"
+                    stamina_cpu_vazia = True
             # Ataque do usuário
             # Escolha da habilidade
-            lista_id_habilidade = []
-            for habilidade in boxeador_usuario.habilidades:
-                if habilidade.tipo == 'Ataque':
-                    self.__tela_jogo.mostrar_habilidade_ataque(habilidade)
-                elif habilidade.tipo == 'Defesa':
-                    self.__tela_jogo.mostrar_habilidade_defesa(habilidade)
-                elif habilidade.tipo == 'Esquiva':
-                    self.__tela_jogo.mostrar_habilidade_esquiva(habilidade)
-                lista_id_habilidade.append(int(habilidade.id))
-            escolha_habilidade = self.__tela_jogo.obtem_id(lista_id_habilidade)
+            escolha_habilidade = self.mostrar_e_escolher_habilidade(boxeador_usuario, boxeador_adversario, mensagem ,boxeador_usuario.habilidades)
+            if not escolha_habilidade:
+                self.__tela_jogo.mostrar_mensagem("Você desistiu da luta, retornando ao menu principal")
             habilidade_escolhida_usuario = self.busca_por_id(escolha_habilidade, boxeador_usuario.habilidades)
             if boxeador_usuario.caracteristica.stamina <= 0:
                 stamina_usuario_vazia = True
@@ -222,89 +200,37 @@ class ControladorJogo:
                 self.__tela_jogo.mostrar_mensagem("Você não tem stamina suficiente para usar essa habilidade")
                 self.__tela_jogo.mostrar_mensagem("Tente novamente")
 
-            self.__jogadas_usuario.append(habilidade_escolhida_usuario)
+            jogadas_usuario.append(habilidade_escolhida_usuario)
             boxeador_usuario.caracteristica.stamina += FightNumbers.STAMINA.value
             boxeador_adversario.caracteristica.stamina += FightNumbers.STAMINA.value
             jogada += 1
             if jogada == 3:
                 jogada = 0
                 round += 1
-                self.__tela_jogo.mostrar_mensagem("-------------------")
-                if round == (FightNumbers.ROUND.value + 1):
-                    self.__tela_jogo.mostrar_mensagem(f"Round 3 de 3")
-                else:
-                    self.__tela_jogo.mostrar_mensagem(f"Round {round} de 3")
-                self.__tela_jogo.mostrar_mensagem("     FIGHT!!")
-                self.__tela_jogo.mostrar_mensagem("-------------------")
-
+  
             if round == (
                     FightNumbers.ROUND.value + 1) or boxeador_usuario.caracteristica.vida <= 0 or boxeador_adversario.caracteristica.vida <= 0:
                 self.__tela_jogo.mostrar_mensagem("O jogo acabou")
                 if boxeador_usuario.caracteristica.vida > boxeador_adversario.caracteristica.vida:
                     self.__tela_jogo.mostrar_mensagem(f"O {boxeador_usuario.apelido} ganhou a luta")
-                    self.mostrar_vitoria_boxeador_um(boxeador_usuario, boxeador_adversario)
-                    self.__vitoria_boxeador_usuario = True
+                    vitoria_jogador_usuario = True
                 elif boxeador_usuario.caracteristica.vida < boxeador_adversario.caracteristica.vida:
                     self.__tela_jogo.mostrar_mensagem(f"O {boxeador_adversario.apelido} ganhou a luta")
-                    self.mostrar_vitoria_boxeador_dois(boxeador_usuario, boxeador_adversario)
                 else:
                     self.__tela_jogo.mostrar_mensagem("Empate")
                     cara_coroa = randint(0, 1)
                     self.__tela_jogo.mostrar_mensagem("Jogo será decidido no cara ou coroa")
                     if cara_coroa == 0:
                         self.__tela_jogo.mostrar_mensagem(f"O {boxeador_usuario.apelido} ganhou a luta")
-                        self.mostrar_vitoria_boxeador_um(boxeador_usuario, boxeador_adversario)
-                        self.__vitoria_boxeador_usuario = True
+                        vitoria_jogador_usuario = True
                     else:
                         self.__tela_jogo.mostrar_mensagem(f"O {boxeador_adversario.apelido} ganhou a luta")
-                        self.mostrar_vitoria_boxeador_dois(boxeador_usuario, boxeador_adversario)
-                return self.__vitoria_boxeador_usuario, self.__jogadas_usuario, _dano_causado_usuario
-
-    def organizar_campeonato(self, torneio, jogador_usuario, jogador_adversario):
-        if torneio.fase == 'semi-final':
-            luta_final = self.__controlador_central.controlador_torneio.lutas
-            jogador_adversario = luta_final[FightNumbers.MYKE_TYSON.value].boxeador_dois
-            self.__tela_jogo.mostrar_final(jogador_usuario, jogador_adversario)
-            self.__controlador_central.controlador_torneio.mostrar_luta_usuario(boxeador_um=jogador_usuario,
-                                                                                boxeador_dois=jogador_adversario)
-            luta_dois, lista_jogadas_usuario, dano_total_causado = self.iniciar_luta(jogador_usuario,
-                                                                                     jogador_adversario)
-            if luta_dois:
-                torneio.fase = 'final'
-                self.__tela_jogo.mostrar_campeao(jogador_usuario)
-                self.retorna_informacoes_lista(lista_jogadas_usuario, dano_total_causado)
-                self.__controlador_central.inicializa_sistema()
-            else:
-                self.__tela_jogo.mostrar_campeao(jogador_adversario)
-                self.__controlador_central.inicializa_sistema()
-        elif torneio.fase == 'quartas-de-final':
-            self.__tela_jogo.mostrar_semi_final(jogador_usuario, jogador_adversario)
-            luta_semi_final = self.__controlador_central.controlador_torneio.lutas
-            jogador_adversario = luta_semi_final[FightNumbers.TONY_TUCKER.value].boxeador_dois
-            self.__tela_jogo.mostrar_final(jogador_usuario, jogador_adversario)
-            self.__controlador_central.controlador_torneio.mostrar_luta_usuario(boxeador_um=jogador_usuario,
-                                                                                boxeador_dois=jogador_adversario)
-            luta_dois, lista_jogadas_usuario, dano_total_causado = self.iniciar_luta(jogador_usuario,
-                                                                                     jogador_adversario)
-            if luta_dois:
-                torneio.fase = 'semi-final'
-                self.__tela_jogo.mostrar_mensagem("Você passou para a semi-final")
-                self.retorna_informacoes_lista(lista_jogadas_usuario, dano_total_causado)
-                luta_final = self.__controlador_central.controlador_torneio.lutas
-                jogador_adversario = luta_final[FightNumbers.MYKE_TYSON.value].boxeador_dois
-                self.__tela_jogo.mostrar_final(jogador_usuario, jogador_adversario)
-                self.__controlador_central.controlador_torneio.mostrar_luta_usuario(boxeador_um=jogador_usuario,
-                                                                                    boxeador_dois=jogador_adversario)
-                luta_dois, lista_jogadas_usuario, dano_total_causado = self.iniciar_luta(jogador_usuario,
-                                                                                         jogador_adversario)
-                if luta_dois:
-                    torneio.fase = 'final'
-                    self.__tela_jogo.mostrar_campeao(jogador_usuario)
-                    self.retorna_informacoes_lista(lista_jogadas_usuario, dano_total_causado)
-                    self.__controlador_central.inicializa_sistema()
-                else:
-                    self.__tela_jogo.mostrar_campeao(jogador_adversario)
-                    self.__controlador_central.inicializa_sistema()
+                print(vitoria_jogador_usuario)
+                print(jogadas_usuario)
+                print(_dano_causado_usuario)
+                return {'vitoria_jogador_usuario':vitoria_jogador_usuario,
+                        'jogadas_usuario':jogadas_usuario,
+                        'dano_causado_usuario':_dano_causado_usuario}
 
     def escolher_habilidade_cpu(self):
         lista_habilidades = self.__controlador_central.controlador_habilidade.habilidades
@@ -325,22 +251,31 @@ class ControladorJogo:
                 return habilidade
         return None
 
-    def mostrar_luta(self, boxeador_um, boxeador_dois):
-        self.__tela_jogo.tela_luta_padrao(boxeador_um.caracteristica.vida,
+    def mostrar_luta(self, boxeador_um, boxeador_dois, round, game_start=False):
+        resposta = self.__tela_jogo.tela_luta_padrao(boxeador_um.caracteristica.vida,
                                           boxeador_dois.caracteristica.vida,
                                           boxeador_um.caracteristica.stamina,
                                           boxeador_dois.caracteristica.stamina,
                                           boxeador_um.nacionalidade, boxeador_dois.nacionalidade,
                                           boxeador_um.apelido, boxeador_dois.apelido,
+                                          round,
+                                          game_start
                                           )
+        return resposta
+
+    def mostrar_e_escolher_habilidade(self, boxeador_um, boxeador_dois, mensagem_habilidade_escolhida, habilidades_boxeador_usuario):
+        resposta = self.__tela_jogo.tela_luta_escolha_habilidade(boxeador_um.caracteristica.vida,
+                                          boxeador_dois.caracteristica.vida,
+                                          boxeador_um.caracteristica.stamina,
+                                          boxeador_dois.caracteristica.stamina,
+                                          mensagem_habilidade_escolhida,
+                                          habilidades_boxeador_usuario
+                                            )
+        return resposta
 
     def mostrar_vitoria_boxeador_um(self, boxeador_um, boxeador_dois):
-        self.__tela_jogo.tela_luta_vitoria_boxeador_um(boxeador_um.caracteristica.vida,
-                                                       boxeador_dois.caracteristica.vida,
-                                                       boxeador_um.caracteristica.stamina,
-                                                       boxeador_dois.caracteristica.stamina,
-                                                       boxeador_um.nacionalidade, boxeador_dois.nacionalidade,
-                                                       boxeador_um.apelido, boxeador_dois.apelido)
+        self.__tela_jogo.tela_luta_vitoria_boxeador_um(boxeador_um.caracteristica.nome,
+                                                       boxeador_dois.caracteristica.nome)
 
     def mostrar_vitoria_boxeador_dois(self, boxeador_um, boxeador_dois):
         self.__tela_jogo.tela_luta_vitoria_boxeador_dois(boxeador_um.caracteristica.vida,

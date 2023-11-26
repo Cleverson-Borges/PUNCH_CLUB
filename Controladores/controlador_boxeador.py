@@ -48,7 +48,7 @@ class ControladorBoxeador:
             dicionario_informacoes_boxeador['cpf'] = cpf
             dicionario_informacoes_caracteristica = self.cadastrar_caracteristicas()
             boxeador_cpu = False
-            #
+
             # caracteristica_exemplo = Caracteristica(
             #     forca=10,
             #     esquiva=10,

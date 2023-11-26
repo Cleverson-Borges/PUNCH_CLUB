@@ -4,6 +4,7 @@ from Entidades.torneio import Torneio
 from DAOs.torneio_dao import TorneioDAO
 import random
 from enum import Enum
+from random import randint
 
 
 class TorneioNumbers(Enum):
@@ -34,18 +35,10 @@ class ControladorTorneio:
 
     def cadastrar_torneio(self):
         self.__controlador_central.controlador_boxeador.verifica_jogadores_maquina()
-        fase_atual = TorneioNumbers.SEMI_FINAL_NUMERO_DE_LUTAS.value
-        dados_torneio = self.__tela_torneio.cadastrar_torneio()
-        nome_torneio = dados_torneio["nome_torneio"]
-        numero_lutadores = dados_torneio["numero_lutadores"]
-        numero_lutas = int(numero_lutadores / TorneioNumbers.MULTIPLICADOR_LUTADORES.value)
-        if numero_lutas == TorneioNumbers.SEMI_FINAL_NUMERO_DE_LUTAS.value:
-            fase_atual = 'semi-final'
-        elif numero_lutas == TorneioNumbers.QUARTAS_DE_FINAL_NUMERO_DE_LUTAS.value:
-            fase_atual = 'quartas-de-final'
+        nome_torneio = self.__tela_torneio.cadastrar_torneio()
         id_torneio = self.cadastra_id_torneio(TorneioNumbers.ID_INICIAL_TORNEIO.value)
-        torneio_cadastrado = Torneio(nome_torneio, numero_lutas, fase_atual, id_torneio)
-        self.criar_lutas_torneio(numero_lutadores, torneio_cadastrado)
+        torneio_cadastrado = Torneio(nome_torneio, id_torneio)
+        self.criar_luta_torneio(torneio_cadastrado)
         self.__torneio_dao.add(torneio_cadastrado)
         self.mostrar_torneio(torneio_cadastrado)
 
@@ -67,7 +60,7 @@ class ControladorTorneio:
             id_torneio += 1
         return id_torneio
 
-    def criar_lutas_torneio(self, numero_lutadores, torneio):
+    def criar_luta_torneio(self, torneio):
         self.__controlador_central.controlador_boxeador.listar_boxeadores_edicao_exclusao()
         cpf_jogador_usuario = self.__tela_torneio.obtem_cpf()
         self.verifica_se_cpf_ja_cadastrado(cpf_jogador_usuario)
@@ -75,17 +68,9 @@ class ControladorTorneio:
         self.__jogador_usuario = jogador_usuario
         lista_jogadores = self.__controlador_central.controlador_boxeador.retornar_boxeadores_cpu()
         lista_jogadores.insert(0, jogador_usuario)
-        lista_boxeadores = lista_jogadores[:(numero_lutadores)]
-        contador = 0
-        while contador < (len(lista_boxeadores) - 1):
-            boxeador_um = lista_boxeadores[contador]
-            boxeador_dois = lista_boxeadores[contador + 1]
-            contador = contador + 2
-            if boxeador_um.boxeador_cpu == False:
-                torneio.boxeador_usuario = boxeador_um
-            if boxeador_dois.boxeador_cpu == False:
-                torneio.boxeador_usuario = boxeador_dois
-            torneio.adicionar_luta(Luta(boxeador_um, boxeador_dois))
+        boxeador_um = lista_jogadores[0]
+        boxeador_dois = lista_jogadores[randint(1, len(lista_jogadores) - 1)]
+        torneio.adicionar_luta(Luta(boxeador_um, boxeador_dois))
 
     def mostrar_torneio(self, torneio):
         self.__tela_torneio.mostrar_torneio(torneio.nome_torneio, int(torneio.numero_lutas * 2), torneio.id_torneio)
@@ -133,6 +118,14 @@ class ControladorTorneio:
             self.__tela_torneio.mostrar_mensagem("Você não pode participar de dois torneios ao mesmo tempo!")
             self.__tela_torneio.mostrar_mensagem("Termine seu torneio antes!")
             self.__controlador_central.abre_tela()
+
+    def remover_torneio(self, id_torneio):
+        torneio = self.busca_torneio_por_id(id_torneio)
+        if torneio is not None:
+            self.__torneio_dao.remove(torneio)
+        else:
+            self.__tela_torneio.mostrar_mensagem("Torneio não encontrado!")
+
 
     def listar_torneios(self):
         if len(self.__torneio_dao.get_all()) > 0:

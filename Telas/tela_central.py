@@ -10,7 +10,7 @@ class TelaCentral(TelaAbstrata):
 
     def print_mensagem(self, mensagem):
         sg.ChangeLookAndFeel('DarkTanBlue')
-        sg.PopupNoButtons('', mensagem, auto_close=True, auto_close_duration=5 , location=(600, 300))
+        sg.PopupNoButtons('', mensagem, auto_close=True, auto_close_duration=5, location=(600, 300))
 
     def close(self):
         self.__window.Close()

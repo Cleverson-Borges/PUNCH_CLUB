@@ -43,11 +43,10 @@ class ControladorCentral:
         self.__controlador_torneio.abre_tela()
 
     def encerra_sistema(self):
-        self.__tela_central.mostrar_mensagem("----------------------------------------------------")
-        self.__tela_central.mostrar_mensagem("      Adoramos ter você jogando PUNCH CLUB!!!")
-        self.__tela_central.mostrar_mensagem("----------------------------------------------------")
-        self.__tela_central.mostrar_mensagem("Com os cumprimentos, Breno Sayão e Cleverson Borges ")
-        self.__tela_central.mostrar_mensagem("----------------------------------------------------")
+        self.__tela_central.print_mensagem("      Adoramos ter você jogando PUNCH CLUB!!!\n"
+                                           "\n"
+                                           "   Desenvolvido por: Breno Sayão e Cleverson Borges  \n"
+                                           "\n")
         exit(0)
 
     def abre_tela(self):

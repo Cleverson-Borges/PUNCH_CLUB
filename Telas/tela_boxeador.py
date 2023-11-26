@@ -31,7 +31,7 @@ class TelaBoxeador(TelaAbstrata):
         idade = values['idade']
         peso = values['peso']
         altura = values['altura']
-        nacionalidade = values['naconalidade']
+        nacionalidade = values['nacionalidade']
 
         self.close()
         return {"nome": nome, "apelido": apelido, "idade": idade, "peso": peso, "altura": altura,

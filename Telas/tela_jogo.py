@@ -1,9 +1,14 @@
 from Telas.tela_central import TelaAbstrata
+import PySimpleGUI as sg
+import time
+import os
+import Imagens.base_64_imagens
 
 
 class TelaJogo(TelaAbstrata):
     def __init__(self):
-        pass
+        sg.theme('DarkTanBlue')
+        self.__window = None
 
     def le_num_inteiro(self, mensagem=" ", ints_validos=None):
         while True:
@@ -18,249 +23,167 @@ class TelaJogo(TelaAbstrata):
                 if ints_validos:
                     print("Valores válidos: ", ints_validos)
 
-    def obtem_id(self, lista_inteiro=None):
-        if lista_inteiro:
-            resposta = self.le_num_inteiro("Escolha qual habilidade que você deseja usar: ",lista_inteiro)
-            return resposta
-        resposta = self.le_num_inteiro("Escolha qual habilidade que você deseja usar: ", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-        return resposta
-
     def obtem_id_torneio(self, lista_ids_validos):
         print("Escolha pelo ID o torneio que você deseja jogar: ")
         id_torneio_escolhido = self.le_num_inteiro("Informe o ID do torneio: ",lista_ids_validos)
         return id_torneio_escolhido
 
-    def tela_inicio_luta_opcoes(self):
-        print()
-        print("---------------------------------------------")
-        print("| [1] Lutar          |          [0] Desistir|")
-        print("---------------------------------------------")
-        print()
-        opcao = self.le_num_inteiro("Informe sua escolha: ", [0, 1])
-        return opcao
+    def tela_luta_padrao(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2, round,game_start=False):
 
-    def mostrar_habilidade_ataque (self, habilidade):
-        print(f"ID da habilidade: {habilidade.id}")
-        print(f"Nome: {habilidade.nome}")
-        print(f"Custo de Stamina: {habilidade.custo}")
-        print(f"Dano da habilidade: {habilidade.dano}")
-        print()
-
-    def mostrar_habilidade_defesa(self, habilidade):
-        print(f"ID da habilidade: {habilidade.id}")
-        print(f"Nome: {habilidade.nome}")
-        print(f"Custo de Stamina: {habilidade.custo}")
-        print(f"Taxa de Defesa: {habilidade.taxa_defesa}")
-        print()
-
-    def mostrar_habilidade_esquiva(self, habilidade):
-        print(f"ID da habilidade: {habilidade.id}")
-        print(f"Nome: {habilidade.nome}")
-        print(f"Custo de Stamina: {habilidade.custo}")
-        print(f"Taxa de esquiva: {habilidade.taxa_esquiva}")
-        print()
-
-    def tela_luta_padrao(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2):
-        lutador1 = [
-            f"     {vida1} HP    {stamina1} ST",
-            f"",
-            f"          {apelido1}",
-            "        |||||||||",
-            "        | _   _ |",
-            "       (  O _ O  )",
-            "        |   _   |",
-            "         |_____|",
-            "  _______/     \\_______",
-            " /                     \\",
-            "|   |\\             /|   |",
-            "|   ||  .       .  ||   |",
-            "|   / \\           / \\   |",
-            "\\  |   | |_ | _| |   |  /",
-            "|==|   | |_ | _| |   |==|",
-            "/  /_ _|_|__|__|_|_ _\\  \\",
-            "|___| /            \\|___|",
-            "      |     |      |",
-            "      |     |      |",
-            f"      |{nacionalidade1}  |   {nacionalidade1}|",
-            "      |     |      |",
-            "      \"|\"|\"\"|\"|\"\"|",
+        layout = [
+            [sg.Image(key='-IMAGE-')],
+            [sg.Button('LUTAR', key='LUTAR', size=(20, 2), button_color=('white', 'blue')),
+             sg.Button('SAIR', key='SAIR', size=(20, 2), button_color=('black', 'pink'))],
+            [sg.Text(f'{vida1} HP   {stamina1} ST', size=(40, 2), justification='left', expand_x=True,
+                     background_color='black', font=('Helvetica', 14, 'bold'), text_color='white'),
+             sg.Text(f'{vida2} HP   {stamina2} ST', size=(40, 2), justification='right', expand_x=True,
+                     background_color='black', font=('Helvetica', 14, 'bold'), text_color='white')],
+            [sg.Text(apelido1, size=(20, 2), justification='left', expand_x=True,
+                     background_color='black', font=('Helvetica', 14, 'bold'), text_color='white'),
+             sg.Text(apelido2, size=(20, 2), justification='right', expand_x=True,
+                     background_color='black', font=('Helvetica', 14, 'bold'), text_color='white')],
+            [sg.Text(nacionalidade1, background_color='black', justification='left',
+                     font=('Helvetica', 14, 'bold'), text_color='white', expand_x=True),
+             sg.Text(nacionalidade2, background_color='black', justification='right',
+                     font=('Helvetica', 14, 'bold'), text_color='white', expand_x=True)],
+            [sg.Text(f'Round {round} de 3', size=(40, 2), justification='center', expand_x=True,
+                    background_color='lightgreen', font=('Helvetica', 14, 'bold'), text_color='black')]
         ]
 
-        lutador2 = [
-            f"                       {vida2} HP    {stamina2} ST",
-            f"",
-            f"                            {apelido2}",
-            "                           --|||--",
-            "                          | _   _ |",
-            "                        (  o _ o  )",
-            "                          |  ___  |",
-            "                            |_____|",
-            "              _______/     \\_______",
-            "            /                      \\",
-            "           |   |\\             /|   |",
-            "           |   || \*/     \*/ ||   |",
-            "           |   / \\           / \\   |",
-            "           \\  |   | |_ | _| |   |  /",
-            "           |==|   | |_ | _| |   |==|",
-            "           /  /_ _|_|__|__|_|_ _\\  \\",
-            "           |___| /            \\|___|",
-            "                      |     |      |",
-            "                      |     |      |",
-            f"                      |{nacionalidade2}  |   {nacionalidade2}|",
-            "                      |     |      |",
+        window = sg.Window('Tela de Luta', layout, no_titlebar=True, grab_anywhere=True, keep_on_top=True, finalize=True)
+        image_elem = window['-IMAGE-']
 
-        ]
+        images_base64 = [Imagens.base_64_imagens.boxe_image_base_64,
+                         Imagens.base_64_imagens.boxe_image_2_base_64,
+                         Imagens.base_64_imagens.boxe_image_3_base_64
+                         ]
 
-        for linha1, linha2 in zip(lutador1, lutador2):
-            print(linha1 + "           " + linha2)
+        while True:
+            for image_base64 in images_base64:
+                image_elem.update(data=image_base64)
+                event, values = window.read(timeout=200)
+                if event == sg.WINDOW_CLOSED or event == 'SAIR':
+                    window.close()
+                    return False
+                if event == 'LUTAR':
+                    if not game_start:
+                        window.close()
+                        return True
+                    else:
+                        window.close()
+
+    def tela_luta_escolha_habilidade(self, vida1, vida2, stamina1, stamina2, mensagem_habilidade_escolhida, habilidades_usuario):
+
+        layout = [
+            [sg.Image(key='-IMAGE-')],
+            [sg.Button('SAIR', key='SAIR', size=(10, ), button_color=('black', 'pink'))],
+            [sg.Text(f'{vida1} HP   {stamina1} ST', size=(10, 1), justification='left', expand_x=True,
+                     background_color='black', font=('Helvetica', 12), text_color='white'),
+             sg.Text(f'{vida2} HP   {stamina2} ST', size=(10, 1), justification='right', expand_x=True,
+                     background_color='black', font=('Helvetica', 12), text_color='white')],
+            [sg.Text(f'{mensagem_habilidade_escolhida}', size=(10, 1), justification='center', expand_x=True,
+                        background_color='black', font=('Helvetica', 14, 'bold'), text_color='white')]
+            ]
+        lista_habilidades_usuario = []
+        for habilidade in habilidades_usuario:
+            if habilidade.tipo == 'Ataque':
+                botao_habilidade = sg.Button(f'{habilidade.nome}\n(Custo: {habilidade.custo}, Dano: {habilidade.dano})',
+                                             key=habilidade.id,
+                                             size=(20, 2),
+                                             button_color=('black', 'white'))
+
+                layout.append([botao_habilidade])
+                lista_habilidades_usuario.append(habilidade.id)
+            if habilidade.tipo == 'Defesa':
+                botao_habilidade = sg.Button(f'{habilidade.nome}\n(Custo: {habilidade.custo}, Defesa: {habilidade.taxa_defesa})',
+                                             key=habilidade.id,
+                                             size=(20, 2),
+                                             button_color=('black', 'white'))
+
+                layout.append([botao_habilidade])
+                lista_habilidades_usuario.append(habilidade.id)
+            if habilidade.tipo == 'Esquiva':
+
+                botao_habilidade = sg.Button(f'{habilidade.nome}\n(Custo: {habilidade.custo}, Esquiva: {habilidade.taxa_esquiva})',
+                                             key=habilidade.id,
+                                             size=(20, 2),
+                                             button_color=('black', 'white'))
+
+                layout.append([botao_habilidade])
+                lista_habilidades_usuario.append(habilidade.id)
+
+        window = sg.Window('Tela de Luta', layout, no_titlebar=True, grab_anywhere=True, keep_on_top=True, finalize=True)
+        image_elem = window['-IMAGE-']
+
+        images_base64 = [Imagens.base_64_imagens.boxe_image_base_64,
+                         Imagens.base_64_imagens.boxe_image_2_base_64,
+                         Imagens.base_64_imagens.boxe_image_3_base_64
+                         ]
+
+        while True:
+            for image_base64 in images_base64:
+                image_elem.update(data=image_base64)
+                event, values = window.read(timeout=200)
+                if event == sg.WINDOW_CLOSED or event == 'SAIR':
+                    window.close()
+                    return False
+                for habilidade in lista_habilidades_usuario:
+                    if event == habilidade:
+                        window.close()
+                        return habilidade
 
 
-    def tela_luta_vitoria_boxeador_um(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2):
-        lutador1 = [
-            f"     {vida1} HP    {stamina1} ST",
-            f"",
-            f"          [{apelido1}]",
-            "        |||||||||",
-            "        | _   _ |",
-            "       (  O _ O  )",
-            "        |   _   |",
-            "         |_____|",
-            "  _______/     \\_______",
-            " /                     \\",
-            "|   |\\             /|   |",
-            "|   ||  .       .  ||   |",
-            "|   / \\           / \\   |",
-            "\\  |   | |_ | _| |   |  /",
-            "|==|   | |_ | _| |   |==|",
-            "/  /_ _|_|__|__|_|_ _\\  \\",
-            "|___| /            \\|___|",
-            "      |     |      |",
-            "      |     |      |",
-            f"      |{nacionalidade1}  |   {nacionalidade1}|",
-            "      |     |      |",
-            "      \"|\"|\"\"|\"|\"\"|",
-        ]
-
-        lutador2 = [
-            f"                       {vida2} HP    {stamina2} ST",
-            f"",
-            f"                            [{apelido2}]",
-            "                           --|||--",
-            "                          | _   _ |",
-            "                        (  X _ X  )",
-            "                          |   ()  |",
-            "                            |_____|",
-            "              _______/     \\_______",
-            "            /                      \\",
-            "           |   |\\             /|   |",
-            "           |   || \*/     \*/ ||   |",
-            "           |   / \\           / \\   |",
-            "           \\  |   | |_ | _| |   |  /",
-            "           |==|   | |_ | _| |   |==|",
-            "           /  /_ _|_|__|__|_|_ _\\  \\",
-            "           |___| /            \\|___|",
-            "                      |     |      |",
-            "                      |     |      |",
-            f"                      |{nacionalidade2}  |   {nacionalidade2}|",
-            "                      |     |      |",
-
-        ]
-
-        for linha1, linha2 in zip(lutador1, lutador2):
-            print(linha1 + "           " + linha2)
-
-
-    def tela_luta_vitoria_boxeador_dois(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2):
-        lutador1 = [
-            f"     {vida1} HP    {stamina1} ST",
-            f"",
-            f"          {apelido1}",
-            "        |||||||||",
-            "        | _   _ |",
-            "       (  X _ X  )",
-            "        |   ()   |",
-            "         |_____|",
-            "  _______/     \\_______",
-            " /                     \\",
-            "|   |\\             /|   |",
-            "|   ||  .       .  ||   |",
-            "|   / \\           / \\   |",
-            "\\  |   | |_ | _| |   |  /",
-            "|==|   | |_ | _| |   |==|",
-            "/  /_ _|_|__|__|_|_ _\\  \\",
-            "|___| /            \\|___|",
-            "      |     |      |",
-            "      |     |      |",
-            f"      |{nacionalidade1}  |   {nacionalidade1}|",
-            "      |     |      |",
-            "      \"|\"|\"\"|\"|\"\"|",
-        ]
-
-        lutador2 = [
-            f"                       {vida2} HP    {stamina2} ST",
-            f"",
-            f"                            {apelido2}",
-            "                           --|||--",
-            "                          | _   _ |",
-            "                        (  o _ o  )",
-            "                          |  ___  |",
-            "                            |_____|",
-            "              _______/     \\_______",
-            "            /                      \\",
-            "           |   |\\             /|   |",
-            "           |   || \*/     \*/ ||   |",
-            "           |   / \\           / \\   |",
-            "           \\  |   | |_ | _| |   |  /",
-            "           |==|   | |_ | _| |   |==|",
-            "           /  /_ _|_|__|__|_|_ _\\  \\",
-            "           |___| /            \\|___|",
-            "                      |     |      |",
-            "                      |     |      |",
-            f"                      |{nacionalidade2}  |   {nacionalidade2}|",
-            "                      |     |      |",
-
-        ]
-
-        for linha1, linha2 in zip(lutador1, lutador2):
-            print(linha1 + "           " + linha2)
+    def close(self):
+        self.__window.Close()
 
     def mostra_informacoes_luta_usuario(self, dano_total, habilidades_usadas):
-        print()
-        print('-------------- RELATÓRIO FINAL DA LUTA --------------')
-        print()
-        print(f"Você causou {dano_total} de dano")
-        print(f"Você usou {habilidades_usadas - 1} habilidades")
-        print()
-        print("-----------------------------------------------------")
+        layout = [
+            [sg.Text('-------------- RELATÓRIO FINAL DA LUTA --------------')],
+            [sg.Text(f"Você causou {dano_total} de dano")],
+            [sg.Text(f"Você usou {habilidades_usadas - 1} habilidades")],
+            [sg.Text('-----------------------------------------------------')],
+            [sg.Button('OK')]
+        ]
 
-    def mostrar_final(self, jogador_usuario, jogador_adversario):
-        print()
-        print()
-        print("               ------ GRANDE FINAL ------               ")
-        print()
-        print()
-        print("----------------------------------------------------------------")
-        print(f"|[{jogador_usuario.apelido}] VS [{jogador_adversario.apelido}]|")
-        print("----------------------------------------------------------------")
+        window = sg.Window('Relatório Final', layout)
 
-    def mostrar_semi_final(self, jogador_usuario, jogador_adversario):
-        print()
-        print("               ------ SEMI FINAL ------               ")
-        print()
-        print("----------------------------------------------------------------")
-        print(f"|[{jogador_usuario.apelido}] VS [{jogador_adversario.apelido}]|")
-        print("----------------------------------------------------------------")
+        while True:
+            event, values = window.read()
 
-    def mostrar_campeao(self, jogador):
-        print()
-        print("               !!!!!! CAMPEÃO !!!!!!               ")
-        print()
-        print()
-        print(f"O {jogador.apelido} ganhou o torneio")
-        print(f"Parabéns {jogador.nome}!")
-        print()
-        print("-----------------------------------------")
-        print("-------------- FIM DE JOGO --------------")
-        print("-----------------------------------------")
-    def mostrar_mensagem(self, mensagem):
-        print(mensagem)
+            if event == sg.WINDOW_CLOSED or event == 'OK':
+                break
+
+        window.close()
+
+    def mostrar_mensagem(self, mensagem, auto_close_duration=5):
+        layout = [
+            [sg.Text(mensagem, font=('Helvetica', 16), justification='center')],
+            [sg.Button('OK', size=(10, 1), pad=((200, 0), 3), key='-OK-')]
+        ]
+
+        window = sg.Window('Mensagem', layout, finalize=True)
+
+        event, values = window.read(timeout=auto_close_duration * 1000)
+
+        window.close()
+
+    def mostrar_campeao(self, boxeador_campeao):
+
+        layout = [
+            [sg.Image(key='-IMAGE-')],
+            [sg.Button('SAIR', key='SAIR', size=(20, 2), button_color=('black', 'pink'))],
+            [sg.Text(f'Parabéns {boxeador_campeao.nome}! Você mereceu!', background_color='black', justification='right',
+                     font=('Helvetica', 14, 'bold'), text_color='white', expand_x=True)]
+        ]
+
+        window = sg.Window('Tela de Luta', layout, no_titlebar=True, grab_anywhere=True, keep_on_top=True, finalize=True)
+        image_elem = window['-IMAGE-']
+
+        imagem_campeao = Imagens.base_64_imagens.boxe_image_4_base_64,
+
+        while True:
+            image_elem.update(data=imagem_campeao)
+            event, values = window.read()
+            if event == sg.WINDOW_CLOSED or event == 'SAIR':
+                window.close()
+                return False

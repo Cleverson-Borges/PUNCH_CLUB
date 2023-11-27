@@ -70,10 +70,11 @@ class ControladorTorneio:
         lista_jogadores.insert(0, jogador_usuario)
         boxeador_um = lista_jogadores[0]
         boxeador_dois = lista_jogadores[randint(1, len(lista_jogadores) - 1)]
+        torneio.boxeador_usuario = boxeador_um
         torneio.adicionar_luta(Luta(boxeador_um, boxeador_dois))
 
     def mostrar_torneio(self, torneio):
-        self.__tela_torneio.mostrar_torneio(torneio.nome_torneio, int(torneio.numero_lutas * 2), torneio.id_torneio)
+        self.__tela_torneio.mostrar_torneio(torneio.nome_torneio, torneio.id_torneio)
         for luta in torneio.lista_lutas:
                 self.__tela_torneio.mostrar_chaveamento(torneio.nome_torneio, luta.boxeador_um, luta.boxeador_dois, torneio.numero_lutas)
 
@@ -119,6 +120,24 @@ class ControladorTorneio:
             self.__tela_torneio.mostrar_mensagem("Termine seu torneio antes!")
             self.__controlador_central.abre_tela()
 
+    def remover_torneio_por_usuario(self, usuario):
+        for torneio in self.__torneio_dao.get_all():
+            if torneio.boxeador_usuario.cpf == usuario.cpf:
+                self.__torneio_dao.remove(torneio)
+                return True
+        return False
+
+    def editar_jogador_torneio(self, cpf, novos_dados):
+        for torneio in self.__torneio_dao.get_all():
+            if torneio.boxeador_usuario.cpf == cpf:
+                torneio.boxeador_usuario.nome = novos_dados["nome"]
+                torneio.boxeador_usuario.idade = novos_dados["idade"]
+                torneio.boxeador_usuario.apelido = novos_dados["apelido"]
+                torneio.boxeador_usuario.peso = novos_dados["peso"]
+                torneio.boxeador_usuario.altura = novos_dados["altura"]
+                torneio.boxeador_usuario.nacionalidade = novos_dados["nacionalidade"]
+                return True
+        return False
     def remover_torneio(self, id_torneio):
         torneio = self.busca_torneio_por_id(id_torneio)
         if torneio is not None:
@@ -130,7 +149,7 @@ class ControladorTorneio:
     def listar_torneios(self):
         if len(self.__torneio_dao.get_all()) > 0:
             for torneio in self.__torneio_dao.get_all():
-                self.__tela_torneio.mostrar_torneio(torneio.nome_torneio, torneio.numero_lutas, torneio.id_torneio)
+                self.__tela_torneio.mostrar_torneio(torneio.nome_torneio, torneio.id_torneio)
         else:
             self.__tela_torneio.mostrar_mensagem("Não há torneios cadastrados!")
 

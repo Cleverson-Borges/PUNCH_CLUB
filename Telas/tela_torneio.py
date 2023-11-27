@@ -56,7 +56,7 @@ class TelaTorneio(TelaAbstrata):
         ]
         self.__window = sg.Window('mostrar chaveamento').Layout(layout)
 
-    def mostrar_torneio(self, nome_torneio, numero_lutadores):
+    def mostrar_torneio(self, nome_torneio):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
             [sg.Column(
@@ -120,8 +120,8 @@ class TelaTorneio(TelaAbstrata):
 
     def listar_torneios(self, dados_torneio):
         string_torneio = ""
-        for habilidade in dados_torneio:
-            string_torneio = string_torneio + "ID: " + str(habilidade["id"]) + '\n'
-            string_torneio = string_torneio + "NOME DO TORNEIO: " + habilidade["nome_torneio"] + '\n'
-            string_torneio = string_torneio + "JOGADOR: " + habilidade["nome"] + '\n'
+        for torneio in dados_torneio:
+            string_torneio = string_torneio + "ID: " + str(torneio["id"]) + '\n'
+            string_torneio = string_torneio + "NOME DO TORNEIO: " + torneio["nome_torneio"] + '\n'
+            string_torneio = string_torneio + "JOGADOR: " + torneio["nome"] + '\n'
         sg.Popup('░▒▓█ LISTA DE TORNEIOS █▓▒░', string_torneio)

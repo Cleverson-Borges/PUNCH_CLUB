@@ -35,21 +35,14 @@ class TelaTorneio(TelaAbstrata):
         self.close()
         return {"nome_torneio": nome_torneio}
 
-    def mostrar_chaveamento(self, nome_torneio, boxeador1, boxeador2, numero_fase=1):
-        if numero_fase == 1:
-            numero_fase = "final"
-        elif numero_fase == 2:
-            numero_fase = "semi-final"
-        elif numero_fase == 4:
-            numero_fase = "quartas-de-final"
-
+    def mostrar_chaveamento(self, nome_torneio, boxeador1, boxeador2):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
             [sg.Column(
                 [
                     [sg.Text(f'⣿⣿⣿ CHAVEAMENTO DO TORNEIO {nome_torneio} ⣿⣿⣿', font=('Lucida', 25, 'bold'))],
                     [sg.Text('  ')],
-                    [sg.Text(f'CHAVE {numero_fase} = {boxeador1.nome} vs {boxeador2.nome}', size=(15, 1))],
+                    [sg.Text(f'CHAVE = {boxeador1.nome} vs {boxeador2.nome}', size=(15, 1))],
                     [sg.Text('  ')],
                     [sg.Cancel('Voltar')]]
             )]

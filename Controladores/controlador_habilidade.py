@@ -44,17 +44,14 @@ class ControladorHabilidade:
             if habilidade_escolhida == 0:
                 return None
             if habilidade_escolhida == 1:
-                self.__tela_habilidade.mostrar_mensagem('Habilidades de ataque')
                 self.busca_habilidade_ataque('Ataque')
                 habilidades_escolhidas.append(self.selecao_habilidade_ataque())
                 contador += 1
             elif habilidade_escolhida == 2:
-                self.__tela_habilidade.mostrar_mensagem('Habilidades de defesa')
                 self.busca_habilidade_defesa('Defesa')
                 habilidades_escolhidas.append(self.selecao_habilidade_defesa())
                 contador += 1
             elif habilidade_escolhida == 3:
-                self.__tela_habilidade.mostrar_mensagem('Habilidades de esquiva')
                 self.busca_habilidade_esquiva('Esquiva')
                 habilidades_escolhidas.append(self.selecao_habilidade_esquiva())
                 contador += 1

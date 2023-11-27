@@ -74,7 +74,7 @@ class ControladorTorneio:
         torneio.adicionar_luta(Luta(boxeador_um, boxeador_dois))
 
     def mostrar_torneio(self, torneio):
-        self.__tela_torneio.mostrar_torneio(torneio.nome_torneio, torneio.id_torneio)
+        self.__tela_torneio.mostrar_torneio(torneio.nome_torneio)
         for luta in torneio.lista_lutas:
                 self.__tela_torneio.mostrar_chaveamento(torneio.nome_torneio, luta.boxeador_um, luta.boxeador_dois, torneio.numero_lutas)
 

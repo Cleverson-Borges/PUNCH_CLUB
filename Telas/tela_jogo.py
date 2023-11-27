@@ -28,7 +28,7 @@ class TelaJogo(TelaAbstrata):
         id_torneio_escolhido = self.le_num_inteiro("Informe o ID do torneio: ",lista_ids_validos)
         return id_torneio_escolhido
 
-    def tela_luta_padrao(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, apelido1, apelido2, round,game_start=False):
+    def tela_luta_padrao(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, nome1, nome2, apelido1, apelido2, round,game_start=False):
 
         layout = [
             [sg.Image(key='-IMAGE-')],
@@ -40,8 +40,12 @@ class TelaJogo(TelaAbstrata):
                      background_color='black', font=('Helvetica', 14, 'bold'), text_color='white')],
             [sg.Text(apelido1, size=(20, 2), justification='left', expand_x=True,
                      background_color='black', font=('Helvetica', 14, 'bold'), text_color='white'),
+             sg.Text(nome1, size=(20, 2), justification='left', expand_x=True,
+                     background_color='black', font=('Helvetica', 14, 'bold'), text_color='white'),
              sg.Text(apelido2, size=(20, 2), justification='right', expand_x=True,
-                     background_color='black', font=('Helvetica', 14, 'bold'), text_color='white')],
+                     background_color='black', font=('Helvetica', 14, 'bold'), text_color='white')
+             , sg.Text(nome2, size=(20, 2), justification='right', expand_x=True,
+                       background_color='black', font=('Helvetica', 14, 'bold'), text_color='white')],
             [sg.Text(nacionalidade1, background_color='black', justification='left',
                      font=('Helvetica', 14, 'bold'), text_color='white', expand_x=True),
              sg.Text(nacionalidade2, background_color='black', justification='right',

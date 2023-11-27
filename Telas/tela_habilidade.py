@@ -13,8 +13,17 @@ class TelaHabilidade(TelaAbstrata):
     def close(self):
         self.__window.Close()
 
-    def mostrar_mensagem(self, mensagem):
-        sg.popup('', mensagem)
+    def mostrar_mensagem(self, mensagem, auto_close_duration=5):
+        layout = [
+            [sg.Text(mensagem, font=('Helvetica', 16), justification='center')],
+            [sg.Button('OK', size=(10, 1), pad=((200, 0), 3), key='-OK-')]
+        ]
+
+        window = sg.Window('Mensagem', layout, finalize=True)
+
+        event, values = window.read(timeout=auto_close_duration * 1000)
+
+        window.close()
 
     def tela_tipo(self):
         sg.ChangeLookAndFeel('DarkTanBlue')

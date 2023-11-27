@@ -148,8 +148,13 @@ class ControladorTorneio:
 
     def listar_torneios(self):
         if len(self.__torneio_dao.get_all()) > 0:
+            lista_torneios = []
             for torneio in self.__torneio_dao.get_all():
-                self.__tela_torneio.mostrar_torneio(torneio.nome_torneio, torneio.id_torneio, torneio.boxeador_usuario)
+                lista_torneios.append({"nome_torneio": torneio.nome_torneio,
+                                       "id": torneio.id_torneio,
+                                       "nome": torneio.boxeador_usuario.nome})
+
+            self.__tela_torneio.listar_torneios(lista_torneios)
         else:
             self.__tela_torneio.mostrar_mensagem("Não há torneios cadastrados!")
 

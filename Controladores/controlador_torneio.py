@@ -35,7 +35,7 @@ class ControladorTorneio:
 
     def cadastrar_torneio(self):
         self.__controlador_central.controlador_boxeador.verifica_jogadores_maquina()
-        nome_torneio = self.__tela_torneio.cadastrar_torneio()
+        nome_torneio = self.__tela_torneio.cadastrar_torneio()['nome_torneio']
         id_torneio = self.cadastra_id_torneio(TorneioNumbers.ID_INICIAL_TORNEIO.value)
         torneio_cadastrado = Torneio(nome_torneio, id_torneio)
         self.criar_luta_torneio(torneio_cadastrado)

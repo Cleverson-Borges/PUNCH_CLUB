@@ -257,6 +257,7 @@ class ControladorJogo:
                                           boxeador_um.caracteristica.stamina,
                                           boxeador_dois.caracteristica.stamina,
                                           boxeador_um.nacionalidade, boxeador_dois.nacionalidade,
+                                          boxeador_um.nome, boxeador_dois.nome,
                                           boxeador_um.apelido, boxeador_dois.apelido,
                                           round,
                                           game_start

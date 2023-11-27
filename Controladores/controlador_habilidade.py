@@ -15,18 +15,6 @@ class ControladorHabilidade:
     def habilidades(self):
         return self.__habilidades
 
-    def cadastrar_habilidade(self, habilidade: Habilidade):
-        if isinstance(habilidade, Habilidade):
-            self.__habilidades.append(habilidade)
-        else:
-            raise TypeError('A habilidade deve ser uma instância da classe Habilidade')
-
-    def habilidade_atual(self, habilidade):
-        if isinstance(habilidade, Habilidade):
-            self.__habilidade_atual = habilidade
-        else:
-            raise TypeError('A habilidade deve ser uma instância da classe Habilidade')
-
     def gerar_base_de_habilidades(self):
         habilidade1 = Ataque(1, 'Jab', 'Soco direto', 'Ataque', 3, 3)
         habilidade2 = Ataque(2, 'Hook', 'Soco gancho', 'Ataque', 3, 5)
@@ -109,24 +97,38 @@ class ControladorHabilidade:
                 return habilidade
         return None
 
-# Método que pode substiuir outros
-#
-#    def busca_habilidade(self):
-#        for habilidade in self.__habilidades:
-#            if habilidade.tipo == 'Ataque':
-#                self.__tela_habilidade.mostrar_habilidade_ataque(habilidade)
-
     def busca_habilidade_ataque(self, tipo):
+        habilidades_cadastradas = []
         for habilidade in self.__habilidades:
             if habilidade.tipo == tipo:
-                self.__tela_habilidade.mostrar_habilidade_ataque(habilidade)
+                habilidades_cadastradas.append({'id': habilidade.id,
+                                                'nome': habilidade.nome,
+                                                'descricao': habilidade.descricao,
+                                                'custo': habilidade.custo,
+                                                'dano': habilidade.dano})
+
+        self.__tela_habilidade.mostrar_habilidade_ataque(habilidades_cadastradas)
 
     def busca_habilidade_defesa(self, tipo):
+        habilidades_cadastradas = []
         for habilidade in self.__habilidades:
             if habilidade.tipo == tipo:
-                self.__tela_habilidade.mostrar_habilidade_defesa(habilidade)
+                habilidades_cadastradas.append({'id': habilidade.id,
+                                                  'nome': habilidade.nome,
+                                                  'descricao': habilidade.descricao,
+                                                  'custo': habilidade.custo,
+                                                  'taxa_defesa': habilidade.taxa_defesa})
+
+        self.__tela_habilidade.mostrar_habilidade_defesa(habilidades_cadastradas)
 
     def busca_habilidade_esquiva(self, tipo):
+        habilidades_cadastradas = []
         for habilidade in self.__habilidades:
             if habilidade.tipo == tipo:
-                self.__tela_habilidade.mostrar_habilidade_esquiva(habilidade)
+                habilidades_cadastradas.append({'id': habilidade.id,
+                                                'nome': habilidade.nome,
+                                                'descricao': habilidade.descricao,
+                                                'custo': habilidade.custo,
+                                                'taxa_esquiva': habilidade.taxa_esquiva})
+
+        self.__tela_habilidade.mostrar_habilidade_esquiva(habilidades_cadastradas)

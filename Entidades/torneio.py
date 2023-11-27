@@ -4,10 +4,8 @@ from Entidades.luta import Luta
 
 
 class Torneio():
-    def __init__(self, nome_torneio, numero_lutas, fase_atual, id_torneio, lista_lutas=None):
+    def __init__(self, nome_torneio, id_torneio, lista_lutas=None):
         self.__nome_torneio = nome_torneio
-        self.__numero_lutas = numero_lutas
-        self.__fase_atual = fase_atual
         self.__id_torneio = id_torneio
         self.__boxeador_usuario = None
         self.__lista_lutas = lista_lutas if lista_lutas is not None else []
@@ -16,13 +14,6 @@ class Torneio():
     def nome_torneio(self):
         return self.__nome_torneio
 
-    @property
-    def numero_lutas(self):
-        return self.__numero_lutas
-
-    @property
-    def fase_atual(self):
-        return self.__fase_atual
 
     @property
     def id_torneio(self):
@@ -40,16 +31,6 @@ class Torneio():
     def nome_torneio(self, nome):
         if isinstance(nome, str):
             self.__nome_torneio = nome
-
-    @numero_lutas.setter
-    def numero_lutas(self, numero):
-        if isinstance(numero, int):
-            self.__numero_lutas = numero
-
-    @fase_atual.setter
-    def fase_atual(self, fase):
-        if isinstance(fase, str):
-            self.__fase_atual = fase
 
     @id_torneio.setter
     def id_torneio(self, id):

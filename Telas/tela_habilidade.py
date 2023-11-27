@@ -14,9 +14,6 @@ class TelaHabilidade(TelaAbstrata):
         self.__window.Close()
 
     def mostrar_mensagem(self, mensagem):
-        print(mensagem)
-
-    def print_mensagem(self, mensagem):
         sg.popup('', mensagem)
 
     def tela_tipo(self):
@@ -60,11 +57,11 @@ class TelaHabilidade(TelaAbstrata):
     def mostrar_habilidade_ataque(self, dados_ataque):
         string_hab_ataque = ""
         for habilidade in dados_ataque:
-            string_hab_ataque = string_hab_ataque + "ID: " + habilidade["id"] + '\n'
+            string_hab_ataque = string_hab_ataque + "ID: " + str(habilidade["id"]) + '\n'
             string_hab_ataque = string_hab_ataque + "NOME: " + habilidade["nome"] + '\n'
             string_hab_ataque = string_hab_ataque + "DESCRIÇÃO: " + habilidade["descricao"] + '\n'
-            string_hab_ataque = string_hab_ataque + "CUSTO DE STAMINA: " + habilidade["custo"] + '\n'
-            string_hab_ataque = string_hab_ataque + "DANO DA HABILIDADE: " + habilidade["dano"] + '\n'
+            string_hab_ataque = string_hab_ataque + "CUSTO DE STAMINA: " + str(habilidade["custo"]) + '\n'
+            string_hab_ataque = string_hab_ataque + "DANO DA HABILIDADE: " + str(habilidade["dano"]) + '\n'
             string_hab_ataque = string_hab_ataque + '\n'
 
         sg.Popup('░▒▓█ LISTA DE HABILIDADES DE ATAQUE █▓▒░', string_hab_ataque)
@@ -72,11 +69,11 @@ class TelaHabilidade(TelaAbstrata):
     def mostrar_habilidade_defesa(self, dados_defesa):
         string_hab_defesa = ""
         for habilidade in dados_defesa:
-            string_hab_defesa = string_hab_defesa + "ID: " + habilidade["id"] + '\n'
+            string_hab_defesa = string_hab_defesa + "ID: " + str(habilidade["id"]) + '\n'
             string_hab_defesa = string_hab_defesa + "NOME: " + habilidade["nome"] + '\n'
             string_hab_defesa = string_hab_defesa + "DESCRIÇÃO: " + habilidade["descricao"] + '\n'
-            string_hab_defesa = string_hab_defesa + "CUSTO DE STAMINA: " + habilidade["custo"] + '\n'
-            string_hab_defesa = string_hab_defesa + "TAXA DE DEFESA: " + habilidade["taxa_defesa"] + '\n'
+            string_hab_defesa = string_hab_defesa + "CUSTO DE STAMINA: " + str(habilidade["custo"]) + '\n'
+            string_hab_defesa = string_hab_defesa + "TAXA DE DEFESA: " + str(habilidade["taxa_defesa"]) + '\n'
             string_hab_defesa = string_hab_defesa + '\n'
 
         sg.Popup('░▒▓█ LISTA DE HABILIDADES DE DEFESA █▓▒░', string_hab_defesa)
@@ -84,11 +81,11 @@ class TelaHabilidade(TelaAbstrata):
     def mostrar_habilidade_esquiva(self, dados_esquiva):
         string_hab_esquiva = ""
         for habilidade in dados_esquiva:
-            string_hab_esquiva = string_hab_esquiva + "ID: " + habilidade["id"] + '\n'
+            string_hab_esquiva = string_hab_esquiva + "ID: " + str(habilidade["id"]) + '\n'
             string_hab_esquiva = string_hab_esquiva + "NOME: " + habilidade["nome"] + '\n'
             string_hab_esquiva = string_hab_esquiva + "DESCRIÇÃO: " + habilidade["descricao"] + '\n'
-            string_hab_esquiva = string_hab_esquiva + "CUSTO DE STAMINA: " + habilidade["custo"] + '\n'
-            string_hab_esquiva = string_hab_esquiva + "TAXA DE ESQUIVA: " + habilidade["taxa_esquiva"] + '\n'
+            string_hab_esquiva = string_hab_esquiva + "CUSTO DE STAMINA: " + str(habilidade["custo"]) + '\n'
+            string_hab_esquiva = string_hab_esquiva + "TAXA DE ESQUIVA: " + str(habilidade["taxa_esquiva"]) + '\n'
             string_hab_esquiva = string_hab_esquiva + '\n'
 
         sg.Popup('░▒▓█ LISTA DE HABILIDADES DE ESQUIVA █▓▒░', string_hab_esquiva)

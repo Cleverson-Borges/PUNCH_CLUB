@@ -32,38 +32,41 @@ class ControladorJogo:
         return torneio_escolhido
 
     def iniciar_jogo(self):
-        torneio = self.escolher_torneio()
-        for luta in torneio.lista_lutas:
-            if not luta.boxeador_um.boxeador_cpu:
-                jogador_usuario = luta.boxeador_um
-                jogador_adversario = luta.boxeador_dois
-            elif not luta.boxeador_dois.boxeador_cpu:
-                jogador_usuario = luta.boxeador_dois
-                jogador_adversario = luta.boxeador_um
-            if not luta.boxeador_um.boxeador_cpu or not luta.boxeador_dois.boxeador_cpu:
-                self.__controlador_central.controlador_torneio.mostrar_luta_usuario(boxeador_um=jogador_usuario,
-                                                                                    boxeador_dois=jogador_adversario,
-                                                                                    torneio=torneio)
-                dict_luta = self.iniciar_luta(jogador_usuario,
-                                              jogador_adversario)
+        if len(self.__controlador_central.controlador_torneio.torneios) > 0:
+            torneio = self.escolher_torneio()
+            for luta in torneio.lista_lutas:
+                if not luta.boxeador_um.boxeador_cpu:
+                    jogador_usuario = luta.boxeador_um
+                    jogador_adversario = luta.boxeador_dois
+                elif not luta.boxeador_dois.boxeador_cpu:
+                    jogador_usuario = luta.boxeador_dois
+                    jogador_adversario = luta.boxeador_um
+                if not luta.boxeador_um.boxeador_cpu or not luta.boxeador_dois.boxeador_cpu:
+                    self.__controlador_central.controlador_torneio.mostrar_luta_usuario(boxeador_um=jogador_usuario,
+                                                                                        boxeador_dois=jogador_adversario,
+                                                                                        torneio=torneio)
+                    dict_luta = self.iniciar_luta(jogador_usuario,
+                                                  jogador_adversario)
 
-                lista_jogadas_usuario = dict_luta.get("jogadas_usuario")
-                if not lista_jogadas_usuario:
-                    lista_jogadas_usuario = []
-                dano_total_causado = dict_luta["dano_causado_usuario"]
-                luta_um = dict_luta["vitoria_jogador_usuario"]
-                self.retorna_informacoes_lista(lista_jogadas_usuario, dano_total_causado)
-                if luta_um:
-                    self.__tela_jogo.mostrar_campeao(boxeador_campeao=jogador_usuario)
-                    self.__controlador_central.controlador_torneio.remover_torneio(torneio.id_torneio)
+                    lista_jogadas_usuario = dict_luta.get("jogadas_usuario")
+                    if not lista_jogadas_usuario:
+                        lista_jogadas_usuario = []
+                    dano_total_causado = dict_luta["dano_causado_usuario"]
+                    luta_um = dict_luta["vitoria_jogador_usuario"]
+                    self.retorna_informacoes_lista(lista_jogadas_usuario, dano_total_causado)
+                    if luta_um:
+                        self.__tela_jogo.mostrar_campeao(boxeador_campeao=jogador_usuario)
+                        self.__controlador_central.controlador_torneio.remover_torneio(torneio.id_torneio)
+                    else:
+                        self.__tela_jogo.mostrar_mensagem("------ GAME OVER ------")
+                        self.__controlador_central.inicializa_sistema()
+
+
                 else:
-                    self.__tela_jogo.mostrar_mensagem("------ GAME OVER ------")
-                    self.__controlador_central.inicializa_sistema()
-
-
-            else:
-                return self.__tela_jogo.mostrar_mensagem("Não iniciará o jogo enquanto não tiver 1 jogador "
-                                                         "controlado por você!")
+                    return self.__tela_jogo.mostrar_mensagem("Não iniciará o jogo enquanto não tiver 1 jogador "
+                                                             "controlado por você!")
+        else:
+            self.__tela_jogo.mostrar_mensagem("Não há nenhum torneio cadastrado, cadastre antes")
 
     def iniciar_luta(self, boxeador_usuario, boxeador_adversario):
         vitoria_jogador_usuario = False

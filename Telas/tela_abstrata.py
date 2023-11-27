@@ -30,9 +30,8 @@ class TelaAbstrata(ABC):
                     raise ValueError
                 return valor_int
             except ValueError:
-                sg.popup(f'Você deve ter no minímo {min_valor} anos e no maximo {max_valor} '
-                         f'anos para poder participar.')
-                valor_lido = sg.popup_get_text('Digite um número inteiro:')
+                sg.popup(f'O valor deve ser no minímo {min_valor} e no maximo {max_valor} ')
+                valor_lido = sg.popup_get_text('Digite um valor válido: ')
 
     def le_num_float_entre(self, valor_lido, min_valor=None, max_valor=None):
         while True:
@@ -44,7 +43,7 @@ class TelaAbstrata(ABC):
                 return valor_float
             except ValueError:
                 sg.popup(f"O valor deve estar entre {min_valor} e {max_valor}.")
-                valor_lido = sg.popup_get_text('Digite um número inteiro:')
+                valor_lido = sg.popup_get_text('Digite um valor válido:')
 
     def le_str_valida(self, valor_lido):
         while True:
@@ -53,5 +52,5 @@ class TelaAbstrata(ABC):
                     raise ValueError
                 return valor_lido.upper()
             except ValueError:
-                sg.popup('String Inválida! Digite exatamente 3 letras.')
-                valor_lido = sg.popup_get_text('Digite uma string de 3 letras:')
+                sg.popup('Entrada Inválida! Digite exatamente 3 letras.')
+                valor_lido = sg.popup_get_text('Digite uma entrada de 3 letras:')

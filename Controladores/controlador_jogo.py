@@ -27,7 +27,12 @@ class ControladorJogo:
     def escolher_torneio(self):
         self.__controlador_central.controlador_torneio.listar_torneios()
         lista_ids_validos = self.__controlador_central.controlador_torneio.retorna_lista_ids_validos()
-        id_torneio = self.__tela_jogo.obtem_id_torneio(lista_ids_validos)
+        resposta_id_torneio = self.__tela_jogo.obtem_id_torneio(lista_ids_validos)
+        if resposta_id_torneio == 0:
+            self.__controlador_central.controlador_torneio.cadastrar_torneio()
+        if resposta_id_torneio is False:
+            self.__tela_jogo.mostrar_mensagem('Valor vazio')
+        id_torneio = resposta_id_torneio
         torneio_escolhido = self.__controlador_central.controlador_torneio.busca_torneio_por_id(id_torneio)
         return torneio_escolhido
 

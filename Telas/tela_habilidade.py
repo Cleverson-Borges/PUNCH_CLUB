@@ -104,13 +104,13 @@ class TelaHabilidade(TelaAbstrata):
         layout = [
             [sg.Text('=== Seleção de habilidades ataque ===', font=("Lucida", 25))],
             [sg.Text('Digite o ID da habilidade que deseja adicionar ao seu boxeador:', font=("Lucida", 15))],
-            [sg.Text('ID:', size=(15, 1)), sg.InputText('id', key='id_ataque')],
+            [sg.Text('ID:', size=(15, 1)), sg.InputText('1 ou 2 ou 3', key='id_ataque')],
             [sg.Button('Confirmar'), sg.Cancel('Voltar')]
         ]
         self.__window = sg.Window('id ataque').Layout(layout)
 
         button, values = self.open()
-        identificador = self.le_num_inteiro_entre(values['identificador'], 1, 3)
+        identificador = self.le_num_inteiro_entre(values['id_ataque'], 1, 3)
         self.close()
         return identificador
 
@@ -119,13 +119,13 @@ class TelaHabilidade(TelaAbstrata):
         layout = [
             [sg.Text('=== Seleção de habilidades defesa ===', font=("Lucida", 25))],
             [sg.Text('Digite o ID da habilidade que deseja adicionar ao seu boxeador:', font=("Lucida", 15))],
-            [sg.Text('ID:', size=(15, 1)), sg.InputText('id', key='id_defesa')],
+            [sg.Text('ID:', size=(15, 1)), sg.InputText('4 ou 5 ou 6', key='id_defesa')],
             [sg.Button('Confirmar'), sg.Cancel('Voltar')]
         ]
         self.__window = sg.Window('id defesa').Layout(layout)
 
         button, values = self.open()
-        identificador = self.le_num_inteiro_entre(values['identificador'], 4, 6)
+        identificador = self.le_num_inteiro_entre(values['id_defesa'], 4, 6)
         self.close()
         return identificador
 
@@ -134,13 +134,13 @@ class TelaHabilidade(TelaAbstrata):
         layout = [
             [sg.Text('=== Seleção de habilidades esquiva ===', font=("Lucida", 25))],
             [sg.Text('Digite o ID da habilidade que deseja adicionar ao seu boxeador:', font=("Lucida", 15))],
-            [sg.Text('ID:', size=(15, 1)), sg.InputText('id', key='id_esquiva')],
+            [sg.Text('ID:', size=(15, 1)), sg.InputText('7 ou 8 ou 9', key='id_esquiva')],
             [sg.Button('Confirmar'), sg.Cancel('Voltar')]
         ]
         self.__window = sg.Window('id esquiva').Layout(layout)
 
         button, values = self.open()
-        identificador = self.le_num_inteiro_entre(values['identificador'], 7, 9)
+        identificador = self.le_num_inteiro_entre(values['id_esquiva'], 7, 9)
         self.close()
 
         return identificador

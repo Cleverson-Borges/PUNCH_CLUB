@@ -12,7 +12,7 @@ class ControladorBoxeador:
         self.__controlador_central = controlador_central
         self.__boxeador_dao = BoxeadorDAO()
         self.__numero_inscricao = 1
-        if len(self.__boxeador_dao.get_all()) > 0:
+        if len(self.__boxeador_dao.get_all()) == 0:
             self.gerar_boxeador()
 
     @property
@@ -56,7 +56,7 @@ class ControladorBoxeador:
             #     defesa=10,
             #     stamina=10,
             # )
-            # 
+            #
             # boxeador = Boxeador(
             #     nome='Exemplo',
             #     apelido='Exemplo',

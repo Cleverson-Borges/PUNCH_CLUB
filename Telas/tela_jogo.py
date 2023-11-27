@@ -65,7 +65,8 @@ class TelaJogo(TelaAbstrata):
                     background_color='lightgreen', font=('Helvetica', 14, 'bold'), text_color='black')]
         ]
 
-        window = sg.Window('Tela de Luta', layout, no_titlebar=True, grab_anywhere=True, keep_on_top=True, finalize=True)
+        window = sg.Window('Tela de Luta', layout, no_titlebar=True, grab_anywhere=True,
+                           keep_on_top=True, location=(200, 000), finalize=True)        
         image_elem = window['-IMAGE-']
 
         images_base64 = [Imagens.base_64_imagens.boxe_image_base_64,
@@ -91,7 +92,7 @@ class TelaJogo(TelaAbstrata):
 
         layout = [
             [sg.Image(key='-IMAGE-')],
-            [sg.Button('SAIR', key='SAIR', size=(10, ), button_color=('black', 'pink'))],
+            [sg.Button('SAIR', key='SAIR', size=(10, 2), button_color=('black', 'pink'))],
             [sg.Text(f'{vida1} HP   {stamina1} ST', size=(10, 1), justification='left', expand_x=True,
                      background_color='black', font=('Helvetica', 12), text_color='white'),
              sg.Text(f'{vida2} HP   {stamina2} ST', size=(10, 1), justification='right', expand_x=True,

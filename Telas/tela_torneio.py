@@ -64,6 +64,25 @@ class TelaTorneio(TelaAbstrata):
         ]
         self.__window = sg.Window('mostrar torneio').Layout(layout)
 
+    def mostrar_luta_usuario(self, nome_torneio, boxeador_um, boxeador_dois):
+        layout = [
+            [sg.Text(f"SUA LUTA DA NOITE É {nome_torneio}", font=('Helvetica', 16), justification='center')],
+            [sg.Text()],
+            [sg.Text(f"= {boxeador_um.nome} vs {boxeador_dois.nome}", font=('Helvetica', 14), justification='center')],
+            [sg.Text('-' * 20 + ' ' * 20 + '-' * 20, justification='center')],
+            [sg.Button('OK')]
+        ]
+
+        window = sg.Window(f'Luta do Torneio {nome_torneio}', layout)
+
+        while True:
+            event, values = window.read()
+
+            if event == sg.WINDOW_CLOSED or event == 'OK':
+                break
+
+        window.close()
+
     def tela_opcoes(self):
         self.inicia_tela_opcoes()
         button, values = self.__window.Read()

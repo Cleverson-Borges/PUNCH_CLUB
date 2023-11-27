@@ -93,7 +93,7 @@ class TelaHabilidade(TelaAbstrata):
     def obtem_id_ataque(self):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
-            [sg.Text('=== Seleção de habilidades ===', font=("Lucida", 25))],
+            [sg.Text('=== Seleção de habilidades ataque ===', font=("Lucida", 25))],
             [sg.Text('Digite o ID da habilidade que deseja adicionar ao seu boxeador:', font=("Lucida", 15))],
             [sg.Text('ID:', size=(15, 1)), sg.InputText('id', key='id_ataque')],
             [sg.Button('Confirmar'), sg.Cancel('Voltar')]
@@ -108,7 +108,7 @@ class TelaHabilidade(TelaAbstrata):
     def obtem_id_defesa(self):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
-            [sg.Text('=== Seleção de habilidades ===', font=("Lucida", 25))],
+            [sg.Text('=== Seleção de habilidades defesa ===', font=("Lucida", 25))],
             [sg.Text('Digite o ID da habilidade que deseja adicionar ao seu boxeador:', font=("Lucida", 15))],
             [sg.Text('ID:', size=(15, 1)), sg.InputText('id', key='id_defesa')],
             [sg.Button('Confirmar'), sg.Cancel('Voltar')]
@@ -123,7 +123,7 @@ class TelaHabilidade(TelaAbstrata):
     def obtem_id_esquiva(self):
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
-            [sg.Text('=== Seleção de habilidades ===', font=("Lucida", 25))],
+            [sg.Text('=== Seleção de habilidades esquiva ===', font=("Lucida", 25))],
             [sg.Text('Digite o ID da habilidade que deseja adicionar ao seu boxeador:', font=("Lucida", 15))],
             [sg.Text('ID:', size=(15, 1)), sg.InputText('id', key='id_esquiva')],
             [sg.Button('Confirmar'), sg.Cancel('Voltar')]

@@ -56,7 +56,7 @@ class ControladorBoxeador:
             #     defesa=10,
             #     stamina=10,
             # )
-            #
+            # 
             # boxeador = Boxeador(
             #     nome='Exemplo',
             #     apelido='Exemplo',
@@ -64,7 +64,7 @@ class ControladorBoxeador:
             #     peso=10,
             #     altura=10,
             #     nacionalidade='Exemplo',
-            #     cpf=123456789,
+            #     cpf=1,
             #     caracteristica=caracteristica_exemplo,
             #     boxeador_cpu=False,
             #     numero_inscricao=0
@@ -318,13 +318,14 @@ class ControladorBoxeador:
                 novos_dados = self.__tela_boxeador.cadastrar_boxeador()
                 boxeador.nome = novos_dados["nome"]
                 boxeador.apelido = novos_dados["apelido"]
-                boxeador.idade = novos_dados["idade"]
-                boxeador.peso = novos_dados["peso"]
-                boxeador.altura = novos_dados["altura"]
+                boxeador.idade = int(novos_dados["idade"])
+                boxeador.peso = float(novos_dados["peso"])
+                boxeador.altura = float(novos_dados["altura"])
                 boxeador.nacionalidade = novos_dados["nacionalidade"]
                 boxeador.boxeador_cpu = False
                 self.listar_boxeadores_edicao_exclusao()
                 self.__tela_boxeador.mostrar_mensagem("Boxeador alterado com sucesso!")
+                self.__controlador_central.controlador_torneio.editar_jogador_torneio(cpf, novos_dados)
             else:
                 self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE BOXEADOR NÃO EXISTE!")
         else:
@@ -342,6 +343,7 @@ class ControladorBoxeador:
                 self.__boxeador_dao.remove(usuario)
                 self.listar_boxeadores_edicao_exclusao()
                 self.__tela_boxeador.mostrar_mensagem("Boxeador excluído com sucesso!")
+                self.__controlador_central.controlador_torneio.remover_torneio_por_usuario(usuario)
             else:
                 self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE BOXEADOR NÃO EXISTE!")
         else:
@@ -363,14 +365,10 @@ class ControladorBoxeador:
         for boxeador in self.__boxeador_dao.get_all():
             if boxeador.boxeador_cpu is False:
                 lista_jogadores_usuario.append(boxeador)
-        if len(lista_jogadores_usuario) == 0 or len(lista_jogadores_usuario) > 1:
-            self.__tela_boxeador.mostrar_mensagem("---------------------------ATENÇÃO--------------------------------"
-                                                  "--")
+        if len(lista_jogadores_usuario) == 0:
             self.__tela_boxeador.mostrar_mensagem("Não é possível iniciar o jogo, você tem que controlar 1 jogador!")
             self.__tela_boxeador.mostrar_mensagem("Por favor, cadastre um jogador e marque a opção de que ele não "
                                                   "é CPU")
-            self.__tela_boxeador.mostrar_mensagem("------------------------------------------------------------------"
-                                                  "--")
             self.encerra_sistema()
 
     def bonificacao_por_peso(self):

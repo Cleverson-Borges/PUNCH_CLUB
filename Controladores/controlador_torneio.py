@@ -76,7 +76,7 @@ class ControladorTorneio:
     def mostrar_torneio(self, torneio):
         self.__tela_torneio.mostrar_torneio(torneio.nome_torneio)
         for luta in torneio.lista_lutas:
-                self.__tela_torneio.mostrar_chaveamento(torneio.nome_torneio, luta.boxeador_um, luta.boxeador_dois, torneio.numero_lutas)
+                self.__tela_torneio.mostrar_chaveamento(torneio.nome_torneio, luta.boxeador_um, luta.boxeador_dois)
 
     def mostrar_luta_usuario(self, boxeador_um, boxeador_dois, torneio):
         self.__tela_torneio.mostrar_luta_usuario(torneio.nome_torneio,boxeador_um, boxeador_dois)
@@ -86,12 +86,6 @@ class ControladorTorneio:
         for boxeador in range(lista_boxeadores):
             boxeador1, boxeador2 = random.sample(lista_boxeadores, 2)
             return boxeador1, boxeador2
-
-    def mostrar_chaveamento(self, torneio):
-        for luta in torneio.lutas:
-            self.__tela_torneio.mostrar_chaveamento(torneio.nome_torneio, luta.boxeador_um,
-                                                    luta.boxeador_dois, torneio.fase)
-
     def encerra_sistema(self):
         self.__controlador_central.abre_tela()
 

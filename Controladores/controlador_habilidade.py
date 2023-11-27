@@ -38,38 +38,28 @@ class ControladorHabilidade:
     def adicionar_habilidade(self):
         contador = 0
         habilidades_escolhidas = []
-        self.__tela_habilidade.mostrar_mensagem('-'*50)
         self.__tela_habilidade.mostrar_mensagem('Adicione 4 habilidades ao seu boxeador')
-        self.__tela_habilidade.mostrar_mensagem('-'*50)
         while contador < 4:
             habilidade_escolhida = self.__tela_habilidade.selecionar_tipo()
             if habilidade_escolhida == 0:
                 return None
             if habilidade_escolhida == 1:
-                self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.__tela_habilidade.mostrar_mensagem('Habilidades de ataque')
-                self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.busca_habilidade_ataque('Ataque')
                 habilidades_escolhidas.append(self.selecao_habilidade_ataque())
                 contador += 1
             elif habilidade_escolhida == 2:
-                self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.__tela_habilidade.mostrar_mensagem('Habilidades de defesa')
-                self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.busca_habilidade_defesa('Defesa')
                 habilidades_escolhidas.append(self.selecao_habilidade_defesa())
                 contador += 1
             elif habilidade_escolhida == 3:
-                self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.__tela_habilidade.mostrar_mensagem('Habilidades de esquiva')
-                self.__tela_habilidade.mostrar_mensagem('-'*50)
                 self.busca_habilidade_esquiva('Esquiva')
                 habilidades_escolhidas.append(self.selecao_habilidade_esquiva())
                 contador += 1
             self.__tela_habilidade.mostrar_mensagem('Habilidade adicionada com sucesso!')
-        self.__tela_habilidade.mostrar_mensagem('-'*50)
         self.__tela_habilidade.mostrar_mensagem('As habilidades foram cadastras com sucesso!')
-        self.__tela_habilidade.mostrar_mensagem('-'*50)
         return habilidades_escolhidas
 
     def selecao_habilidade_ataque(self):

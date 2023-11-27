@@ -124,4 +124,5 @@ class TelaTorneio(TelaAbstrata):
             string_torneio = string_torneio + "ID: " + str(torneio["id"]) + '\n'
             string_torneio = string_torneio + "NOME DO TORNEIO: " + torneio["nome_torneio"] + '\n'
             string_torneio = string_torneio + "JOGADOR: " + torneio["nome"] + '\n'
+            string_torneio = string_torneio + '\n'
         sg.Popup('░▒▓█ LISTA DE TORNEIOS █▓▒░', string_torneio)

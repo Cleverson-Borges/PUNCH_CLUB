@@ -45,9 +45,10 @@ class TelaCentral(TelaAbstrata):
                                border_width=0, font=("Lucida", 12, 'bold'))],
                     [sg.Text('                          ')],
                     [sg.Button('  ░▓ START GAME ▓░   ', size=(25, 3), key='3', button_color=('green'),
-                               border_width=0, font=("Lucida", 12, 'bold'))],
+                               border_width=1, font=("Lucida", 15, 'bold'))],
                     [sg.Text('                          ')],
-                    [sg.Cancel('SAIR', size=(20, 2), button_color=('red'), key='0', font=("Lucida", 12, 'bold'))],
+                    [sg.Cancel('SAIR', size=(15, 2), button_color=('black', 'red'), key='0',
+                               font=("Lucida", 12, 'bold'))],
                 ],
                 element_justification='center'
             )]

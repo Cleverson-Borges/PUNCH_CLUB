@@ -1,58 +1,39 @@
 from Telas.tela_central import TelaAbstrata
 import PySimpleGUI as sg
 
-
 class TelaTorneio(TelaAbstrata):
     def __init__(self):
-        pass
+        self.__window = None
+        self.inicia_tela_opcoes()
 
-    def le_num_inteiro(self, mensagem=" ", ints_validos=None):
-        while True:
-            valor_lido = input(mensagem)
-            try:
-                valor_int = int(valor_lido)
-                if ints_validos and valor_int not in ints_validos:
-                    raise ValueError
-                return valor_int
-            except ValueError:
-                print("Valor inválido!")
-                if ints_validos:
-                    print("Valores válidos: ", ints_validos)
+    def open(self):
+        button, values = self.__window.Read()
+        return button, values
 
-    def cadastrar_torneio(self):
-        print("-"*15, "CADASTRAMENTO DE TORNEIO", "-"*15)
-        print()
-        nome_torneio = input(str("Informe o nome que deseja dar ao torneio PUNCH CLUB: "))
-        return nome_torneio
-
-    def alterar_torneio(self):
-        print("-"*15, "ALTERAR NOME DO TORNEIO", "-"*15)
-        print()
-        nome_torneio = input(str("Informe o novo nome que deseja dar ao torneio PUNCH CLUB: "))
-        print()
-        return {"nome_torneio": nome_torneio}
-
-    def mostrar_luta_usuario(self, nome_torneio, boxeador_um, boxeador_dois):
-        layout = [
-            [sg.Text(f"SUA LUTA DA NOITE É {nome_torneio}", font=('Helvetica', 16), justification='center')],
-            [sg.Text()],
-            [sg.Text(f"= {boxeador_um.nome} vs {boxeador_dois.nome}", font=('Helvetica', 14), justification='center')],
-            [sg.Text('-' * 20 + ' ' * 20 + '-' * 20, justification='center')],
-            [sg.Button('OK')]
-        ]
-
-        window = sg.Window(f'Luta do Torneio {nome_torneio}', layout)
-
-        while True:
-            event, values = window.read()
-
-            if event == sg.WINDOW_CLOSED or event == 'OK':
-                break
-
-        window.close()
+    def close(self):
+        self.__window.Close()
 
     def mostrar_mensagem(self, mensagem):
-        print(mensagem)
+        sg.popup('', mensagem)
+
+    def cadastrar_torneio(self):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('░▒▓█ CADASTRO DE TORNEIO █▓▒░', font=('Lucida', 25, 'bold'))],
+                    [sg.Text('  ')],
+                    [sg.Text('Nome do torneio: ', size=(15, 1)), sg.InputText('', key='nome_torneio')],
+                    [sg.Button('Confirmar'), sg.Cancel('Cancelar')]                ]
+            )]
+        ]
+        self.__window = sg.Window('Cadastro Torneio').Layout(layout)
+
+        button, values = self.open()
+        nome_torneio = values['nome_torneio']
+
+        self.close()
+        return {"nome_torneio": nome_torneio}
 
     def mostrar_chaveamento(self, nome_torneio, boxeador1, boxeador2, numero_fase=1):
         if numero_fase == 1:
@@ -61,32 +42,86 @@ class TelaTorneio(TelaAbstrata):
             numero_fase = "semi-final"
         elif numero_fase == 4:
             numero_fase = "quartas-de-final"
-        print("-"*5, f"CHAVEAMENTO DO TORNEIO {nome_torneio}", "-"*5)
-        print(f"CHAVE {numero_fase} = {boxeador1.nome}", "vs", f"{boxeador2.nome}")
-        print()
 
-    def mostrar_torneio(self, nome_torneio, numero_lutadores, id_torneio):
-        print()
-        print("-"*5, f"TORNEIO {nome_torneio}", "-"*5)
-        print(f"ID DO TORNEIO: {id_torneio}")
-        print()
-        print(f"Numero de lutadores: {numero_lutadores}")
-        print()
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text(f'⣿⣿⣿ CHAVEAMENTO DO TORNEIO {nome_torneio} ⣿⣿⣿', font=('Lucida', 25, 'bold'))],
+                    [sg.Text('  ')],
+                    [sg.Text(f'CHAVE {numero_fase} = {boxeador1.nome} vs {boxeador2.nome}', size=(15, 1))],
+                    [sg.Text('  ')],
+                    [sg.Cancel('Voltar')]]
+            )]
+        ]
+        self.__window = sg.Window('mostrar chaveamento').Layout(layout)
+
+    def mostrar_torneio(self, nome_torneio, numero_lutadores):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('░▒▓█ TORNEIO CADASTRADO █▓▒░', font=('Lucida', 25, 'bold'))],
+                    [sg.Text('  ')],
+                    [sg.Text(f'Nome do torneio: {nome_torneio}', size=(15, 1))],
+                    [sg.Text('   ')],
+                    [sg.Cancel('Voltar')]],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('mostrar torneio').Layout(layout)
 
     def tela_opcoes(self):
-        print()
-        print('-------- ░▒▓█ PUNCH CLUB TORNEIO █▓▒░ ----------',)
-        print('Escolha sua opção:')
-        print('(1) Cadastrar Torneio')
-        print('(0) Retornar')
-        print()
-        opcao = self.le_num_inteiro("Informe a sua escolha: ", [0, 1])
+        self.inicia_tela_opcoes()
+        button, values = self.__window.Read()
+        opcao = 0
+        if button == '1':
+            opcao = 1
+        if button == '2':
+            opcao = 2
+        if button == '0' in (None, 'Cancelar'):
+            opcao = 0
+
+        self.close()
         return opcao
 
-    def obtem_cpf(self):
-        cpf = input("Informe o cpf do seu boxeador: ")
-        return int(cpf)
+    def inicia_tela_opcoes(self):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Column(
+                [
+                    [sg.Text('░▒▓█ PUNCH CLUB TORNEIO █▓▒░', font=("Lucida", 25, 'bold'))],
+                    [sg.Text('Escolha sua opção:', font=("Lucida", 15, 'bold'))],
+                    [sg.Button('CADASTRAR TORNEIO', size=(20, 2), key='1', button_color=('white', 'black'),
+                               border_width=0,font=("Lucida", 12, 'bold'))],
+                    [sg.Cancel('Voltar', size=(8, 1), key='0', button_color=('black', 'red'),
+                               font=("Lucida", 12, 'bold'))]
+                ],
+                element_justification='center'
+            )]
+        ]
+        self.__window = sg.Window('Cadastro de boxeadores').Layout(layout)
 
-    def obtem_id_torneio(self):
-        id_torneio = input("Informe o id do torneio: ")
-        return int(id_torneio)
+    def obtem_cpf(self):
+        sg.ChangeLookAndFeel('DarkTanBlue')
+        layout = [
+            [sg.Text(' ░▒▓█ SELECIONAR BOXEADOR █▓▒░ ', font=("Lucida", 25))],
+            [sg.Text('Digite o CPF do boxeador que deseja selecionar:', font=("Lucida", 15))],
+            [sg.Text('CPF:', size=(15, 1)), sg.InputText('', key='cpf')],
+            [sg.Button('Confirmar'), sg.Cancel('Voltar')]
+        ]
+        self.__window = sg.Window('Seleciona boxeador').Layout(layout)
+
+        button, values = self.open()
+        cpf = self.le_num_inteiro(values['cpf'])
+        self.close()
+
+        return cpf
+
+    def listar_torneios(self, dados_torneio):
+        string_torneio = ""
+        for habilidade in dados_torneio:
+            string_torneio = string_torneio + "ID: " + str(habilidade["id"]) + '\n'
+            string_torneio = string_torneio + "NOME DO TORNEIO: " + habilidade["nome_torneio"] + '\n'
+            string_torneio = string_torneio + "JOGADOR: " + habilidade["nome"] + '\n'
+        sg.Popup('░▒▓█ LISTA DE TORNEIOS █▓▒░', string_torneio)

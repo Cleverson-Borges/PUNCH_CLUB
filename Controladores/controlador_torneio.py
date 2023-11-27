@@ -131,10 +131,10 @@ class ControladorTorneio:
         for torneio in self.__torneio_dao.get_all():
             if torneio.boxeador_usuario.cpf == cpf:
                 torneio.boxeador_usuario.nome = novos_dados["nome"]
-                torneio.boxeador_usuario.idade = novos_dados["idade"]
+                torneio.boxeador_usuario.idade = int(novos_dados["idade"])
                 torneio.boxeador_usuario.apelido = novos_dados["apelido"]
-                torneio.boxeador_usuario.peso = novos_dados["peso"]
-                torneio.boxeador_usuario.altura = novos_dados["altura"]
+                torneio.boxeador_usuario.peso = float(novos_dados["peso"])
+                torneio.boxeador_usuario.altura = float(novos_dados["altura"])
                 torneio.boxeador_usuario.nacionalidade = novos_dados["nacionalidade"]
                 return True
         return False
@@ -149,7 +149,7 @@ class ControladorTorneio:
     def listar_torneios(self):
         if len(self.__torneio_dao.get_all()) > 0:
             for torneio in self.__torneio_dao.get_all():
-                self.__tela_torneio.mostrar_torneio(torneio.nome_torneio, torneio.id_torneio)
+                self.__tela_torneio.mostrar_torneio(torneio.nome_torneio, torneio.id_torneio, torneio.boxeador_usuario)
         else:
             self.__tela_torneio.mostrar_mensagem("Não há torneios cadastrados!")
 

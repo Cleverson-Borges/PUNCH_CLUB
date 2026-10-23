@@ -1,6 +1,6 @@
 from Telas.tela_abstrata import TelaAbstrata
 import FreeSimpleGUI as sg
-import Imagens.base_64_imagens
+from Telas import exibicao
 
 
 class TelaJogo(TelaAbstrata):
@@ -32,8 +32,9 @@ class TelaJogo(TelaAbstrata):
 
     def tela_luta_padrao(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, nome1, nome2, apelido1, apelido2, round, total_rounds, nome_fase=''):
 
+        imagens = exibicao.imagens_luta()
         layout = [
-            [sg.Image(key='-IMAGE-')],
+            [sg.Image(data=imagens[0], key='-IMAGE-')],
             [sg.Button('LUTAR', key='LUTAR', size=(20, 2), button_color=('white', 'blue')),
              sg.Button('SAIR', key='SAIR', size=(20, 2), button_color=('black', 'pink'))],
             [sg.Text(f'{vida1} HP   {stamina1} ST', size=(40, 2), justification='left', expand_x=True,
@@ -56,18 +57,12 @@ class TelaJogo(TelaAbstrata):
                     background_color='lightgreen', font=('Helvetica', 14, 'bold'), text_color='black')]
         ]
 
-        window = sg.Window('Tela de Luta', layout, no_titlebar=True, grab_anywhere=True,
-                           keep_on_top=True, location=(200, 000), finalize=True)        
+        window = sg.Window('Tela de Luta', layout, finalize=True)
         image_elem = window['-IMAGE-']
 
-        images_base64 = [Imagens.base_64_imagens.boxe_image_base_64,
-                         Imagens.base_64_imagens.boxe_image_2_base_64,
-                         Imagens.base_64_imagens.boxe_image_3_base_64
-                         ]
-
         while True:
-            for image_base64 in images_base64:
-                image_elem.update(data=image_base64)
+            for imagem in imagens:
+                image_elem.update(data=imagem)
                 event, values = window.read(timeout=200)
                 if event == sg.WINDOW_CLOSED or event == 'SAIR':
                     window.close()
@@ -78,8 +73,9 @@ class TelaJogo(TelaAbstrata):
 
     def tela_luta_escolha_habilidade(self, vida1, vida2, stamina1, stamina2, mensagem_habilidade_escolhida, habilidades_usuario):
 
+        imagens = exibicao.imagens_luta()
         layout = [
-            [sg.Image(key='-IMAGE-')],
+            [sg.Image(data=imagens[0], key='-IMAGE-')],
             [sg.Button('DESISTIR', key='SAIR', size=(10, 2), button_color=('black', 'pink'))],
             [sg.Text(f'{vida1} HP   {stamina1} ST', size=(10, 1), justification='left', expand_x=True,
                      background_color='black', font=('Helvetica', 12), text_color='white'),
@@ -123,17 +119,12 @@ class TelaJogo(TelaAbstrata):
                 layout.append([botao_habilidade])
                 lista_habilidades_usuario.append(habilidade.id)
 
-        window = sg.Window('Tela de Luta', layout, no_titlebar=True, grab_anywhere=True, keep_on_top=True, finalize=True)
+        window = sg.Window('Tela de Luta', layout, finalize=True)
         image_elem = window['-IMAGE-']
 
-        images_base64 = [Imagens.base_64_imagens.boxe_image_base_64,
-                         Imagens.base_64_imagens.boxe_image_2_base_64,
-                         Imagens.base_64_imagens.boxe_image_3_base_64
-                         ]
-
         while True:
-            for image_base64 in images_base64:
-                image_elem.update(data=image_base64)
+            for imagem in imagens:
+                image_elem.update(data=imagem)
                 event, values = window.read(timeout=200)
                 if event == sg.WINDOW_CLOSED or event == 'SAIR':
                     window.close()
@@ -181,18 +172,13 @@ class TelaJogo(TelaAbstrata):
     def mostrar_campeao(self, boxeador_campeao, nome_torneio):
 
         layout = [
-            [sg.Image(key='-IMAGE-')],
+            [sg.Image(data=exibicao.imagem_campeao(), key='-IMAGE-')],
             [sg.Button('SAIR', key='SAIR', size=(20, 2), button_color=('black', 'pink'))],
             [sg.Text(f'Parabéns {boxeador_campeao.nome}! Você é o campeão do {nome_torneio}!', background_color='black', justification='right',
                      font=('Helvetica', 14, 'bold'), text_color='white', expand_x=True)]
         ]
 
-        window = sg.Window('Tela de Luta', layout, no_titlebar=True, grab_anywhere=True, keep_on_top=True, finalize=True)
-        image_elem = window['-IMAGE-']
-
-        imagem_campeao = Imagens.base_64_imagens.boxe_image_4_base_64
-
-        image_elem.update(data=imagem_campeao)
+        window = sg.Window('Campeão', layout, finalize=True)
         while True:
             event, values = window.read()
             if event == sg.WINDOW_CLOSED or event == 'SAIR':

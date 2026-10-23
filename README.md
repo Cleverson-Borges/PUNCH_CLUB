@@ -17,6 +17,10 @@ python main.py
 A interface usa o [FreeSimpleGUI](https://github.com/spyoungtech/FreeSimpleGUI), fork gratuito (LGPL)
 do PySimpleGUI 4, que não exige licença.
 
+As janelas abrem sempre centralizadas no monitor onde está o mouse quando o jogo inicia (útil com
+monitor estendido), e as imagens se ajustam à resolução desse monitor. Isso usa `screeninfo` e `Pillow`
+(ver `Telas/exibicao.py`).
+
 ## Regras
 
 - **Boxeador**: ao criar, você distribui 10 pontos (força +1, esquiva +1, defesa +1, stamina +1, vida +2 por ponto)

@@ -5,29 +5,45 @@ from Telas.tela_boxeador import TelaBoxeador
 from DAOs.boxeador_dao import BoxeadorDAO
 
 
+# Lutadores controlados pela CPU: (nome, apelido, idade, peso, altura, nacionalidade, cpf, nível)
+BOXEADORES_CPU = [
+    ('Tony Tucker', 'Tucker', 30, 100, 1.90, 'EUA', 128756789, 'facil'),
+    ('John Ruiz', 'Ruiz', 33, 75, 1.81, 'EUA', 122456129, 'medio'),
+    ('Mike Tyson', 'Tyson', 30, 100, 1.90, 'EUA', 123456555, 'dificil'),
+    ('Fabiano Pena', 'Pena', 24, 76, 1.78, 'BRA', 123454321, 'facil'),
+    ('Jorge Silva', 'Silva', 33, 75, 1.81, 'BRA', 123156789, 'medio'),
+    ('Jean Hauck', 'GOAT', 18, 135, 2.23, 'UFSC', 121756789, 'dificil'),
+    ('Anderson Popó', 'Popó', 35, 80, 1.87, 'Brasil', 123436749, 'dificil'),
+    ('Rocky Balboa', 'Garanhão Italiano', 30, 82, 1.78, 'EUA', 130000001, 'medio'),
+    ('Apollo Creed', 'Mestre do Desastre', 32, 86, 1.88, 'EUA', 130000002, 'dificil'),
+    ('Ivan Drago', 'Drago', 28, 118, 1.96, 'URS', 130000003, 'dificil'),
+    ('Clubber Lang', 'Clubber', 29, 92, 1.83, 'EUA', 130000004, 'medio'),
+    ('Tyler Durden', 'Durden', 31, 78, 1.83, 'EUA', 130000005, 'medio'),
+    ('Billy Hope', 'The Great', 34, 79, 1.80, 'EUA', 130000006, 'facil'),
+    ('Maggie Fitzgerald', 'Mo Cuishle', 31, 61, 1.70, 'EUA', 130000007, 'facil'),
+    ('Tommy Conlon', 'Riordan', 27, 88, 1.85, 'EUA', 130000008, 'facil'),
+]
+
+CARACTERISTICAS_CPU = {
+    'facil': {'forca': 10, 'esquiva': 10, 'vida': 100, 'defesa': 10, 'stamina': 10},
+    'medio': {'forca': 10, 'esquiva': 12, 'vida': 125, 'defesa': 13, 'stamina': 12},
+    'dificil': {'forca': 12, 'esquiva': 15, 'vida': 150, 'defesa': 15, 'stamina': 15},
+}
+
+PONTOS_POR_VITORIA = 5
+
+
 class ControladorBoxeador:
     def __init__(self, controlador_central):
         self.__tela_boxeador = TelaBoxeador()
         self.__tela_caracteristica = TelaCaracteristica()
         self.__controlador_central = controlador_central
         self.__boxeador_dao = BoxeadorDAO()
-        self.__numero_inscricao = 1
-        if len(self.__boxeador_dao.get_all()) == 0:
-            self.gerar_boxeador()
+        self.gerar_boxeador()
 
     @property
     def boxeadores(self):
         return self.__boxeador_dao.get_all()
-
-    def le_str_valida(self, mensagem="", strs_validas=None):
-        while True:
-            valor_lido = input(mensagem)
-            if strs_validas and valor_lido not in strs_validas:
-                print("Valor inválido!")
-                if strs_validas:
-                    print("Valores válidos: ", ", ".join(strs_validas))
-            else:
-                return valor_lido
 
     def busca_por_cpf(self, cpf):
         # Busca um usuário na lista de boxeadors com base no CPF
@@ -36,388 +52,262 @@ class ControladorBoxeador:
                 return boxeador
         return None
 
+    def proximo_numero_inscricao(self):
+        numeros = [boxeador.numero_inscricao for boxeador in self.__boxeador_dao.get_all()]
+        return max(numeros, default=0) + 1
+
     def cadastrar_boxeador(self):
         cpf = self.__tela_boxeador.obtem_cpf()
-        try:
-            if self.busca_por_cpf(cpf) is not None:
-                raise ValueError("CPF já cadastrado.")
-        except ValueError as e:
-            print(e)  # Ou realize qualquer outra ação de tratamento necessária.
-        else:
-            dicionario_informacoes_boxeador = self.__tela_boxeador.cadastrar_boxeador()
-            dicionario_informacoes_boxeador['cpf'] = cpf
-            dicionario_informacoes_caracteristica = self.cadastrar_caracteristicas()
-            boxeador_cpu = False
+        if cpf is None:
+            return
+        if self.busca_por_cpf(cpf) is not None:
+            self.__tela_boxeador.mostrar_mensagem("CPF já cadastrado.")
+            return
 
-            # caracteristica_exemplo = Caracteristica(
-            #     forca=10,
-            #     esquiva=10,
-            #     vida=100,
-            #     defesa=10,
-            #     stamina=10,
-            # )
-            #
-            # boxeador = Boxeador(
-            #     nome='Exemplo',
-            #     apelido='Exemplo',
-            #     idade=10,
-            #     peso=10,
-            #     altura=10,
-            #     nacionalidade='Exemplo',
-            #     cpf=1,
-            #     caracteristica=caracteristica_exemplo,
-            #     boxeador_cpu=False,
-            #     numero_inscricao=0
-            # )
+        dicionario_informacoes_boxeador = self.__tela_boxeador.cadastrar_boxeador()
+        if dicionario_informacoes_boxeador is None:
+            return
+        dicionario_informacoes_caracteristica = self.cadastrar_caracteristicas()
+        if dicionario_informacoes_caracteristica is None:
+            self.__tela_boxeador.mostrar_mensagem("Cadastro cancelado.")
+            return
+        lista_habilidades_escolhidas = self.escolher_habilidades()
+        if lista_habilidades_escolhidas is None:
+            self.__tela_boxeador.mostrar_mensagem("Cadastro cancelado.")
+            return
 
-            caracteristicas_boxeador = Caracteristica(
-                forca=dicionario_informacoes_caracteristica['forca'],
-                esquiva=dicionario_informacoes_caracteristica['esquiva'],
-                vida=dicionario_informacoes_caracteristica['vida'],
-                defesa=dicionario_informacoes_caracteristica['defesa'],
-                stamina=dicionario_informacoes_caracteristica['stamina'],
-            )
+        caracteristicas_boxeador = Caracteristica(**dicionario_informacoes_caracteristica)
+        boxeador = Boxeador(
+            nome=dicionario_informacoes_boxeador['nome'],
+            apelido=dicionario_informacoes_boxeador['apelido'],
+            idade=dicionario_informacoes_boxeador['idade'],
+            peso=dicionario_informacoes_boxeador['peso'],
+            altura=dicionario_informacoes_boxeador['altura'],
+            nacionalidade=dicionario_informacoes_boxeador['nacionalidade'],
+            cpf=cpf,
+            caracteristica=caracteristicas_boxeador,
+            boxeador_cpu=False,
+            numero_inscricao=self.proximo_numero_inscricao()
+        )
+        boxeador.habilidades.extend(lista_habilidades_escolhidas)
 
-            boxeador = Boxeador(
-                nome=dicionario_informacoes_boxeador['nome'],
-                apelido=dicionario_informacoes_boxeador['apelido'],
-                idade=dicionario_informacoes_boxeador['idade'],
-                peso=dicionario_informacoes_boxeador['peso'],
-                altura=dicionario_informacoes_boxeador['altura'],
-                nacionalidade=dicionario_informacoes_boxeador['nacionalidade'],
-                cpf=dicionario_informacoes_boxeador['cpf'],
-                caracteristica=caracteristicas_boxeador,
-                boxeador_cpu=boxeador_cpu,
-                numero_inscricao=self.__numero_inscricao
-            )
-            lista_habilidades_escolhidas = self.escolher_habilidades()
-            if lista_habilidades_escolhidas is None and len(boxeador.habilidades) == 0:
-                self.encerra_sistema()
-            for habilidade in lista_habilidades_escolhidas:
-                boxeador.habilidades.append(habilidade)
-
-            self.__boxeador_dao.add(boxeador)
-            self.__tela_boxeador.mostrar_mensagem('Boxeador cadastrado com sucesso!')
-            self.__numero_inscricao += 1
+        self.__boxeador_dao.add(boxeador)
+        self.__tela_boxeador.mostrar_mensagem('Boxeador cadastrado com sucesso!')
 
     def gerar_boxeador(self):
-        numero_inscricao = 10
-        caracteristica_boxeador_facil = Caracteristica(
-                forca=10,
-                esquiva=10,
-                vida=100,
-                defesa=10,
-                stamina=10,
+        # Garante que todos os boxeadores da CPU existam (inclusive em bases salvas por versões antigas).
+        for nome, apelido, idade, peso, altura, nacionalidade, cpf, nivel in BOXEADORES_CPU:
+            if self.busca_por_cpf(cpf) is not None:
+                continue
+            boxeador = Boxeador(
+                nome=nome,
+                apelido=apelido,
+                idade=idade,
+                peso=peso,
+                altura=altura,
+                nacionalidade=nacionalidade,
+                cpf=cpf,
+                caracteristica=Caracteristica(**CARACTERISTICAS_CPU[nivel]),
+                boxeador_cpu=True,
+                numero_inscricao=self.proximo_numero_inscricao()
             )
-        caracteristica_boxeador_medio = Caracteristica(
-                forca=10,
-                esquiva=12,
-                vida=125,
-                defesa=13,
-                stamina=12,
-            )
-        caracteristica_boxeador_dificil = Caracteristica(
-                forca=12,
-                esquiva=15,
-                vida=150,
-                defesa=15,
-                stamina=15,
-            )
-        boxeador_facil = Boxeador(
-            nome='Tony Tucker',
-            apelido='Tucker',
-            idade=30,
-            peso=100,
-            altura=1.90,
-            nacionalidade='EUA',
-            cpf=128756789,
-            caracteristica=caracteristica_boxeador_facil,
-            boxeador_cpu=True,
-            numero_inscricao=numero_inscricao
-            )
-        self.__boxeador_dao.add(boxeador_facil)
-        boxeador_medio = Boxeador(
-            nome='John Ruiz',
-            apelido='Ruiz',
-            idade=33,
-            peso=75,
-            altura=1.81,
-            nacionalidade='EUA',
-            cpf=122456129,
-            caracteristica=caracteristica_boxeador_medio,
-            boxeador_cpu=True,
-            numero_inscricao=numero_inscricao + 1
-            )
-        self.__boxeador_dao.add(boxeador_medio)
-        boxeador_dificil = Boxeador(
-            nome='Mike Tyson',
-            apelido='Tyson',
-            idade=30,
-            peso=100,
-            altura=1.90,
-            nacionalidade='EUA',
-            cpf=123456555,
-            caracteristica=caracteristica_boxeador_dificil,
-            boxeador_cpu=True,
-            numero_inscricao=numero_inscricao + 1
-            )
-        self.__boxeador_dao.add(boxeador_dificil)
-        boxeador_facil_1 = Boxeador(
-            nome='Fabiano Pena',
-            apelido='Pena',
-            idade=24,
-            peso=76,
-            altura=1.78,
-            nacionalidade='BRA',
-            cpf=123454321,
-            caracteristica=caracteristica_boxeador_facil,
-            boxeador_cpu=True,
-            numero_inscricao=numero_inscricao + 1
-            )
-        self.__boxeador_dao.add(boxeador_facil_1)
-        boxeador_medio_1 = Boxeador(
-            nome='Jorge Silva',
-            apelido='Silva',
-            idade=33,
-            peso=75,
-            altura=1.81,
-            nacionalidade='BRA',
-            cpf=123156789,
-            caracteristica=caracteristica_boxeador_medio,
-            boxeador_cpu=True,
-            numero_inscricao=numero_inscricao + 1
-            )
-        self.__boxeador_dao.add(boxeador_medio_1)
-        boxeador_dificil_1 = Boxeador(
-            nome='Jean Hauck',
-            apelido='GOAT',
-            idade=18,
-            peso=135,
-            altura=2.23,
-            nacionalidade='UFSC',
-            cpf=121756789,
-            caracteristica=caracteristica_boxeador_dificil,
-            boxeador_cpu=True,
-            numero_inscricao=numero_inscricao + 1
-            )
-        self.__boxeador_dao.add(boxeador_dificil_1)
-        boxeador_dificil_2 = Boxeador(
-            nome='Anderson Popó',
-            apelido='Popó',
-            idade=35,
-            peso=80,
-            altura=1.87,
-            nacionalidade='Brasil',
-            cpf=123436749,
-            caracteristica=caracteristica_boxeador_dificil,
-            boxeador_cpu=True,
-            numero_inscricao=numero_inscricao + 1
-            )
-        self.__boxeador_dao.add(boxeador_dificil_2)
+            self.__boxeador_dao.add(boxeador)
+
+    def dados_boxeador(self, boxeador):
+        return {'nome': boxeador.nome,
+                'cpf': boxeador.cpf,
+                'apelido': boxeador.apelido,
+                'idade': boxeador.idade,
+                'peso': boxeador.peso,
+                'altura': boxeador.altura,
+                'nacionalidade': boxeador.nacionalidade,
+                'numero_inscricao': boxeador.numero_inscricao,
+                'CPU': boxeador.boxeador_cpu}
 
     def listar_boxeadores(self):
-        # Lista os usuarios presentes na lista
         if not self.__boxeador_dao.is_empty():
-            boxeadores_usuarios_cadastrados = []
-            for boxeador in self.__boxeador_dao.get_all():
-                boxeadores_usuarios_cadastrados.append({'nome':boxeador.nome,
-                                                      'cpf':boxeador.cpf,
-                                                      'apelido': boxeador.apelido,
-                                                      'idade': boxeador.idade,
-                                                      'peso': boxeador.peso,
-                                                      'altura': boxeador.altura,
-                                                      'nacionalidade': boxeador.nacionalidade,
-                                                      'CPU': boxeador.boxeador_cpu
-                                                      })
-            self.__tela_boxeador.mostra_boxeador(boxeadores_usuarios_cadastrados)
+            boxeadores_cadastrados = [self.dados_boxeador(boxeador) for boxeador in self.__boxeador_dao.get_all()]
+            self.__tela_boxeador.mostra_boxeador(boxeadores_cadastrados)
         else:
-            self.__tela_boxeador.mostrar_mensagem("Não há nenhum boxeador de usuário cadastrado!")
+            self.__tela_boxeador.mostrar_mensagem("Não há nenhum boxeador cadastrado!")
 
     def listar_boxeadores_edicao_exclusao(self):
-        # Lista os usuarios presentes na lista
+        # Lista apenas os boxeadores do usuário (os da CPU não podem ser editados)
         if not self.boxeador_dao_usuario_is_empty():
-            boxeadores_usuarios_cadastrados = []
-            for boxeador in self.__boxeador_dao.get_all():
-                if boxeador.boxeador_cpu is False:
-                    boxeadores_usuarios_cadastrados.append({'nome':boxeador.nome,
-                                                          'cpf':boxeador.cpf,
-                                                          'apelido': boxeador.apelido,
-                                                          'idade': boxeador.idade,
-                                                          'peso': boxeador.peso,
-                                                          'altura': boxeador.altura,
-                                                          'nacionalidade': boxeador.nacionalidade,
-                                                          'CPU': boxeador.boxeador_cpu
-                                                          })
+            boxeadores_usuarios_cadastrados = [self.dados_boxeador(boxeador) for boxeador in self.boxeadores_usuario()]
             self.__tela_boxeador.mostra_boxeador(boxeadores_usuarios_cadastrados)
         else:
             self.__tela_boxeador.mostrar_mensagem("Não há nenhum boxeador de usuário cadastrado!")
 
-    def listar_habilidade_boxeador(self):
-        if not self.boxeador_dao_usuario_is_empty():
-            self.listar_boxeadores_edicao_exclusao()
-            cpf = self.__tela_boxeador.obtem_cpf()
-            boxeador = self.busca_por_cpf(cpf)
-            lista_habilidades_boxeador = []
-            if (boxeador is not None):
-                for habilidade in boxeador.habilidades:
-                    if habilidade.tipo == 'Ataque':
-                        lista_habilidades_boxeador.append({'id':habilidade.id,
-                                                           'nome':habilidade.nome,
-                                                           'dano':habilidade.dano,
-                                                           'descricao':habilidade.descricao,
-                                                           'custo':habilidade.custo,
-                                                           'tipo': 'Ataque'})
-                    elif habilidade.tipo == 'Defesa':
-                        lista_habilidades_boxeador.append({'id':habilidade.id,
-                                                              'nome':habilidade.nome,
-                                                              'taxa_defesa':habilidade.taxa_defesa,
-                                                              'descricao':habilidade.descricao,
-                                                              'custo':habilidade.custo,
-                                                                'tipo': 'Defesa'})
-                    elif habilidade.tipo == 'Esquiva':
-                        lista_habilidades_boxeador.append({'id':habilidade.id,
-                                                                'nome':habilidade.nome,
-                                                                'taxa_esquiva':habilidade.taxa_esquiva,
-                                                                'descricao':habilidade.descricao,
-                                                                'custo':habilidade.custo,
-                                                                'tipo': 'Esquiva'})
-                self.__tela_boxeador.lista_habilidades(lista_habilidades_boxeador)
-
-            else:
-                self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE BOXEADOR NÃO EXISTE!")
-        else:
+    def seleciona_boxeador_usuario(self, mensagem=None):
+        # Mostra os boxeadores do usuário e pede um CPF. Retorna o boxeador ou None.
+        if self.boxeador_dao_usuario_is_empty():
             self.__tela_boxeador.mostrar_mensagem("Não há nenhum boxeador de usuário cadastrado!")
+            return None
+        self.listar_boxeadores_edicao_exclusao()
+        if mensagem:
+            self.__tela_boxeador.mostrar_mensagem(mensagem)
+        cpf = self.__tela_boxeador.obtem_cpf()
+        if cpf is None:
+            return None
+        boxeador = self.busca_por_cpf(cpf)
+        if boxeador is None or boxeador.boxeador_cpu:
+            self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE BOXEADOR NÃO EXISTE!")
+            return None
+        return boxeador
+
+    def listar_habilidade_boxeador(self):
+        boxeador = self.seleciona_boxeador_usuario()
+        if boxeador is None:
+            return
+        lista_habilidades_boxeador = []
+        for habilidade in boxeador.habilidades:
+            dados = {'id': habilidade.id,
+                     'nome': habilidade.nome,
+                     'descricao': habilidade.descricao,
+                     'custo': habilidade.custo,
+                     'tipo': habilidade.tipo}
+            if habilidade.tipo == 'Ataque':
+                dados['dano'] = habilidade.dano
+            elif habilidade.tipo == 'Defesa':
+                dados['taxa_defesa'] = habilidade.taxa_defesa
+            elif habilidade.tipo == 'Esquiva':
+                dados['taxa_esquiva'] = habilidade.taxa_esquiva
+            lista_habilidades_boxeador.append(dados)
+        self.__tela_boxeador.lista_habilidades(lista_habilidades_boxeador)
 
     def listar_caracteristica_boxeador(self):
-        if not self.boxeador_dao_usuario_is_empty():
-            self.listar_boxeadores_edicao_exclusao()
-            cpf = self.__tela_boxeador.obtem_cpf()
-            boxeador = self.busca_por_cpf(cpf)
-            if (boxeador is not None):
-                lista_caracteristica_boxeador = []
-                lista_caracteristica_boxeador.append({'forca':boxeador.caracteristica.forca,
-                                                    'esquiva':boxeador.caracteristica.esquiva,
-                                                    'vida':boxeador.caracteristica.vida,
-                                                    'defesa':boxeador.caracteristica.defesa,
-                                                    'stamina':boxeador.caracteristica.stamina})
-
-                self.__tela_boxeador.mostrar_caracteristica_boxeador(lista_caracteristica_boxeador)
-            else:
-                self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE BOXEADOR NÃO EXISTE!")
-        else:
-            self.__tela_boxeador.mostrar_mensagem("Não há nenhum boxeador de usuário cadastrado!")
+        boxeador = self.seleciona_boxeador_usuario()
+        if boxeador is None:
+            return
+        bonus = self.bonificacao_por_peso(boxeador)
+        descricao_bonus = ', '.join(f'{nome} {valor:+d}' for nome, valor in bonus.items() if valor != 0)
+        self.__tela_boxeador.mostrar_caracteristica_boxeador([{
+            'forca': boxeador.caracteristica.forca,
+            'esquiva': boxeador.caracteristica.esquiva,
+            'vida': boxeador.caracteristica.vida,
+            'defesa': boxeador.caracteristica.defesa,
+            'stamina': boxeador.caracteristica.stamina,
+            'imc': self.calcula_imc(boxeador),
+            'bonus_imc': descricao_bonus or 'sem alterações'}])
 
     def alterar_boxeador(self):
-        if not self.boxeador_dao_usuario_is_empty():
-            self.listar_boxeadores_edicao_exclusao()
-            self.__tela_boxeador.mostrar_mensagem("Insira o CPF do boxeador que deseja alterar")
-            cpf = self.__tela_boxeador.obtem_cpf()
-            boxeador = self.busca_por_cpf(cpf)
-            if (boxeador is not None):
-                self.__tela_boxeador.mostrar_mensagem("Insira o CPF do boxeador para alteração")
-                novos_dados = self.__tela_boxeador.cadastrar_boxeador()
-                boxeador.nome = novos_dados["nome"]
-                boxeador.apelido = novos_dados["apelido"]
-                boxeador.idade = int(novos_dados["idade"])
-                boxeador.peso = float(novos_dados["peso"])
-                boxeador.altura = float(novos_dados["altura"])
-                boxeador.nacionalidade = novos_dados["nacionalidade"]
-                boxeador.boxeador_cpu = False
-                self.listar_boxeadores_edicao_exclusao()
-                self.__tela_boxeador.mostrar_mensagem("Boxeador alterado com sucesso!")
-                self.__controlador_central.controlador_torneio.editar_jogador_torneio(cpf, novos_dados)
-            else:
-                self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE BOXEADOR NÃO EXISTE!")
-        else:
-            self.__tela_boxeador.mostrar_mensagem("Não há nenhum boxeador editável cadastrado!")
+        boxeador = self.seleciona_boxeador_usuario("Insira o CPF do boxeador que deseja alterar")
+        if boxeador is None:
+            return
+        self.__tela_boxeador.mostrar_mensagem("Insira os novos dados do boxeador")
+        novos_dados = self.__tela_boxeador.cadastrar_boxeador()
+        if novos_dados is None:
+            return
+        boxeador.nome = novos_dados["nome"]
+        boxeador.apelido = novos_dados["apelido"]
+        boxeador.idade = novos_dados["idade"]
+        boxeador.peso = novos_dados["peso"]
+        boxeador.altura = novos_dados["altura"]
+        boxeador.nacionalidade = novos_dados["nacionalidade"]
+
+        if self.__tela_boxeador.confirmar("Deseja redistribuir os pontos de características?\n"
+                                          "(os pontos ganhos em torneios serão perdidos)"):
+            nova_caracteristica = self.cadastrar_caracteristicas()
+            if nova_caracteristica is not None:
+                boxeador.caracteristica = Caracteristica(**nova_caracteristica)
+        if self.__tela_boxeador.confirmar("Deseja escolher novas habilidades?"):
+            novas_habilidades = self.escolher_habilidades()
+            if novas_habilidades is not None:
+                boxeador.habilidades.clear()
+                boxeador.habilidades.extend(novas_habilidades)
+
+        self.__boxeador_dao.update(boxeador)
+        self.__tela_boxeador.mostrar_mensagem("Boxeador alterado com sucesso!")
 
     def excluir_boxeador(self):
-        # Exclui boxeador na lista de boxeador
-        if not self.boxeador_dao_usuario_is_empty():
-            self.listar_boxeadores_edicao_exclusao()
-            self.__tela_boxeador.mostrar_mensagem("Insira o CPF do boxeador que deseja excluir")
-            cpf_usuario = self.__tela_boxeador.obtem_cpf()
-            usuario = self.busca_por_cpf(cpf_usuario)
-
-            if (usuario is not None):
-                self.__boxeador_dao.remove(usuario)
-                self.listar_boxeadores_edicao_exclusao()
-                self.__tela_boxeador.mostrar_mensagem("Boxeador excluído com sucesso!")
-                self.__controlador_central.controlador_torneio.remover_torneio_por_usuario(usuario)
-            else:
-                self.__tela_boxeador.mostrar_mensagem("CUIDADO: ESTE BOXEADOR NÃO EXISTE!")
-        else:
-            self.__tela_boxeador.mostrar_mensagem("Não há nenhum boxeador editável cadastrado!")
+        usuario = self.seleciona_boxeador_usuario("Insira o CPF do boxeador que deseja excluir")
+        if usuario is None:
+            return
+        self.__boxeador_dao.remove(usuario)
+        self.__controlador_central.controlador_torneio.remover_torneio_por_usuario(usuario)
+        self.__tela_boxeador.mostrar_mensagem("Boxeador excluído com sucesso!")
 
     def cadastrar_caracteristicas(self):
-        dict_caracterisitca = self.__tela_caracteristica.tela_cadastro_status()
-        return dict_caracterisitca
+        return self.__tela_caracteristica.tela_cadastro_status()
+
+    def distribuir_pontos_vitoria(self, boxeador):
+        # Regra da documentação: cada luta vencida no torneio dá 5 pontos de característica.
+        self.__tela_boxeador.mostrar_mensagem(f"Vitória! Você ganhou {PONTOS_POR_VITORIA} pontos para "
+                                              f"distribuir nas características de {boxeador.apelido}.")
+        caracteristica = boxeador.caracteristica
+        valores_atuais = {'forca': caracteristica.forca, 'esquiva': caracteristica.esquiva,
+                          'vida': caracteristica.vida, 'defesa': caracteristica.defesa,
+                          'stamina': caracteristica.stamina}
+        novos_valores = self.__tela_caracteristica.tela_distribuir_pontos(PONTOS_POR_VITORIA, valores_atuais)
+        caracteristica.forca = novos_valores['forca']
+        caracteristica.esquiva = novos_valores['esquiva']
+        caracteristica.vida = novos_valores['vida']
+        caracteristica.defesa = novos_valores['defesa']
+        caracteristica.stamina = novos_valores['stamina']
+        self.__boxeador_dao.update(boxeador)
 
     def escolher_habilidades(self):
-        habilidades = self.__controlador_central.controlador_habilidade.adicionar_habilidade()
-        return habilidades
+        return self.__controlador_central.controlador_habilidade.adicionar_habilidade()
 
     def listar_caracteristicas(self, boxeador:Boxeador):
         return boxeador.caracteristica
 
     def verifica_jogadores_maquina(self):
-        lista_jogadores_usuario = []
-        for boxeador in self.__boxeador_dao.get_all():
-            if boxeador.boxeador_cpu is False:
-                lista_jogadores_usuario.append(boxeador)
-        if len(lista_jogadores_usuario) == 0:
+        # Retorna True se existe pelo menos um boxeador controlado pelo usuário.
+        if self.boxeador_dao_usuario_is_empty():
             self.__tela_boxeador.mostrar_mensagem("Não é possível iniciar o jogo, você tem que controlar 1 jogador!")
-            self.__tela_boxeador.mostrar_mensagem("Por favor, cadastre um jogador e marque a opção de que ele não "
-                                                  "é CPU")
-            self.encerra_sistema()
+            self.__tela_boxeador.mostrar_mensagem("Por favor, cadastre um boxeador antes")
+            return False
+        return True
 
-    def bonificacao_por_peso(self):
-        for boxeador in self.__boxeador_dao.get_all():
-            imc = float(boxeador.peso / (boxeador.altura * boxeador.altura))
-            if imc < 17:
-                boxeador.caracteristica.forca -= 5
-                boxeador.caracteristica.esquiva += 7
-                boxeador.caracteristica.stamina += 5
-            elif 17 <= imc <= 18.49:
-                boxeador.caracteristica.forca -= 2
-                boxeador.caracteristica.esquiva += 5
-                boxeador.caracteristica.stamina += 3
-            elif 30 <= imc <= 34.99:
-                boxeador.caracteristica.forca += 2
-                boxeador.caracteristica.esquiva -= 3
-                boxeador.caracteristica.stamina -= 2
-            elif imc > 35:
-                boxeador.caracteristica.forca += 5
-                boxeador.caracteristica.esquiva -= 5
-                boxeador.caracteristica.stamina -= 4
-    def encerra_sistema(self):
-        self.__controlador_central.abre_tela()
+    def calcula_imc(self, boxeador):
+        return boxeador.peso / (boxeador.altura * boxeador.altura)
+
+    def bonificacao_por_peso(self, boxeador):
+        # Ajustes de força, esquiva e stamina conforme o IMC (regra da documentação).
+        # Não altera o boxeador: o bônus é aplicado só durante as lutas.
+        imc = self.calcula_imc(boxeador)
+        if imc < 17:
+            return {'forca': -5, 'esquiva': 7, 'stamina': 5}
+        elif imc < 18.5:
+            return {'forca': -2, 'esquiva': 5, 'stamina': 3}
+        elif imc < 30:
+            return {'forca': 0, 'esquiva': 0, 'stamina': 0}
+        elif imc < 35:
+            return {'forca': 2, 'esquiva': -3, 'stamina': -2}
+        else:
+            return {'forca': 5, 'esquiva': -5, 'stamina': -4}
+
+    def caracteristicas_de_luta(self, boxeador):
+        # Características efetivas usadas na luta: base do boxeador + bônus do IMC.
+        bonus = self.bonificacao_por_peso(boxeador)
+        caracteristica = boxeador.caracteristica
+        return {'forca': max(1, caracteristica.forca + bonus['forca']),
+                'esquiva': max(0, caracteristica.esquiva + bonus['esquiva']),
+                'vida': caracteristica.vida,
+                'defesa': caracteristica.defesa,
+                'stamina': max(1, caracteristica.stamina + bonus['stamina'])}
 
     def abre_tela(self):
-
         escolha_tela = {1: self.cadastrar_boxeador,
                         2: self.alterar_boxeador,
                         3: self.listar_boxeadores,
                         4: self.excluir_boxeador,
                         5: self.listar_habilidade_boxeador,
-                        6: self.listar_caracteristica_boxeador,
-                        0: self.encerra_sistema}
+                        6: self.listar_caracteristica_boxeador}
 
-        continua = True
-        while continua:
-            escolha_tela[self.__tela_boxeador.primeira_tela_opcoes()]()
+        while True:
+            opcao = self.__tela_boxeador.primeira_tela_opcoes()
+            if opcao == 0:
+                return
+            escolha_tela[opcao]()
 
     def retornar_boxeadores_cpu(self):
-        lista_boxeadores_cpu = []
-        for boxeador in self.__boxeador_dao.get_all():
-            if boxeador.boxeador_cpu is True:
-                lista_boxeadores_cpu.append(boxeador)
-        return lista_boxeadores_cpu
+        return [boxeador for boxeador in self.__boxeador_dao.get_all() if boxeador.boxeador_cpu is True]
+
+    def boxeadores_usuario(self):
+        return [boxeador for boxeador in self.__boxeador_dao.get_all() if boxeador.boxeador_cpu is False]
 
     def boxeador_dao_usuario_is_empty(self):
-        lista_boxeadores_usuario = []
-        for boxeador in self.__boxeador_dao.get_all():
-            if boxeador.boxeador_cpu is False:
-                lista_boxeadores_usuario.append(boxeador)
-        if len(lista_boxeadores_usuario) == 0:
-            return True
+        return len(self.boxeadores_usuario()) == 0

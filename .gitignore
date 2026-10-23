@@ -1,0 +1,21 @@
+# Ambiente virtual (recriado com: pip install -r requirements.txt)
+venv/
+.venv/
+env/
+
+# Bytecode do Python
+__pycache__/
+*.py[cod]
+
+# Dados salvos do jogo (recriados automaticamente na primeira execução)
+*.pkl
+*.pkl.bak
+
+# IDEs e editores
+.idea/
+.vscode/
+*.swp
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

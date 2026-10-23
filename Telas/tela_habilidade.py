@@ -1,5 +1,5 @@
-from Telas.tela_central import TelaAbstrata
-import PySimpleGUI as sg
+from Telas.tela_abstrata import TelaAbstrata
+import FreeSimpleGUI as sg
 
 
 class TelaHabilidade(TelaAbstrata):
@@ -49,19 +49,11 @@ class TelaHabilidade(TelaAbstrata):
     def selecionar_tipo(self):
         self.tela_tipo()
         button, values = self.__window.Read()
-        opcao = 0
-        if button == '1':
-            opcao = 1
-        if button == '2':
-            opcao = 2
-        if button == '3':
-            opcao = 3
-        if button == '4':
-            opcao = 4
-
         self.close()
-
-        return opcao
+        # 1 = ataque, 2 = defesa, 3 = esquiva, 0 = sair (botão SAIR ou janela fechada)
+        if button in ('1', '2', '3'):
+            return int(button)
+        return 0
 
     def mostrar_habilidade_ataque(self, dados_ataque):
         string_hab_ataque = ""
@@ -104,14 +96,16 @@ class TelaHabilidade(TelaAbstrata):
         layout = [
             [sg.Text('=== Seleção de habilidades ataque ===', font=("Lucida", 25))],
             [sg.Text('Digite o ID da habilidade que deseja adicionar ao seu boxeador:', font=("Lucida", 15))],
-            [sg.Text('ID:', size=(15, 1)), sg.InputText('1 ou 2 ou 3', key='id_ataque')],
+            [sg.Text('ID:', size=(15, 1)), sg.InputText('', key='id_ataque'), sg.Text('(1, 2 ou 3)')],
             [sg.Button('Confirmar'), sg.Cancel('Voltar')]
         ]
         self.__window = sg.Window('id ataque').Layout(layout)
 
         button, values = self.open()
-        identificador = self.le_num_inteiro_entre(values['id_ataque'], 1, 3)
         self.close()
+        if button != 'Confirmar':
+            return None
+        identificador = self.le_num_inteiro_entre(values['id_ataque'], 1, 3)
         return identificador
 
     def obtem_id_defesa(self):
@@ -119,14 +113,16 @@ class TelaHabilidade(TelaAbstrata):
         layout = [
             [sg.Text('=== Seleção de habilidades defesa ===', font=("Lucida", 25))],
             [sg.Text('Digite o ID da habilidade que deseja adicionar ao seu boxeador:', font=("Lucida", 15))],
-            [sg.Text('ID:', size=(15, 1)), sg.InputText('4 ou 5 ou 6', key='id_defesa')],
+            [sg.Text('ID:', size=(15, 1)), sg.InputText('', key='id_defesa'), sg.Text('(4, 5 ou 6)')],
             [sg.Button('Confirmar'), sg.Cancel('Voltar')]
         ]
         self.__window = sg.Window('id defesa').Layout(layout)
 
         button, values = self.open()
-        identificador = self.le_num_inteiro_entre(values['id_defesa'], 4, 6)
         self.close()
+        if button != 'Confirmar':
+            return None
+        identificador = self.le_num_inteiro_entre(values['id_defesa'], 4, 6)
         return identificador
 
     def obtem_id_esquiva(self):
@@ -134,13 +130,15 @@ class TelaHabilidade(TelaAbstrata):
         layout = [
             [sg.Text('=== Seleção de habilidades esquiva ===', font=("Lucida", 25))],
             [sg.Text('Digite o ID da habilidade que deseja adicionar ao seu boxeador:', font=("Lucida", 15))],
-            [sg.Text('ID:', size=(15, 1)), sg.InputText('7 ou 8 ou 9', key='id_esquiva')],
+            [sg.Text('ID:', size=(15, 1)), sg.InputText('', key='id_esquiva'), sg.Text('(7, 8 ou 9)')],
             [sg.Button('Confirmar'), sg.Cancel('Voltar')]
         ]
         self.__window = sg.Window('id esquiva').Layout(layout)
 
         button, values = self.open()
-        identificador = self.le_num_inteiro_entre(values['id_esquiva'], 7, 9)
         self.close()
+        if button != 'Confirmar':
+            return None
+        identificador = self.le_num_inteiro_entre(values['id_esquiva'], 7, 9)
 
         return identificador

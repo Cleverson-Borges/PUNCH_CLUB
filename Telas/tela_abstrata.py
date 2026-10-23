@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 
 class TelaAbstrata(ABC):
@@ -10,8 +10,12 @@ class TelaAbstrata(ABC):
     def print_mensagem(self, mensagem):
         sg.popup('', mensagem)
 
+    # Os leitores abaixo repetem a pergunta até receber um valor válido.
+    # Se o usuário cancelar a janela de correção, retornam None.
     def le_num_inteiro(self, valor_lido, ints_validos=None):
         while True:
+            if valor_lido is None:
+                return None
             try:
                 valor_int = int(valor_lido)
                 if ints_validos is not None and valor_int not in ints_validos:
@@ -23,6 +27,8 @@ class TelaAbstrata(ABC):
 
     def le_num_inteiro_entre(self, valor_lido, min_valor=None, max_valor=None):
         while True:
+            if valor_lido is None:
+                return None
             try:
                 valor_int = int(valor_lido)
                 if (min_valor is not None and valor_int < min_valor) or (
@@ -35,8 +41,10 @@ class TelaAbstrata(ABC):
 
     def le_num_float_entre(self, valor_lido, min_valor=None, max_valor=None):
         while True:
+            if valor_lido is None:
+                return None
             try:
-                valor_float = float(valor_lido)
+                valor_float = float(str(valor_lido).replace(',', '.'))
                 if (min_valor is not None and valor_float < min_valor) or (
                         max_valor is not None and valor_float > max_valor):
                     raise ValueError
@@ -47,10 +55,21 @@ class TelaAbstrata(ABC):
 
     def le_str_valida(self, valor_lido):
         while True:
-            try:
-                if not isinstance(valor_lido, str) or len(valor_lido) != 3 or not valor_lido.isalpha():
-                    raise ValueError
+            if valor_lido is None:
+                return None
+            if isinstance(valor_lido, str) and len(valor_lido) == 3 and valor_lido.isalpha():
                 return valor_lido.upper()
-            except ValueError:
-                sg.popup('Entrada Inválida! Digite exatamente 3 letras.')
-                valor_lido = sg.popup_get_text('Digite uma entrada de 3 letras:')
+            sg.popup('Entrada Inválida! Digite exatamente 3 letras.')
+            valor_lido = sg.popup_get_text('Digite uma entrada de 3 letras:')
+
+    def le_str_nao_vazia(self, valor_lido, nome_campo):
+        while True:
+            if valor_lido is None:
+                return None
+            if valor_lido.strip() != '':
+                return valor_lido.strip()
+            sg.popup(f'O campo {nome_campo} não pode ficar vazio.')
+            valor_lido = sg.popup_get_text(f'Digite o {nome_campo}:')
+
+    def confirmar(self, mensagem):
+        return sg.popup_yes_no(mensagem, title='Confirmação') == 'Yes'

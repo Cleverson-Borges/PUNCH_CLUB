@@ -1,7 +1,5 @@
-from Telas.tela_central import TelaAbstrata
-import PySimpleGUI as sg
-import time
-import os
+from Telas.tela_abstrata import TelaAbstrata
+import FreeSimpleGUI as sg
 import Imagens.base_64_imagens
 
 
@@ -25,21 +23,14 @@ class TelaJogo(TelaAbstrata):
         self.__window = sg.Window('Seleciona id do torneio').Layout(layout)
 
         button, values = self.open()
-        id = self.le_num_inteiro(values['id'], lista_ids_validos)
         self.close()
-
-        for valor in values:
-            if button == 'Voltar':
-                self.close()
-                return 0
-            if values[valor] == '':
-                self.close()
-                return False
-            if button == 'Confirmar':
-                return int(id)
+        # Retorna o id escolhido, ou None se o usuário voltar.
+        if button != 'Confirmar':
+            return None
+        return self.le_num_inteiro(values['id'], lista_ids_validos)
 
 
-    def tela_luta_padrao(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, nome1, nome2, apelido1, apelido2, round,game_start=False):
+    def tela_luta_padrao(self, vida1, vida2, stamina1, stamina2, nacionalidade1, nacionalidade2, nome1, nome2, apelido1, apelido2, round, total_rounds, nome_fase=''):
 
         layout = [
             [sg.Image(key='-IMAGE-')],
@@ -61,7 +52,7 @@ class TelaJogo(TelaAbstrata):
                      font=('Helvetica', 14, 'bold'), text_color='white', expand_x=True),
              sg.Text(nacionalidade2, background_color='black', justification='right',
                      font=('Helvetica', 14, 'bold'), text_color='white', expand_x=True)],
-            [sg.Text(f'Round {round} de 3', size=(40, 2), justification='center', expand_x=True,
+            [sg.Text(f'{nome_fase}   Round {round} de {total_rounds}', size=(40, 2), justification='center', expand_x=True,
                     background_color='lightgreen', font=('Helvetica', 14, 'bold'), text_color='black')]
         ]
 
@@ -82,17 +73,14 @@ class TelaJogo(TelaAbstrata):
                     window.close()
                     return False
                 if event == 'LUTAR':
-                    if not game_start:
-                        window.close()
-                        return True
-                    else:
-                        window.close()
+                    window.close()
+                    return True
 
     def tela_luta_escolha_habilidade(self, vida1, vida2, stamina1, stamina2, mensagem_habilidade_escolhida, habilidades_usuario):
 
         layout = [
             [sg.Image(key='-IMAGE-')],
-            [sg.Button('SAIR', key='SAIR', size=(10, 2), button_color=('black', 'pink'))],
+            [sg.Button('DESISTIR', key='SAIR', size=(10, 2), button_color=('black', 'pink'))],
             [sg.Text(f'{vida1} HP   {stamina1} ST', size=(10, 1), justification='left', expand_x=True,
                      background_color='black', font=('Helvetica', 12), text_color='white'),
              sg.Text(f'{vida2} HP   {stamina2} ST', size=(10, 1), justification='right', expand_x=True,
@@ -101,11 +89,16 @@ class TelaJogo(TelaAbstrata):
                         background_color='black', font=('Helvetica', 14, 'bold'), text_color='white')]
             ]
         lista_habilidades_usuario = []
+        if all(habilidade.custo > stamina1 for habilidade in habilidades_usuario):
+            layout.append([sg.Button('DESCANSAR\n(recupera stamina, sem ação)', key='DESCANSAR', size=(20, 2),
+                                     button_color=('black', 'lightgreen'))])
+            lista_habilidades_usuario.append('DESCANSAR')
         for habilidade in habilidades_usuario:
             if habilidade.tipo == 'Ataque':
                 botao_habilidade = sg.Button(f'{habilidade.nome}\n(Custo: {habilidade.custo}, Dano: {habilidade.dano})',
                                              key=habilidade.id,
                                              size=(20, 2),
+                                             disabled=habilidade.custo > stamina1,
                                              button_color=('black', 'white'))
 
                 layout.append([botao_habilidade])
@@ -114,6 +107,7 @@ class TelaJogo(TelaAbstrata):
                 botao_habilidade = sg.Button(f'{habilidade.nome}\n(Custo: {habilidade.custo}, Defesa: {habilidade.taxa_defesa})',
                                              key=habilidade.id,
                                              size=(20, 2),
+                                             disabled=habilidade.custo > stamina1,
                                              button_color=('black', 'white'))
 
                 layout.append([botao_habilidade])
@@ -123,6 +117,7 @@ class TelaJogo(TelaAbstrata):
                 botao_habilidade = sg.Button(f'{habilidade.nome}\n(Custo: {habilidade.custo}, Esquiva: {habilidade.taxa_esquiva})',
                                              key=habilidade.id,
                                              size=(20, 2),
+                                             disabled=habilidade.custo > stamina1,
                                              button_color=('black', 'white'))
 
                 layout.append([botao_habilidade])
@@ -156,7 +151,7 @@ class TelaJogo(TelaAbstrata):
         layout = [
             [sg.Text('-------------- RELATÓRIO FINAL DA LUTA --------------')],
             [sg.Text(f"Você causou {dano_total} de dano")],
-            [sg.Text(f"Você usou {habilidades_usadas - 1} habilidades")],
+            [sg.Text(f"Você usou {habilidades_usadas} habilidades")],
             [sg.Text('-----------------------------------------------------')],
             [sg.Button('OK')]
         ]
@@ -183,22 +178,22 @@ class TelaJogo(TelaAbstrata):
 
         window.close()
 
-    def mostrar_campeao(self, boxeador_campeao):
+    def mostrar_campeao(self, boxeador_campeao, nome_torneio):
 
         layout = [
             [sg.Image(key='-IMAGE-')],
             [sg.Button('SAIR', key='SAIR', size=(20, 2), button_color=('black', 'pink'))],
-            [sg.Text(f'Parabéns {boxeador_campeao.nome}! Você mereceu!', background_color='black', justification='right',
+            [sg.Text(f'Parabéns {boxeador_campeao.nome}! Você é o campeão do {nome_torneio}!', background_color='black', justification='right',
                      font=('Helvetica', 14, 'bold'), text_color='white', expand_x=True)]
         ]
 
         window = sg.Window('Tela de Luta', layout, no_titlebar=True, grab_anywhere=True, keep_on_top=True, finalize=True)
         image_elem = window['-IMAGE-']
 
-        imagem_campeao = Imagens.base_64_imagens.boxe_image_4_base_64,
+        imagem_campeao = Imagens.base_64_imagens.boxe_image_4_base_64
 
+        image_elem.update(data=imagem_campeao)
         while True:
-            image_elem.update(data=imagem_campeao)
             event, values = window.read()
             if event == sg.WINDOW_CLOSED or event == 'SAIR':
                 window.close()

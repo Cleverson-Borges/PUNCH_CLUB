@@ -12,10 +12,12 @@ class DAO(ABC):
             self.__dump()
 
     def __dump(self):
-        pickle.dump(self.__cache, open(self.__datasource, 'wb'))
+        with open(self.__datasource, 'wb') as arquivo:
+            pickle.dump(self.__cache, arquivo)
 
     def __load(self):
-        self.__cache = pickle.load(open(self.__datasource,'rb'))
+        with open(self.__datasource, 'rb') as arquivo:
+            self.__cache = pickle.load(arquivo)
 
     #esse método precisa chamar o self.__dump()
     def add(self, key, obj):
@@ -46,8 +48,7 @@ class DAO(ABC):
             pass #implementar aqui o tratamento da exceção
 
     def get_all(self):
-        return self.__cache.values()
+        return list(self.__cache.values())
 
     def is_empty(self):
-        if len(self.__cache.items()) == 0:
-            return True
+        return len(self.__cache) == 0

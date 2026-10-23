@@ -83,14 +83,14 @@ class Boxeador:
 
     @peso.setter
     def peso(self, peso):
-        if isinstance(peso, float):
+        if isinstance(peso, (int, float)):
             self.__peso = peso
         else:
             raise TypeError('O peso deve ser um float')
 
     @altura.setter
     def altura(self, altura):
-        if isinstance(altura, float):
+        if isinstance(altura, (int, float)):
             self.__altura = altura
         else:
             raise TypeError('A altura deve ser um float')
@@ -110,11 +110,11 @@ class Boxeador:
             raise TypeError('O CPF deve ser um inteiro')
 
     @caracteristica.setter
-    def caracteristica(self, status):
-        if isinstance(status, Caracteristica):
-            self.__status = status
+    def caracteristica(self, caracteristica):
+        if isinstance(caracteristica, Caracteristica):
+            self.__caracteristica = caracteristica
         else:
-            raise TypeError('O status deve ser um objeto da classe Status')
+            raise TypeError('A característica deve ser um objeto da classe Caracteristica')
 
     @numero_inscricao.setter
     def numero_inscricao(self, numero_inscricao):

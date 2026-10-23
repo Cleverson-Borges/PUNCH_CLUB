@@ -7,14 +7,13 @@ from Telas.tela_central import TelaCentral
 
 class ControladorCentral:
     def __init__(self):
-        self.__controlador_boxeador = ControladorBoxeador(self)
         self.__controlador_habilidade = ControladorHabilidade(self)
+        self.__controlador_boxeador = ControladorBoxeador(self)
         self.__controlador_luta = ControladorJogo(self)
         self.__controlador_torneio = ControladorTorneio(self)
         self.__tela_central = TelaCentral()
 
     def inicializa_sistema(self):
-        self.cria_base_dados_habilidade()
         self.abre_tela()
 
     @property
@@ -33,9 +32,6 @@ class ControladorCentral:
     def controlador_torneio(self):
         return self.__controlador_torneio
 
-    def cria_base_dados_habilidade(self):
-        self.__controlador_habilidade.gerar_base_de_habilidades()
-
     def cadastra_boxeador(self):
         self.__controlador_boxeador.abre_tela()
 
@@ -47,16 +43,15 @@ class ControladorCentral:
                                            "\n"
                                            "   Desenvolvido por: Breno Sayão e Cleverson Borges  \n"
                                            "\n")
-        exit(0)
 
     def abre_tela(self):
+        # Os submenus retornam para cá ao terminar, então este é o único laço principal do jogo.
         lista_opcoes = {1: self.cadastra_boxeador,
-                        2: self.__controlador_torneio.abre_tela,
+                        2: self.cadastra_torneio,
                         3: self.__controlador_luta.iniciar_jogo,
                         0: self.encerra_sistema}
         while True:
             opcao_escolhida = self.__tela_central.tela_opcoes()
-            funcao_escolhida = lista_opcoes[opcao_escolhida]
-            funcao_escolhida()
+            lista_opcoes[opcao_escolhida]()
             if opcao_escolhida == 0:
                 break

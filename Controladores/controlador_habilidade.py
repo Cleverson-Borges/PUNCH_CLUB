@@ -1,4 +1,3 @@
-from Entidades.habilidade import Habilidade
 from Telas.tela_habilidade import TelaHabilidade
 from Entidades.ataque import Ataque
 from Entidades.defesa import Defesa
@@ -10,12 +9,14 @@ class ControladorHabilidade:
         self.__controlador_central = controlador_central
         self.__habilidades = []
         self.__tela_habilidade = TelaHabilidade()
+        self.gerar_base_de_habilidades()
 
     @property
     def habilidades(self):
         return self.__habilidades
 
     def gerar_base_de_habilidades(self):
+        self.__habilidades.clear()
         habilidade1 = Ataque(1, 'Jab', 'Soco direto', 'Ataque', 3, 3)
         habilidade2 = Ataque(2, 'Hook', 'Soco gancho', 'Ataque', 3, 5)
         habilidade3 = Ataque(3, 'Uppercut', 'Soco Uppercut', 'Ataque', 5, 8)
@@ -40,22 +41,27 @@ class ControladorHabilidade:
         habilidades_escolhidas = []
         self.__tela_habilidade.mostrar_mensagem('Adicione 4 habilidades ao seu boxeador')
         while contador < 4:
-            habilidade_escolhida = self.__tela_habilidade.selecionar_tipo()
-            if habilidade_escolhida == 0:
+            tipo_escolhido = self.__tela_habilidade.selecionar_tipo()
+            if tipo_escolhido == 0:
                 return None
-            if habilidade_escolhida == 1:
+            if tipo_escolhido == 1:
                 self.busca_habilidade_ataque('Ataque')
-                habilidades_escolhidas.append(self.selecao_habilidade_ataque())
-                contador += 1
-            elif habilidade_escolhida == 2:
+                habilidade = self.selecao_habilidade_ataque()
+            elif tipo_escolhido == 2:
                 self.busca_habilidade_defesa('Defesa')
-                habilidades_escolhidas.append(self.selecao_habilidade_defesa())
-                contador += 1
-            elif habilidade_escolhida == 3:
+                habilidade = self.selecao_habilidade_defesa()
+            else:
                 self.busca_habilidade_esquiva('Esquiva')
-                habilidades_escolhidas.append(self.selecao_habilidade_esquiva())
-                contador += 1
-            self.__tela_habilidade.mostrar_mensagem('Habilidade adicionada com sucesso!')
+                habilidade = self.selecao_habilidade_esquiva()
+
+            if habilidade is None:
+                continue  # o usuário voltou para a seleção de tipo
+            if habilidade in habilidades_escolhidas:
+                self.__tela_habilidade.mostrar_mensagem('Essa habilidade já foi escolhida, escolha outra!')
+                continue
+            habilidades_escolhidas.append(habilidade)
+            contador += 1
+            self.__tela_habilidade.mostrar_mensagem(f'Habilidade adicionada com sucesso! ({contador}/4)')
         self.__tela_habilidade.mostrar_mensagem('As habilidades foram cadastras com sucesso!')
         return habilidades_escolhidas
 
@@ -77,8 +83,6 @@ class ControladorHabilidade:
         if habilidade_escolhida is not None:
             return habilidade_escolhida
     def busca_por_id(self, id):
-        if id == 0:
-            self.__tela_habilidade.selecionar_tipo()
         for habilidade in self.habilidades:
             if habilidade.id == id:
                 return habilidade

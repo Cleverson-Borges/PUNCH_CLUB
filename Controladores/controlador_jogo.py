@@ -1,22 +1,33 @@
 from Telas.tela_jogo import TelaJogo
-from random import randint
-from DAOs.torneio_dao import TorneioDAO
 from Entidades.torneio import Torneio
-from Entidades.luta import Luta
+from random import randint, choice
 from enum import Enum
 
 
 class FightNumbers(Enum):
-    ROUND = 3
-    STAMINA = 4
-    MYKE_TYSON = 1
-    TONY_TUCKER = 3
+    ROUNDS = 3
+    JOGADAS_POR_ROUND = 3
+    RECUPERACAO_STAMINA = 4      # stamina recuperada por todos ao fim de cada jogada
+    RECUPERACAO_DEFESA = 5       # stamina extra ao defender com stamina baixa
+    TAXA_MAXIMA = 95             # teto (%) para chance de esquiva e redução de dano
 
-class TorneioNumbers(Enum):
-    SEMI_FINAL = 4
-    QUARTAS_DE_FINAL = 8
-    MULTIPLICADOR_LUTADORES = 2
-    ID_INICIAL_TORNEIO = 1
+
+class EstadoLutador:
+    # Vida e stamina durante a luta. Fica separado do Boxeador para que a luta
+    # não altere as características salvas do personagem.
+    def __init__(self, boxeador, caracteristicas):
+        self.boxeador = boxeador
+        self.apelido = boxeador.apelido
+        self.forca = caracteristicas['forca']
+        self.esquiva = caracteristicas['esquiva']
+        self.defesa = caracteristicas['defesa']
+        self.vida_max = caracteristicas['vida']
+        self.vida = caracteristicas['vida']
+        self.stamina_max = caracteristicas['stamina']
+        self.stamina = caracteristicas['stamina']
+
+    def pode_usar(self, habilidade):
+        return habilidade.custo <= self.stamina
 
 
 class ControladorJogo:
@@ -25,233 +36,215 @@ class ControladorJogo:
         self.__tela_jogo = TelaJogo()
 
     def escolher_torneio(self):
-        self.__controlador_central.controlador_torneio.listar_torneios()
-        lista_ids_validos = self.__controlador_central.controlador_torneio.retorna_lista_ids_validos()
-        resposta_id_torneio = self.__tela_jogo.obtem_id_torneio(lista_ids_validos)
-        if resposta_id_torneio == 0:
-            self.__controlador_central.controlador_torneio.cadastrar_torneio()
-        if resposta_id_torneio is False:
-            self.__tela_jogo.mostrar_mensagem('Valor vazio')
-        id_torneio = resposta_id_torneio
-        torneio_escolhido = self.__controlador_central.controlador_torneio.busca_torneio_por_id(id_torneio)
-        return torneio_escolhido
+        controlador_torneio = self.__controlador_central.controlador_torneio
+        controlador_torneio.listar_torneios()
+        lista_ids_validos = controlador_torneio.retorna_lista_ids_validos()
+        id_torneio = self.__tela_jogo.obtem_id_torneio(lista_ids_validos)
+        if id_torneio is None:
+            return None
+        return controlador_torneio.busca_torneio_por_id(id_torneio)
 
     def iniciar_jogo(self):
-        if len(self.__controlador_central.controlador_torneio.torneios) > 0:
-            torneio = self.escolher_torneio()
-            for luta in torneio.lista_lutas:
-                if not luta.boxeador_um.boxeador_cpu:
-                    jogador_usuario = luta.boxeador_um
-                    jogador_adversario = luta.boxeador_dois
-                elif not luta.boxeador_dois.boxeador_cpu:
-                    jogador_usuario = luta.boxeador_dois
-                    jogador_adversario = luta.boxeador_um
-                if not luta.boxeador_um.boxeador_cpu or not luta.boxeador_dois.boxeador_cpu:
-                    self.__controlador_central.controlador_torneio.mostrar_luta_usuario(boxeador_um=jogador_usuario,
-                                                                                        boxeador_dois=jogador_adversario,
-                                                                                        torneio=torneio)
-                    dict_luta = self.iniciar_luta(jogador_usuario,
-                                                  jogador_adversario)
-
-                    lista_jogadas_usuario = dict_luta.get("jogadas_usuario")
-                    if not lista_jogadas_usuario:
-                        lista_jogadas_usuario = []
-                    dano_total_causado = dict_luta["dano_causado_usuario"]
-                    luta_um = dict_luta["vitoria_jogador_usuario"]
-                    self.retorna_informacoes_lista(lista_jogadas_usuario, dano_total_causado)
-                    if luta_um:
-                        self.__tela_jogo.mostrar_campeao(boxeador_campeao=jogador_usuario)
-                        self.__controlador_central.controlador_torneio.remover_torneio(torneio.id_torneio)
-                    else:
-                        self.__tela_jogo.mostrar_mensagem("------ GAME OVER ------")
-                        self.__controlador_central.inicializa_sistema()
-
-
-                else:
-                    return self.__tela_jogo.mostrar_mensagem("Não iniciará o jogo enquanto não tiver 1 jogador "
-                                                             "controlado por você!")
-        else:
+        if not self.__controlador_central.controlador_boxeador.verifica_jogadores_maquina():
+            return
+        if len(self.__controlador_central.controlador_torneio.torneios) == 0:
             self.__tela_jogo.mostrar_mensagem("Não há nenhum torneio cadastrado, cadastre antes")
+            return
+        torneio = self.escolher_torneio()
+        if torneio is not None:
+            self.jogar_torneio(torneio)
 
-    def iniciar_luta(self, boxeador_usuario, boxeador_adversario):
-        vitoria_jogador_usuario = False
+    def jogar_torneio(self, torneio):
+        controlador_torneio = self.__controlador_central.controlador_torneio
+        controlador_boxeador = self.__controlador_central.controlador_boxeador
+        usuario = controlador_boxeador.busca_por_cpf(torneio.cpf_usuario)
+        if usuario is None:
+            self.__tela_jogo.mostrar_mensagem("O boxeador deste torneio não existe mais!")
+            controlador_torneio.remover_torneio(torneio.id_torneio)
+            return
+
+        controlador_torneio.mostrar_torneio(torneio)
+        while True:
+            # As lutas entre boxeadores da CPU da fase atual são simuladas automaticamente.
+            luta_usuario = None
+            for luta in torneio.fase_atual:
+                if luta.finalizada:
+                    continue
+                if luta.envolve(usuario.cpf):
+                    luta_usuario = luta
+                    continue
+                boxeador_um = controlador_boxeador.busca_por_cpf(luta.cpf_boxeador_um)
+                boxeador_dois = controlador_boxeador.busca_por_cpf(luta.cpf_boxeador_dois)
+                luta.cpf_vencedor = self.simular_luta(boxeador_um, boxeador_dois).cpf
+            controlador_torneio.salvar_torneio(torneio)
+
+            if luta_usuario is not None:
+                cpf_adversario = (luta_usuario.cpf_boxeador_dois if luta_usuario.cpf_boxeador_um == usuario.cpf
+                                  else luta_usuario.cpf_boxeador_um)
+                adversario = controlador_boxeador.busca_por_cpf(cpf_adversario)
+                controlador_torneio.mostrar_luta_usuario(boxeador_um=usuario, boxeador_dois=adversario, torneio=torneio)
+                nome_fase = Torneio.nome_da_fase(len(torneio.fase_atual))
+                resultado = self.iniciar_luta(usuario, adversario, nome_fase)
+                self.retorna_informacoes_lista(resultado['jogadas_usuario'], resultado['dano_causado_usuario'])
+
+                if not resultado['vitoria_jogador_usuario']:
+                    luta_usuario.cpf_vencedor = adversario.cpf
+                    self.__tela_jogo.mostrar_mensagem("------ GAME OVER ------\nVocê foi eliminado do torneio.")
+                    controlador_torneio.remover_torneio(torneio.id_torneio)
+                    return
+                luta_usuario.cpf_vencedor = usuario.cpf
+                controlador_boxeador.distribuir_pontos_vitoria(usuario)
+
+            controlador_torneio.avancar_fase(torneio)
+            if torneio.finalizado:
+                self.__tela_jogo.mostrar_campeao(boxeador_campeao=usuario, nome_torneio=torneio.nome_torneio)
+                controlador_torneio.mostrar_torneio(torneio)
+                controlador_torneio.remover_torneio(torneio.id_torneio)
+                return
+
+            controlador_torneio.mostrar_torneio(torneio)
+            proxima_fase = Torneio.nome_da_fase(len(torneio.fase_atual))
+            if not self.__tela_jogo.confirmar(f"Próxima luta: {proxima_fase}.\nDeseja lutar agora?"):
+                self.__tela_jogo.mostrar_mensagem("Progresso salvo! Continue o torneio pelo START GAME.")
+                return
+
+    def iniciar_luta(self, boxeador_usuario, boxeador_adversario, nome_fase=''):
+        controlador_boxeador = self.__controlador_central.controlador_boxeador
+        usuario = EstadoLutador(boxeador_usuario, controlador_boxeador.caracteristicas_de_luta(boxeador_usuario))
+        cpu = EstadoLutador(boxeador_adversario, controlador_boxeador.caracteristicas_de_luta(boxeador_adversario))
         jogadas_usuario = []
-        self.__controlador_central.controlador_boxeador.verifica_jogadores_maquina()
-        _dano_causado_usuario = 0
-        round = 1
-        jogada = 0
-        game_start = True
-        while boxeador_usuario.caracteristica.vida > 0 and boxeador_adversario.caracteristica.vida > 0 and game_start and round <= 4:
-            escolha_inicial = self.mostrar_luta(boxeador_usuario, boxeador_adversario, round)
-            if not escolha_inicial:
-                self.__tela_jogo.mostrar_mensagem("Você desistiu da luta, retornando ao menu principal")
-                self.__controlador_central.inicializa_sistema()
-            # Ataque da CPU
-            habilidade_escolhida_cpu = self.escolher_habilidade_cpu()
-            mensagem = ''
-            if not isinstance(habilidade_escolhida_cpu, tuple):
-                if habilidade_escolhida_cpu.custo < boxeador_adversario.caracteristica.stamina:
-                    if habilidade_escolhida_cpu.tipo == 'Ataque':
-                        mensagem = f"O {boxeador_adversario.apelido} usou a habilidade {habilidade_escolhida_cpu.tipo} e te dara {habilidade_escolhida_cpu.dano} de dano"
-                    elif habilidade_escolhida_cpu.tipo == 'Defesa':
-                        mensagem = f"O {boxeador_adversario.apelido} usou a habilidade {habilidade_escolhida_cpu.tipo} e bloqueará em {habilidade_escolhida_cpu.taxa_defesa} % o dano"
-                    elif habilidade_escolhida_cpu.tipo == 'Esquiva':
-                        mensagem = f"O {boxeador_adversario.apelido} usou a habilidade {habilidade_escolhida_cpu.tipo} e tem {habilidade_escolhida_cpu.taxa_esquiva} % de chance de esquivar do dano"
-                    stamina_cpu_vazia = False
+        dano_causado_usuario = 0
+
+        for numero_round in range(1, FightNumbers.ROUNDS.value + 1):
+            if usuario.vida <= 0 or cpu.vida <= 0:
+                break
+            if not self.mostrar_luta(usuario, cpu, numero_round, nome_fase):
+                return self.desistencia(jogadas_usuario, dano_causado_usuario)
+
+            for jogada in range(FightNumbers.JOGADAS_POR_ROUND.value):
+                habilidade_cpu = self.escolher_habilidade_cpu(cpu)
+                if habilidade_cpu is None:
+                    mensagem = f"O {cpu.apelido} está sem stamina e vai descansar"
                 else:
-                    mensagem = f"O {boxeador_adversario.apelido} não tem stamina suficiente para usar a habilidade {habilidade_escolhida_cpu.tipo}"
-                    stamina_cpu_vazia = True
-            # Ataque do usuário
-            # Escolha da habilidade
-            escolha_habilidade = self.mostrar_e_escolher_habilidade(boxeador_usuario, boxeador_adversario, mensagem ,boxeador_usuario.habilidades)
-            if not escolha_habilidade:
-                self.__tela_jogo.mostrar_mensagem("Você desistiu da luta, retornando ao menu principal")
-            habilidade_escolhida_usuario = self.busca_por_id(escolha_habilidade, boxeador_usuario.habilidades)
-            if boxeador_usuario.caracteristica.stamina <= 0:
-                stamina_usuario_vazia = True
-            else:
-                stamina_usuario_vazia = False
-            if habilidade_escolhida_cpu.tipo == 'Ataque' and habilidade_escolhida_usuario.tipo == 'Ataque':
-                # Ataque da CPU
-                if habilidade_escolhida_cpu.custo < boxeador_adversario.caracteristica.stamina and stamina_cpu_vazia == False:
-                    dano_causado_ao_usuario = boxeador_usuario.caracteristica.forca + habilidade_escolhida_usuario.dano
-                    boxeador_usuario.caracteristica.vida -= dano_causado_ao_usuario
-                boxeador_usuario.caracteristica.stamina -= habilidade_escolhida_usuario.custo
+                    mensagem = f"O {cpu.apelido} vai usar {habilidade_cpu.nome} ({habilidade_cpu.tipo})"
 
-                # Ataque do Usuário
-                if habilidade_escolhida_usuario.custo < boxeador_usuario.caracteristica.stamina and stamina_usuario_vazia == False:
-                    dano_causado_a_cpu = boxeador_adversario.caracteristica.forca + habilidade_escolhida_cpu.dano
-                    boxeador_adversario.caracteristica.vida -= dano_causado_a_cpu
-                    _dano_causado_usuario += dano_causado_a_cpu
-                boxeador_adversario.caracteristica.stamina -= habilidade_escolhida_cpu.custo
+                escolha_habilidade = self.mostrar_e_escolher_habilidade(usuario, cpu, mensagem,
+                                                                        boxeador_usuario.habilidades)
+                if escolha_habilidade is False:
+                    return self.desistencia(jogadas_usuario, dano_causado_usuario)
+                habilidade_usuario = None
+                if escolha_habilidade != 'DESCANSAR':
+                    habilidade_usuario = self.busca_por_id(escolha_habilidade, boxeador_usuario.habilidades)
+                    jogadas_usuario.append(habilidade_usuario)
 
+                relatorio, dano = self.resolver_turno(usuario, habilidade_usuario, cpu, habilidade_cpu)
+                dano_causado_usuario += dano
+                self.__tela_jogo.mostrar_mensagem('\n'.join(relatorio))
+                if usuario.vida <= 0 or cpu.vida <= 0:
+                    break
 
-            elif habilidade_escolhida_cpu.tipo == 'Ataque' and habilidade_escolhida_usuario.tipo == 'Defesa':
-                taxa_defesa = 0
-                dano_causado_ao_usuario = 0
-                if habilidade_escolhida_cpu.custo < boxeador_adversario.caracteristica.stamina and stamina_cpu_vazia == False:
-                    # Ataque da CPU e defesa do usuário
-                    dano_causado_ao_usuario = boxeador_adversario.caracteristica.forca + habilidade_escolhida_cpu.dano
-                boxeador_adversario.caracteristica.stamina -= habilidade_escolhida_cpu.custo
+        vitoria_jogador_usuario = self.decidir_vencedor(usuario, cpu, mostrar=True) is usuario
+        return {'vitoria_jogador_usuario': vitoria_jogador_usuario,
+                'jogadas_usuario': jogadas_usuario,
+                'dano_causado_usuario': round_dano(dano_causado_usuario)}
 
-                if habilidade_escolhida_usuario.custo < boxeador_usuario.caracteristica.stamina and stamina_usuario_vazia == False:
-                    taxa_defesa = habilidade_escolhida_usuario.taxa_defesa / 100
-                dano_com_defesa = dano_causado_ao_usuario - (dano_causado_ao_usuario * taxa_defesa)
-                boxeador_usuario.caracteristica.vida -= dano_com_defesa
-                boxeador_usuario.caracteristica.stamina -= habilidade_escolhida_usuario.custo
+    def desistencia(self, jogadas_usuario, dano_causado_usuario):
+        self.__tela_jogo.mostrar_mensagem("Você jogou a toalha! Desistir conta como derrota.")
+        return {'vitoria_jogador_usuario': False,
+                'jogadas_usuario': jogadas_usuario,
+                'dano_causado_usuario': round_dano(dano_causado_usuario)}
 
-            elif habilidade_escolhida_cpu.tipo == 'Ataque' and habilidade_escolhida_usuario.tipo == 'Esquiva':
-                # Gerar um número aleatório entre 1 e 100
-                numero_aleatorio = randint(1, 100)
-                chance_desvio = 0
-                if habilidade_escolhida_cpu.custo < boxeador_adversario.caracteristica.stamina and stamina_cpu_vazia == False:
-                    # Ataque da CPU e esquiva do usuário
-                    chance_desvio = habilidade_escolhida_usuario.taxa_esquiva
-                boxeador_usuario.caracteristica.stamina -= habilidade_escolhida_usuario.custo
+    def decidir_vencedor(self, lutador_um, lutador_dois, mostrar=False):
+        mensagens = ["O jogo acabou"]
+        if lutador_um.vida > lutador_dois.vida:
+            vencedor = lutador_um
+        elif lutador_um.vida < lutador_dois.vida:
+            vencedor = lutador_dois
+        else:
+            mensagens.append("Empate! O jogo será decidido no cara ou coroa")
+            vencedor = lutador_um if randint(0, 1) == 0 else lutador_dois
+        mensagens.append(f"O {vencedor.apelido} ganhou a luta")
+        if mostrar:
+            self.__tela_jogo.mostrar_mensagem('\n'.join(mensagens))
+        return vencedor
 
-                if habilidade_escolhida_cpu.custo < boxeador_adversario.caracteristica.stamina:
-                    # Verificar se o número aleatório está dentro da chance de desvio
-                    if numero_aleatorio <= chance_desvio:
-                        if stamina_usuario_vazia:
-                            self.__tela_jogo.mostrar_mensagem("WOW que amenteigado que você está! Ataque desviado!")
-                    else:
-                        dano_cpu = boxeador_adversario.caracteristica.forca + habilidade_escolhida_cpu.dano
-                        boxeador_usuario.caracteristica.vida -= dano_cpu
-                        self.__tela_jogo.mostrar_mensagem(
-                            f"Hoje não campeão, você não conseguiu desviar do ataque e tomou {dano_cpu} de dano")
+    def resolver_turno(self, usuario, habilidade_usuario, cpu, habilidade_cpu):
+        # Os dois lutadores agem ao mesmo tempo. Retorna (linhas do relatório, dano causado pelo usuário).
+        relatorio = []
+        acao_usuario = self.pagar_habilidade(usuario, habilidade_usuario, relatorio)
+        acao_cpu = self.pagar_habilidade(cpu, habilidade_cpu, relatorio)
+        habilidade_cpu = acao_cpu
 
-                    boxeador_usuario.caracteristica.stamina -= habilidade_escolhida_cpu.custo
-                    boxeador_usuario.caracteristica.stamina -= habilidade_escolhida_cpu.custo
+        dano_usuario = self.calcular_dano(usuario, acao_usuario, cpu, habilidade_cpu, relatorio)
+        dano_cpu = self.calcular_dano(cpu, habilidade_cpu, usuario, acao_usuario, relatorio)
+        cpu.vida = round_dano(cpu.vida - dano_usuario)
+        usuario.vida = round_dano(usuario.vida - dano_cpu)
 
-            elif habilidade_escolhida_usuario.tipo == 'Ataque' and habilidade_escolhida_cpu.tipo == 'Defesa':
-                taxa_defesa = 0
-                if habilidade_escolhida_cpu.custo < boxeador_adversario.caracteristica.stamina and stamina_cpu_vazia == False:
-                    taxa_defesa = habilidade_escolhida_cpu.taxa_defesa / 100
-                boxeador_adversario.caracteristica.stamina -= habilidade_escolhida_cpu.custo
-                # Ataque do usuário e defesa da CPU
-                if habilidade_escolhida_usuario.custo < boxeador_usuario.caracteristica.stamina and stamina_usuario_vazia == False:
-                    dano_causado_a_cpu = boxeador_usuario.caracteristica.forca + habilidade_escolhida_usuario.dano
-                    dano_com_defesa = dano_causado_a_cpu - (dano_causado_a_cpu * taxa_defesa)
-                    boxeador_adversario.caracteristica.vida -= dano_com_defesa
-                    _dano_causado_usuario += dano_causado_a_cpu
-                boxeador_usuario.caracteristica.stamina -= habilidade_escolhida_usuario.custo
+        if dano_usuario == 0 and dano_cpu == 0 and not relatorio:
+            relatorio.append("Nenhum golpe acertou o alvo nesta jogada")
 
+        for lutador, habilidade in ((usuario, acao_usuario), (cpu, habilidade_cpu)):
+            # Defender com stamina baixa ajuda a recuperar o fôlego (regra da documentação)
+            if (habilidade is not None and habilidade.tipo == 'Defesa'
+                    and lutador.stamina < lutador.stamina_max / 2):
+                lutador.stamina += FightNumbers.RECUPERACAO_DEFESA.value
+                relatorio.append(f"O {lutador.apelido} se defendeu e recuperou o fôlego "
+                                 f"(+{FightNumbers.RECUPERACAO_DEFESA.value} ST)")
+            lutador.stamina = min(lutador.stamina_max, lutador.stamina + FightNumbers.RECUPERACAO_STAMINA.value)
 
-            elif habilidade_escolhida_usuario.tipo == 'Ataque' and habilidade_escolhida_cpu.tipo == 'Esquiva':
-                # Gerar um número aleatório entre 1 e 100
-                numero_aleatorio = randint(1, 100)
-                chance_desvio = 0
-                if habilidade_escolhida_usuario.custo < boxeador_usuario.caracteristica.stamina and stamina_usuario_vazia == False:
-                    # Ataque do usuário e esquiva da CPU
-                    chance_desvio = habilidade_escolhida_cpu.taxa_esquiva
-                    boxeador_usuario.caracteristica.stamina -= habilidade_escolhida_usuario.custo
-                # Verificar se o número aleatório está dentro da chance de desvio
-                if numero_aleatorio <= chance_desvio:
-                    if stamina_cpu_vazia == False:
-                        self.__tela_jogo.mostrar_mensagem("WOW que amenteigado que você está! Ataque desviado!")
-                else:
-                    dano_usuario = boxeador_usuario.caracteristica.forca + habilidade_escolhida_usuario.dano
-                    boxeador_adversario.caracteristica.vida -= dano_usuario
-                    _dano_causado_usuario += dano_usuario
-                    self.__tela_jogo.mostrar_mensagem(
-                        f"Hoje não campeão, você não conseguiu desviar do ataque e tomou {dano_usuario} de dano")
-                boxeador_adversario.caracteristica.stamina -= habilidade_escolhida_cpu.custo
-                boxeador_adversario.caracteristica.stamina -= habilidade_escolhida_cpu.custo
+        return relatorio, dano_usuario
 
-            elif ((habilidade_escolhida_usuario.tipo == 'Defesa' and habilidade_escolhida_cpu.tipo == 'Esquiva'
-                   or (habilidade_escolhida_usuario.tipo == 'Esquiva' and habilidade_escolhida_cpu.tipo == 'Defesa')
-                   or (habilidade_escolhida_usuario.tipo == 'Defesa' and habilidade_escolhida_cpu.tipo == 'Defesa'))):
-                self.__tela_jogo.mostrar_mensagem(
-                    "Você e seu adversário usaram habilidades de defesa ou esquiva, nada aconteceu")
+    def pagar_habilidade(self, lutador, habilidade, relatorio):
+        # Desconta a stamina e retorna a habilidade, ou None se o lutador não puder usá-la.
+        if habilidade is None:
+            return None
+        if not lutador.pode_usar(habilidade):
+            relatorio.append(f"O {lutador.apelido} não tem stamina suficiente para usar {habilidade.nome}")
+            return None
+        lutador.stamina -= habilidade.custo
+        return habilidade
 
-            else:
-                self.__tela_jogo.mostrar_mensagem("Você não tem stamina suficiente para usar essa habilidade")
-                self.__tela_jogo.mostrar_mensagem("Tente novamente")
+    def calcular_dano(self,atacante, habilidade_atacante, defensor, habilidade_defensor, relatorio):
+        if habilidade_atacante is None or habilidade_atacante.tipo != 'Ataque':
+            return 0
+        dano = atacante.forca + habilidade_atacante.dano
 
-            jogadas_usuario.append(habilidade_escolhida_usuario)
-            boxeador_usuario.caracteristica.stamina += FightNumbers.STAMINA.value
-            boxeador_adversario.caracteristica.stamina += FightNumbers.STAMINA.value
-            jogada += 1
-            if jogada == 3:
-                jogada = 0
-                round += 1
-  
-            if round == (
-                    FightNumbers.ROUND.value + 1) or boxeador_usuario.caracteristica.vida <= 0 or boxeador_adversario.caracteristica.vida <= 0:
-                self.__tela_jogo.mostrar_mensagem("O jogo acabou")
-                if boxeador_usuario.caracteristica.vida > boxeador_adversario.caracteristica.vida:
-                    self.__tela_jogo.mostrar_mensagem(f"O {boxeador_usuario.apelido} ganhou a luta")
-                    vitoria_jogador_usuario = True
-                elif boxeador_usuario.caracteristica.vida < boxeador_adversario.caracteristica.vida:
-                    self.__tela_jogo.mostrar_mensagem(f"O {boxeador_adversario.apelido} ganhou a luta")
-                else:
-                    self.__tela_jogo.mostrar_mensagem("Empate")
-                    cara_coroa = randint(0, 1)
-                    self.__tela_jogo.mostrar_mensagem("Jogo será decidido no cara ou coroa")
-                    if cara_coroa == 0:
-                        self.__tela_jogo.mostrar_mensagem(f"O {boxeador_usuario.apelido} ganhou a luta")
-                        vitoria_jogador_usuario = True
-                    else:
-                        self.__tela_jogo.mostrar_mensagem(f"O {boxeador_adversario.apelido} ganhou a luta")
-                print(vitoria_jogador_usuario)
-                print(jogadas_usuario)
-                print(_dano_causado_usuario)
-                return {'vitoria_jogador_usuario':vitoria_jogador_usuario,
-                        'jogadas_usuario':jogadas_usuario,
-                        'dano_causado_usuario':_dano_causado_usuario}
+        if habilidade_defensor is not None and habilidade_defensor.tipo == 'Esquiva':
+            chance_desvio = min(habilidade_defensor.taxa_esquiva + defensor.esquiva, FightNumbers.TAXA_MAXIMA.value)
+            if randint(1, 100) <= chance_desvio:
+                relatorio.append(f"O {defensor.apelido} esquivou do {habilidade_atacante.nome} "
+                                 f"do {atacante.apelido}! ({chance_desvio}% de chance)")
+                return 0
+            relatorio.append(f"O {defensor.apelido} tentou esquivar, mas não conseguiu!")
+        elif habilidade_defensor is not None and habilidade_defensor.tipo == 'Defesa':
+            taxa_defesa = min(habilidade_defensor.taxa_defesa + defensor.defesa, FightNumbers.TAXA_MAXIMA.value)
+            dano = dano * (1 - taxa_defesa / 100)
+            relatorio.append(f"O {defensor.apelido} bloqueou {taxa_defesa}% do golpe")
 
-    def escolher_habilidade_cpu(self):
+        dano = round_dano(dano)
+        relatorio.append(f"O {atacante.apelido} acertou {habilidade_atacante.nome} e causou {dano} de dano "
+                         f"no {defensor.apelido}")
+        return dano
+
+    def escolher_habilidade_cpu(self, lutador):
+        # A CPU sorteia entre as habilidades que consegue pagar; sem stamina, descansa (None).
         lista_habilidades = self.__controlador_central.controlador_habilidade.habilidades
-        id_escolhido = randint(1, len(lista_habilidades) - 1)
-        for habilidades in lista_habilidades:
-            if habilidades.id == id_escolhido:
-                if habilidades.tipo == 'Ataque':
-                    return habilidades
-                elif habilidades.tipo == 'Defesa':
-                    return habilidades
-                elif habilidades.tipo == 'Esquiva':
-                    return habilidades
-        return None, None
+        possiveis = [habilidade for habilidade in lista_habilidades if lutador.pode_usar(habilidade)]
+        if len(possiveis) == 0:
+            return None
+        return choice(possiveis)
+
+    def simular_luta(self, boxeador_um, boxeador_dois):
+        # Luta entre dois boxeadores da CPU, sem telas. Retorna o boxeador vencedor.
+        controlador_boxeador = self.__controlador_central.controlador_boxeador
+        lutador_um = EstadoLutador(boxeador_um, controlador_boxeador.caracteristicas_de_luta(boxeador_um))
+        lutador_dois = EstadoLutador(boxeador_dois, controlador_boxeador.caracteristicas_de_luta(boxeador_dois))
+        for jogada in range(FightNumbers.ROUNDS.value * FightNumbers.JOGADAS_POR_ROUND.value):
+            self.resolver_turno(lutador_um, self.escolher_habilidade_cpu(lutador_um),
+                                lutador_dois, self.escolher_habilidade_cpu(lutador_dois))
+            if lutador_um.vida <= 0 or lutador_dois.vida <= 0:
+                break
+        return self.decidir_vencedor(lutador_um, lutador_dois).boxeador
 
     def busca_por_id(self, id, lista_habilidades):
         for habilidade in lista_habilidades:
@@ -259,41 +252,26 @@ class ControladorJogo:
                 return habilidade
         return None
 
-    def mostrar_luta(self, boxeador_um, boxeador_dois, round, game_start=False):
-        resposta = self.__tela_jogo.tela_luta_padrao(boxeador_um.caracteristica.vida,
-                                          boxeador_dois.caracteristica.vida,
-                                          boxeador_um.caracteristica.stamina,
-                                          boxeador_dois.caracteristica.stamina,
-                                          boxeador_um.nacionalidade, boxeador_dois.nacionalidade,
-                                          boxeador_um.nome, boxeador_dois.nome,
-                                          boxeador_um.apelido, boxeador_dois.apelido,
-                                          round,
-                                          game_start
-                                          )
-        return resposta
+    def mostrar_luta(self, usuario, cpu, round, nome_fase=''):
+        boxeador_um = usuario.boxeador
+        boxeador_dois = cpu.boxeador
+        return self.__tela_jogo.tela_luta_padrao(usuario.vida, cpu.vida,
+                                                 usuario.stamina, cpu.stamina,
+                                                 boxeador_um.nacionalidade, boxeador_dois.nacionalidade,
+                                                 boxeador_um.nome, boxeador_dois.nome,
+                                                 boxeador_um.apelido, boxeador_dois.apelido,
+                                                 round, FightNumbers.ROUNDS.value, nome_fase)
 
-    def mostrar_e_escolher_habilidade(self, boxeador_um, boxeador_dois, mensagem_habilidade_escolhida, habilidades_boxeador_usuario):
-        resposta = self.__tela_jogo.tela_luta_escolha_habilidade(boxeador_um.caracteristica.vida,
-                                          boxeador_dois.caracteristica.vida,
-                                          boxeador_um.caracteristica.stamina,
-                                          boxeador_dois.caracteristica.stamina,
-                                          mensagem_habilidade_escolhida,
-                                          habilidades_boxeador_usuario
-                                            )
-        return resposta
-
-    def mostrar_vitoria_boxeador_um(self, boxeador_um, boxeador_dois):
-        self.__tela_jogo.tela_luta_vitoria_boxeador_um(boxeador_um.caracteristica.nome,
-                                                       boxeador_dois.caracteristica.nome)
-
-    def mostrar_vitoria_boxeador_dois(self, boxeador_um, boxeador_dois):
-        self.__tela_jogo.tela_luta_vitoria_boxeador_dois(boxeador_um.caracteristica.vida,
-                                                         boxeador_dois.caracteristica.vida,
-                                                         boxeador_um.caracteristica.stamina,
-                                                         boxeador_dois.caracteristica.stamina,
-                                                         boxeador_um.nacionalidade, boxeador_dois.nacionalidade,
-                                                         boxeador_um.apelido, boxeador_dois.apelido)
+    def mostrar_e_escolher_habilidade(self, usuario, cpu, mensagem_habilidade_escolhida, habilidades_boxeador_usuario):
+        return self.__tela_jogo.tela_luta_escolha_habilidade(usuario.vida, cpu.vida,
+                                                             usuario.stamina, cpu.stamina,
+                                                             mensagem_habilidade_escolhida,
+                                                             habilidades_boxeador_usuario)
 
     def retorna_informacoes_lista(self, lista, dano_total_causado):
         habilidades_usadas = len(lista)
         self.__tela_jogo.mostra_informacoes_luta_usuario(dano_total_causado, habilidades_usadas)
+
+
+def round_dano(valor):
+    return round(valor, 1)

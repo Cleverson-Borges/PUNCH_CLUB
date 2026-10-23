@@ -1,39 +1,45 @@
-from Telas.tela_central import TelaAbstrata
-import PySimpleGUI as sg
+from Telas.tela_abstrata import TelaAbstrata
+import FreeSimpleGUI as sg
 
 
 class TelaBoxeador(TelaAbstrata):
     def __init__(self):
         self.__window = None
-        self.tela_opcoes()
 
     def open(self):
         button, values = self.__window.Read()
         return button, values
 
     def cadastrar_boxeador(self):
+        # Retorna o dicionário com os dados do boxeador, ou None se o usuário voltar.
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
                     [sg.Text('░▒▓█ CADASTRAMENTO DE NOVO BOXEADOR █▓▒░', font=('Lucida', 25, 'bold'))],
                     [sg.Text('Nome:', size=(15, 1)), sg.InputText('', key='nome')],
                     [sg.Text('Apelido:', size=(15, 1)), sg.InputText('', key='apelido')],
-                    [sg.Text('Idade:', size=(15, 1)), sg.InputText('(min: 18 max: 100)', key='idade')],
-                    [sg.Text('Peso:', size=(15, 1)), sg.InputText('(min: 35kg max: 150.7kg)', key='peso')],
-                    [sg.Text('Altura:', size=(15, 1)), sg.InputText('(min: 1.20m max: 2.30m)', key='altura')],
-                    [sg.Text('Nacionalidade:', size=(15, 1)), sg.InputText('(3 letras iniciais)', key='nacionalidade')],
+                    [sg.Text('Idade:', size=(15, 1)), sg.InputText('', key='idade'), sg.Text('(min: 18 max: 100)')],
+                    [sg.Text('Peso:', size=(15, 1)), sg.InputText('', key='peso'), sg.Text('(min: 35kg max: 150.7kg)')],
+                    [sg.Text('Altura:', size=(15, 1)), sg.InputText('', key='altura'), sg.Text('(min: 1.20m max: 2.30m)')],
+                    [sg.Text('Nacionalidade:', size=(15, 1)), sg.InputText('', key='nacionalidade'),
+                     sg.Text('(3 letras iniciais)')],
                     [sg.Button('Cadastrar'), sg.Cancel('Voltar')]
         ]
         self.__window = sg.Window('Cadastamento boxeador').Layout(layout)
 
         button, values = self.open()
-        nome = values['nome']
-        apelido = values['apelido']
-        idade = self.le_num_inteiro_entre(values['idade'], 18, 100)
-        peso = self.le_num_float_entre(values['peso'], 35.0, 150.7)
-        altura = self.le_num_float_entre(values['altura'], 1.20, 2.20)
-        nacionalidade = self.le_str_valida(values['nacionalidade'])
-
         self.close()
+        if button != 'Cadastrar':
+            return None
+
+        nome = self.le_str_nao_vazia(values['nome'], 'nome')
+        apelido = self.le_str_nao_vazia(values['apelido'], 'apelido') if nome is not None else None
+        idade = self.le_num_inteiro_entre(values['idade'], 18, 100) if apelido is not None else None
+        peso = self.le_num_float_entre(values['peso'], 35.0, 150.7) if idade is not None else None
+        altura = self.le_num_float_entre(values['altura'], 1.20, 2.30) if peso is not None else None
+        nacionalidade = self.le_str_valida(values['nacionalidade']) if altura is not None else None
+        if nacionalidade is None:
+            return None
+
         return {"nome": nome, "apelido": apelido, "idade": idade, "peso": peso, "altura": altura,
                 "nacionalidade": nacionalidade}
 
@@ -68,29 +74,16 @@ class TelaBoxeador(TelaAbstrata):
     def primeira_tela_opcoes(self):
         self.tela_opcoes()
         button, values = self.__window.Read()
-        opcao = 0
-        if button == '1':
-            opcao = 1
-        if button == '2':
-            opcao = 2
-        if button == '3':
-            opcao = 3
-        if button == '4':
-            opcao = 4
-        if button == '5':
-            opcao = 5
-        if button == '6':
-            opcao = 6
-        if button == '0' in (None, 'Cancelar'):
-            opcao = 0
-
         self.close()
-        return opcao
+        if button in ('1', '2', '3', '4', '5', '6'):
+            return int(button)
+        return 0
 
     def mostrar_mensagem(self, mensagem):
         sg.popup('', mensagem)
 
     def obtem_cpf(self):
+        # Retorna o CPF digitado, ou None se o usuário voltar.
         sg.ChangeLookAndFeel('DarkTanBlue')
         layout = [
             [sg.Text(' ░▒▓█ SELECIONAR BOXEADOR █▓▒░ ', font=("Lucida", 25))],
@@ -101,21 +94,10 @@ class TelaBoxeador(TelaAbstrata):
         self.__window = sg.Window('Seleciona boxeador').Layout(layout)
 
         button, values = self.open()
-        cpf = self.le_num_inteiro(values['cpf'])
         self.close()
-
-        return cpf
-
-    def verifica_boxeador_cpu(self):
-        sg.ChangeLookAndFeel('DarkTanBlue')
-        layout = [
-            [sg.Text(' ░▒▓█ SELECIONAR BOXEADOR █▓▒░ ', font=("Lucida", 25))],
-            [sg.Text('Este é o lutador que você quer jogar? (S/N): ', size=(15, 1)), sg.InputText('', key='resposta')],
-            [sg.Button('Confirmar'), sg.Cancel('Voltar')]
-        ]
-        self.__window = sg.Window('Seleciona boxeador').Layout(layout)
-        resposta = input('Este é o lutador que você quer jogar? (Responda com S (Sim) ou N (Não): ')
-        return resposta
+        if button != 'Confirmar':
+            return None
+        return self.le_num_inteiro(values['cpf'])
 
     def mostra_boxeador(self, dados_boxeador):
         string_todos_boxeadores = ""
@@ -123,9 +105,11 @@ class TelaBoxeador(TelaAbstrata):
             string_todos_boxeadores = string_todos_boxeadores + "NOME DO BOXEADOR: " + boxeador["nome"] + '\n'
             string_todos_boxeadores = string_todos_boxeadores + "CPF DO BOXEADOR: " + str(boxeador["cpf"]) + '\n'
             string_todos_boxeadores = string_todos_boxeadores + "APELIDO: " + boxeador["apelido"] + '\n'
+            string_todos_boxeadores = string_todos_boxeadores + "INSCRIÇÃO: " + str(boxeador["numero_inscricao"]) + '\n'
+            string_todos_boxeadores = string_todos_boxeadores + "CONTROLE: " + ("CPU" if boxeador["CPU"] else "Você") + '\n'
             string_todos_boxeadores = string_todos_boxeadores + '\n'
 
-        sg.Popup('░▒▓█ LISTA DE BOXEADORES █▓▒░', string_todos_boxeadores)
+        sg.popup_scrolled(string_todos_boxeadores, title='░▒▓█ LISTA DE BOXEADORES █▓▒░', size=(60, 25))
 
     def lista_habilidades(self, dados_habilidade):
         string_todas_habilidades = ""
@@ -152,9 +136,11 @@ class TelaBoxeador(TelaAbstrata):
             string_todas_caracteristicas = string_todas_caracteristicas + "VIDA: " + str(caracteristica["vida"]) + '\n'
             string_todas_caracteristicas = string_todas_caracteristicas + "STAMINA: " + str(caracteristica["stamina"]) + '\n'
             string_todas_caracteristicas = string_todas_caracteristicas + "DEFESA: " + str(caracteristica["defesa"]) + '\n'
-
             string_todas_caracteristicas = string_todas_caracteristicas + '\n'
+            string_todas_caracteristicas = string_todas_caracteristicas + f"IMC: {caracteristica['imc']:.1f}" + '\n'
+            string_todas_caracteristicas = string_todas_caracteristicas + "BÔNUS DO IMC NA LUTA: " + caracteristica["bonus_imc"] + '\n'
 
         sg.Popup('░▒▓█ LISTA DE CARACTERISTICAS DO BOXEADOR █▓▒░', string_todas_caracteristicas)
+
     def close(self):
         self.__window.Close()

@@ -1,53 +1,47 @@
-from Entidades.boxeador import Boxeador
-
-
 class Luta:
-    def __init__(self, boxeador_um, boxeador_dois):
-        self.__boxeador_um = boxeador_um
-        self.__boxeador_dois = boxeador_dois
-        self.__vencedor = None
-        self.__round_atual = 0
+    # A luta guarda apenas os CPFs dos boxeadores: os objetos ficam no BoxeadorDAO,
+    # assim o torneio salvo não carrega cópias desatualizadas dos lutadores.
+    def __init__(self, cpf_boxeador_um: int, cpf_boxeador_dois: int):
+        self.__cpf_boxeador_um = cpf_boxeador_um
+        self.__cpf_boxeador_dois = cpf_boxeador_dois
+        self.__cpf_vencedor = None
 
     @property
-    def boxeador_um(self):
-        return self.__boxeador_um
+    def cpf_boxeador_um(self):
+        return self.__cpf_boxeador_um
 
     @property
-    def boxeador_dois(self):
-        return self.__boxeador_dois
+    def cpf_boxeador_dois(self):
+        return self.__cpf_boxeador_dois
 
     @property
-    def vencedor(self):
-        return self.__vencedor
+    def cpf_vencedor(self):
+        return self.__cpf_vencedor
 
     @property
-    def round_atual(self):
-        return self.__round_atual
+    def finalizada(self):
+        return self.__cpf_vencedor is not None
 
-    @boxeador_um.setter
-    def boxeador_um(self, lutador_um):
-        if isinstance(lutador_um, Boxeador):
-            self.__boxeador_um = lutador_um
+    @cpf_boxeador_um.setter
+    def cpf_boxeador_um(self, cpf):
+        if isinstance(cpf, int):
+            self.__cpf_boxeador_um = cpf
         else:
-            raise TypeError('O lutador deve ser um boxeador')
+            raise TypeError('O CPF do lutador deve ser um inteiro')
 
-    @boxeador_dois.setter
-    def boxeador_dois(self, lutador_dois):
-        if isinstance(lutador_dois, Boxeador):
-            self.__boxeador_dois = lutador_dois
+    @cpf_boxeador_dois.setter
+    def cpf_boxeador_dois(self, cpf):
+        if isinstance(cpf, int):
+            self.__cpf_boxeador_dois = cpf
         else:
-            raise TypeError('O lutador deve ser um boxeador')
+            raise TypeError('O CPF do lutador deve ser um inteiro')
 
-    @vencedor.setter
-    def vencedor(self, vencedor):
-        if isinstance(vencedor, Boxeador):
-            self.__vencedor = vencedor
+    @cpf_vencedor.setter
+    def cpf_vencedor(self, cpf):
+        if cpf in (self.__cpf_boxeador_um, self.__cpf_boxeador_dois):
+            self.__cpf_vencedor = cpf
         else:
-            raise TypeError('O lutador deve ser um boxeador')
+            raise ValueError('O vencedor deve ser um dos lutadores da luta')
 
-    @round_atual.setter
-    def round_atual(self, round_atual):
-        if isinstance(round_atual, int):
-            self.__round_atual = round_atual
-        else:
-            raise TypeError('O round deve ser um inteiro')
+    def envolve(self, cpf):
+        return cpf in (self.__cpf_boxeador_um, self.__cpf_boxeador_dois)

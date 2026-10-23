@@ -1,10 +1,9 @@
 from Telas.tela_abstrata import TelaAbstrata
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 class TelaCentral(TelaAbstrata):
     def __init__(self):
         self.__window = None
-        self.init_opcoes()
 
     def mostrar_mensagem(self, mensagem):
         print(mensagem)

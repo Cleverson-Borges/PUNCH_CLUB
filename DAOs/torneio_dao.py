@@ -11,7 +11,7 @@ class TorneioDAO(DAO):
             super().add(torneio.id_torneio, torneio)
 
     def update(self, torneio: Torneio):
-        if ((torneio is not None) and isinstance(torneio, torneio) and isinstance(torneio.id_torneio, int)):
+        if ((torneio is not None) and isinstance(torneio, Torneio) and isinstance(torneio.id_torneio, int)):
             super().update(torneio.id_torneio, torneio)
 
     def get(self, key:int):
